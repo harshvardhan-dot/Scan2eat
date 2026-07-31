@@ -4,30 +4,45 @@ import { login, requestPasswordReset, firstTimeSetup, registerAdmin, getPublicTe
 
 type Role = 'student' | 'mess_staff' | 'admin' | 'developer';
 
-const roleMeta: Record<Role, { label: string; accent: string; badge: string; description: string }> = {
+const roleMeta: Record<Role, { label: string; accent: string; badge: string }> = {
   student: {
     label: 'Student',
     accent: 'from-cyan-500 to-sky-500 text-cyan-400 border-cyan-500/30',
-    badge: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20',
-    description: 'Access digital meal pass, weekly menu, and tiffin delivery.'
+    badge: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20'
   },
   mess_staff: {
     label: 'Mess Staff',
     accent: 'from-emerald-500 to-teal-500 text-emerald-400 border-emerald-500/30',
-    badge: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
-    description: 'Scan student QR codes to issue and receive lunch boxes.'
+    badge: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
   },
   admin: {
     label: 'Warden',
     accent: 'from-violet-500 to-fuchsia-500 text-violet-400 border-violet-500/30',
-    badge: 'bg-violet-500/10 text-violet-300 border-violet-500/20',
-    description: 'Control analytics, student roster, excel import, and van drivers.'
+    badge: 'bg-violet-500/10 text-violet-300 border-violet-500/20'
   },
   developer: {
     label: 'Developer',
     accent: 'from-amber-500 to-orange-500 text-amber-400 border-amber-500/30',
-    badge: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
-    description: 'Platform owner portal: Tenants, wardens, food rankings, and global reviews.'
+    badge: 'bg-amber-500/10 text-amber-300 border-amber-500/20'
+  }
+};
+
+const roleBgStyles: Record<Role, { dark: string; light: string }> = {
+  student: {
+    dark: 'bg-[radial-gradient(ellipse_at_20%_20%,rgba(6,182,212,0.25),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(14,165,233,0.15),transparent_50%),linear-gradient(135deg,#03141f_0%,#092030_60%,#05121b_100%)] text-slate-100',
+    light: 'bg-gradient-to-br from-cyan-100/70 via-sky-50 to-slate-100 text-slate-900'
+  },
+  mess_staff: {
+    dark: 'bg-[radial-gradient(ellipse_at_20%_20%,rgba(16,185,129,0.25),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(20,184,166,0.15),transparent_50%),linear-gradient(135deg,#021711_0%,#06261d_60%,#031813_100%)] text-slate-100',
+    light: 'bg-gradient-to-br from-emerald-100/70 via-teal-50 to-slate-100 text-slate-900'
+  },
+  admin: {
+    dark: 'bg-[radial-gradient(ellipse_at_20%_20%,rgba(139,92,246,0.25),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(217,70,239,0.15),transparent_50%),linear-gradient(135deg,#0c061e_0%,#160e31_60%,#0e0920_100%)] text-slate-100',
+    light: 'bg-gradient-to-br from-violet-100/70 via-fuchsia-50 to-slate-100 text-slate-900'
+  },
+  developer: {
+    dark: 'bg-[radial-gradient(ellipse_at_20%_20%,rgba(245,158,11,0.28),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(217,119,6,0.18),transparent_50%),linear-gradient(135deg,#1c1103_0%,#2e1b05_60%,#180e02_100%)] text-slate-100',
+    light: 'bg-gradient-to-br from-amber-100/80 via-orange-50 to-amber-50 text-slate-900'
   }
 };
 
@@ -230,10 +245,8 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const isDark = !document.documentElement.classList.contains('light');
 
   return (
-    <div className={`relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-colors ${
-      isDark
-        ? 'bg-[radial-gradient(ellipse_at_15%_15%,rgba(139,92,246,0.18),transparent_45%),radial-gradient(ellipse_at_85%_85%,rgba(245,158,11,0.10),transparent_45%),linear-gradient(135deg,#07050f_0%,#0f0b1e_60%,#0a0816_100%)] text-slate-100'
-        : 'bg-gradient-to-br from-violet-50 via-slate-100 to-amber-50 text-slate-900'
+    <div className={`relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-all duration-500 ${
+      isDark ? roleBgStyles[selectedRole].dark : roleBgStyles[selectedRole].light
     }`}>
       <div className={`w-full max-w-5xl flex flex-col gap-6 rounded-[32px] border p-6 backdrop-blur-xl lg:flex-row lg:p-8 ${
         isDark
@@ -246,48 +259,37 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
           isDark ? 'border-slate-700/70 bg-slate-900/60' : 'border-violet-200 bg-violet-50/50'
         }`}>
           <div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl overflow-hidden ring-2 ring-violet-500/40 animate-float">
-                  <img src="/logo.jpg" alt="Scan2eat" className="h-full w-full object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }}
-                  />
-                </div>
-                <p className="text-xs font-bold uppercase tracking-[0.35em] text-shimmer">Scan2eat</p>
+            <div className="flex items-center gap-2.5">
+              <div className="h-9 w-9 rounded-xl overflow-hidden ring-2 ring-violet-500/40 animate-float">
+                <img src="/logo.jpg" alt="Scan2eat" className="h-full w-full object-cover"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }}
+                />
               </div>
-
-              {/* Quick Developer Switch Button */}
-              <button
-                type="button"
-                onClick={() => handleSelectRole('developer')}
-                className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/20 transition flex items-center gap-1.5"
-              >
-                <span>👑</span> Developer Portal
-              </button>
+              <p className="text-xs font-bold uppercase tracking-[0.35em] text-shimmer">Scan2eat</p>
             </div>
 
-            <h1 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Hostel Meal Portal</h1>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              Mobile authentication for residents, mess staff, wardens, and platform developer.
-            </p>
+            <h1 className={`mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              Hostel Meal Portal
+            </h1>
           </div>
 
           <div className="mt-8">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Select Login Role:</p>
+            <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Select Login Role:</p>
             <div className="grid gap-3 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 stagger">
               {(Object.keys(roleMeta) as Role[]).map((role) => (
                 <button
                   key={role}
                   type="button"
                   onClick={() => handleSelectRole(role)}
-                  className={`animate-fade-up card-hover rounded-2xl border px-4 py-3.5 text-left text-sm transition-all duration-200 ${
+                  className={`animate-fade-up card-hover rounded-2xl border px-4 py-3 text-center text-sm transition-all duration-200 ${
                     selectedRole === role
-                      ? `bg-gradient-to-r ${roleMeta[role].accent.split(' ')[0]} ${roleMeta[role].accent.split(' ')[1]} text-slate-950 font-bold shadow-lg shadow-cyan-500/10 scale-[1.03]`
-                      : 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-slate-600 hover:bg-slate-800/80'
+                      ? `bg-gradient-to-r ${roleMeta[role].accent.split(' ')[0]} ${roleMeta[role].accent.split(' ')[1]} text-slate-950 font-bold shadow-lg scale-[1.03]`
+                      : isDark
+                      ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-slate-600 hover:bg-slate-800/80'
+                      : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
                   }`}
                 >
                   <p className="font-bold">{roleMeta[role].label}</p>
-                  <p className="mt-1 text-[11px] opacity-80 line-clamp-2">{roleMeta[role].description}</p>
                 </button>
               ))}
             </div>
