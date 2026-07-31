@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "npm install --production=false && tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "test": "node --import tsx --test src/**/*.test.ts"
   },
