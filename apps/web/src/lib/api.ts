@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '/api/v1' });
+const envApiUrl = (import.meta as any).env?.VITE_API_URL;
+const apiBase = envApiUrl
+  ? `${envApiUrl.replace(/\/$/, '')}/api/v1`
+  : '/api/v1';
+
+const api = axios.create({ baseURL: apiBase });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('hostelos-token');

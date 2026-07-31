@@ -27,6 +27,11 @@ app.use('/api/v1/mess-staff', messRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/students', studentRouter);
 
-app.listen(port, () => {
-  console.log(`HostelOS server listening on http://localhost:${port}`);
-});
+if (process.env.VERCEL !== '1') {
+  app.listen(port, () => {
+    console.log(`HostelOS server listening on http://localhost:${port}`);
+  });
+}
+
+export { app };
+export default app;
