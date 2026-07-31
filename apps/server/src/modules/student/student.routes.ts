@@ -64,13 +64,13 @@ studentRouter.get('/van-drivers', (_req, res) => {
 });
 
 // Second time lunch box return
-studentRouter.post('/:studentId/return-second-box', (req, res) => {
+studentRouter.post('/:studentId/return-second-box', (req: any, res: any) => {
   const result = demoStore.returnSecondLunchBox(req.params.studentId);
   return res.json(result);
 });
 
 // Submit food review after return
-studentRouter.post('/:studentId/review', (req, res) => {
+studentRouter.post('/:studentId/review', (req: any, res: any) => {
   const result = demoStore.createStudentReview(req.params.studentId, req.body);
   return res.json(result);
 });
