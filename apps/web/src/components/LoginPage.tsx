@@ -414,14 +414,13 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
               <div>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
-                  Official Email *
+                  Official Email (Optional)
                 </label>
                 <input
                   type="email"
-                  required
                   value={adminForm.email}
                   onChange={(e) => setAdminForm({ ...adminForm, email: e.target.value })}
-                  placeholder="e.g. rajesh@hostel.edu"
+                  placeholder="e.g. rajesh@hostel.edu (optional)"
                   className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-violet-400"
                 />
               </div>

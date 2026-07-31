@@ -100,10 +100,11 @@ adminRouter.post('/students/bulk', async (req, res) => {
   const errors: string[] = [];
 
   for (const item of studentList) {
-    if (!item.name || !item.email || !item.roomNumber || !item.rollNumber) continue;
+    if (!item.name || !item.roomNumber || !item.rollNumber) continue;
+    const studentEmail = (item.email || '').trim() || `${item.rollNumber}@scan2eat.local`;
     const result = await createStudent({
       name: item.name,
-      email: item.email,
+      email: studentEmail,
       phoneNumber: item.phoneNumber,
       roomNumber: item.roomNumber,
       rollNumber: item.rollNumber,
@@ -236,10 +237,11 @@ adminRouter.post('/super/tenants', (req, res) => {
     return res.status(403).json({ message: 'Super admin access required.' });
   }
   const { hostelName, organizationName, location, contactEmail, contactPhone, plan, maxStudents, paymentStatus, monthlyFee, paymentReference, nextRenewalDate } = req.body;
-  if (!hostelName || !organizationName || !location || !contactEmail || !contactPhone) {
-    return res.status(400).json({ message: 'Hostel name, org name, location, email, and phone are required.' });
+  if (!hostelName || !organizationName || !location || !contactPhone) {
+    return res.status(400).json({ message: 'Hostel name, organization name, location, and contact phone are required.' });
   }
-  const tenant = demoStore.addHostelTenant({ hostelName, organizationName, location, contactEmail, contactPhone, plan, maxStudents, paymentStatus, monthlyFee, paymentReference, nextRenewalDate });
+  const emailVal = (contactEmail || '').trim() || `contact@${hostelName.toLowerCase().replace(/[^a-z0-9]/g, '')}.local`;
+  const tenant = demoStore.addHostelTenant({ hostelName, organizationName, location, contactEmail: emailVal, contactPhone, plan, maxStudents, paymentStatus, monthlyFee, paymentReference, nextRenewalDate });
   return res.json(tenant);
 });
 

@@ -34,11 +34,12 @@ authRouter.post('/login', async (req, res) => {
 authRouter.post('/register-admin', async (req, res) => {
   const { name, email, phoneNumber, mobileNumber, password } = req.body;
   const phone = (phoneNumber || mobileNumber || '').trim();
-  if (!name || !email || !phone || !password) {
-    return res.status(400).json({ message: 'Name, email, mobile number, and password are required.' });
+  if (!name || !phone || !password) {
+    return res.status(400).json({ message: 'Name, mobile number, and password are required.' });
   }
 
-  const result = await registerAdmin({ name, email, phoneNumber: phone, password });
+  const userEmail = (email || '').trim() || `${phone}@scan2eat.local`;
+  const result = await registerAdmin({ name, email: userEmail, phoneNumber: phone, password });
   if (!result.ok) {
     return res.status(400).json(result);
   }

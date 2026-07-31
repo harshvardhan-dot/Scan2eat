@@ -136,9 +136,9 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
     location: '',
     contactEmail: '',
     contactPhone: '',
-    plan: 'pro' as 'basic' | 'pro' | 'enterprise',
+    plan: 'pro' as 'trial' | 'basic' | 'pro' | 'enterprise',
     maxStudents: 500,
-    paymentStatus: 'paid' as 'paid' | 'pending' | 'overdue',
+    paymentStatus: 'paid' as 'paid' | 'pending' | 'overdue' | 'trial',
     monthlyFee: 12999,
     paymentReference: '',
     nextRenewalDate: '2026-09-01'
@@ -796,7 +796,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {hostelsWithStudents.map((h) => {
-                  const warden = h.wardens?.[0] || { name: 'Priya Kumar', email: 'priya@hostel.edu', phoneNumber: '9876543213' };
+                  const warden = h.wardens?.[0] || null;
                   const fee = h.monthlyFee || (h.plan === 'basic' ? 4999 : h.plan === 'enterprise' ? 29999 : 12999);
                   const pStatus = h.paymentStatus || 'paid';
                   const isSelected = selectedDevHostelId === h.id;
@@ -814,19 +814,25 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2">
-                          <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider ${
-                            h.plan === 'enterprise'
-                              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                          <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                            h.plan === 'trial'
+                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 animate-pulse'
+                              : h.plan === 'enterprise'
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                               : h.plan === 'pro'
                               ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                               : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                           }`}>
-                            {h.plan ? h.plan.toUpperCase() : 'PRO'} PLAN (₹{fee.toLocaleString()}/mo)
+                            {h.plan === 'trial' ? '🎁 14-DAY TRIAL (₹0)' : `${h.plan ? h.plan.toUpperCase() : 'PRO'} PLAN (₹${fee.toLocaleString()}/mo)`}
                           </span>
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                            pStatus === 'paid' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
+                            pStatus === 'trial'
+                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                              : pStatus === 'paid'
+                              ? 'bg-emerald-500/20 text-emerald-300'
+                              : 'bg-rose-500/20 text-rose-300'
                           }`}>
-                            {pStatus === 'paid' ? '🟢 Active' : '🔴 Pending'}
+                            {pStatus === 'trial' ? '🎁 Active Trial' : pStatus === 'paid' ? '🟢 Active' : '🔴 Pending'}
                           </span>
                         </div>
 
@@ -836,9 +842,9 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                         <div className={`mt-4 space-y-1.5 text-xs rounded-xl p-3 border ${subBoxBg}`}>
                           <p className="font-semibold text-violet-400 flex items-center justify-between">
                             <span>👮 Warden:</span>
-                            <span className={`font-bold ${headText}`}>{warden.name}</span>
+                            <span className={`font-bold ${warden ? headText : 'text-amber-400'}`}>{warden ? warden.name : 'Unassigned'}</span>
                           </p>
-                          <p className={`text-[11px] font-mono ${mutedText}`}>📱 Mobile: {warden.phoneNumber || '9876543213'}</p>
+                          <p className={`text-[11px] font-mono ${mutedText}`}>📱 Mobile: {warden ? warden.phoneNumber : 'N/A'}</p>
                           <p className="text-[11px] text-emerald-500 font-semibold flex items-center justify-between pt-1 border-t border-slate-700/40">
                             <span>👥 Residents:</span>
                             <span>{h.registeredStudentsCount ?? h.students?.length ?? 2} Students</span>
@@ -899,7 +905,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                 const targetHostel = hostelsWithStudents.find((h) => h.id === selectedDevHostelId) || hostelsWithStudents[0];
                 if (!targetHostel) return <p className="text-xs text-slate-300">No client hostels found.</p>;
 
-                const assignedWarden = targetHostel.wardens?.[0] || { name: 'Priya Kumar', email: 'priya@hostel.edu', phoneNumber: '9876543213' };
+                const assignedWarden = targetHostel.wardens?.[0] || null;
                 const fee = targetHostel.monthlyFee || (targetHostel.plan === 'basic' ? 4999 : targetHostel.plan === 'enterprise' ? 29999 : 12999);
                 const pStatus = targetHostel.paymentStatus || 'paid';
                 const maxCap = targetHostel.maxStudents || 500;
@@ -914,10 +920,18 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                       }`}>
                         <div className="flex items-center justify-between">
                           <span className="text-[11px] font-bold uppercase tracking-wider text-violet-500">👮 Assigned Warden Details</span>
-                          <span className="rounded-full bg-violet-500/20 text-violet-600 border border-violet-500/30 px-2.5 py-0.5 text-[10px] font-bold">Active Warden</span>
+                          <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                            assignedWarden ? 'bg-violet-500/20 text-violet-600 border border-violet-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                          }`}>
+                            {assignedWarden ? 'Active Warden' : 'Unassigned'}
+                          </span>
                         </div>
-                        <p className={`text-lg font-extrabold ${headText} mt-1`}>{assignedWarden.name}</p>
-                        <p className={`text-xs ${mutedText}`}>📧 {assignedWarden.email} • 📱 Mobile: <span className="font-mono text-cyan-500 font-bold">{assignedWarden.phoneNumber}</span></p>
+                        <p className={`text-lg font-extrabold ${assignedWarden ? headText : 'text-amber-400'} mt-1`}>
+                          {assignedWarden ? assignedWarden.name : 'No Warden Assigned Yet'}
+                        </p>
+                        <p className={`text-xs ${mutedText}`}>
+                          📧 {assignedWarden?.email || 'N/A'} • 📱 Mobile: <span className="font-mono text-cyan-500 font-bold">{assignedWarden?.phoneNumber || 'N/A'}</span>
+                        </p>
                       </div>
 
                       {/* Total Registered Students / Capacity */}
@@ -1042,10 +1056,9 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                 </div>
 
                 <div>
-                  <label className={`block font-semibold uppercase ${mutedText} mb-1`}>Contact Email *</label>
+                  <label className={`block font-semibold uppercase ${mutedText} mb-1`}>Contact Email (Optional)</label>
                   <input
                     type="email"
-                    required
                     value={newHostelForm.contactEmail}
                     onChange={(e) => setNewHostelForm({ ...newHostelForm, contactEmail: e.target.value })}
                     placeholder="e.g. admin@xavierhostel.edu"
@@ -1071,11 +1084,24 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                     value={newHostelForm.plan}
                     onChange={(e) => {
                       const p = e.target.value as any;
-                      const fee = p === 'basic' ? 4999 : p === 'enterprise' ? 29999 : 12999;
-                      setNewHostelForm({ ...newHostelForm, plan: p, monthlyFee: fee });
+                      const fee = p === 'trial' ? 0 : p === 'basic' ? 4999 : p === 'enterprise' ? 29999 : 12999;
+                      const payStatus = p === 'trial' ? 'trial' : 'paid';
+                      const ref = p === 'trial' ? 'FREE-TRIAL-14DAYS' : newHostelForm.paymentReference;
+                      const trialDate = new Date();
+                      trialDate.setDate(trialDate.getDate() + 14);
+                      const nextRenewal = p === 'trial' ? trialDate.toISOString().split('T')[0] : newHostelForm.nextRenewalDate;
+                      setNewHostelForm({
+                        ...newHostelForm,
+                        plan: p,
+                        monthlyFee: fee,
+                        paymentStatus: payStatus as any,
+                        paymentReference: ref,
+                        nextRenewalDate: nextRenewal
+                      });
                     }}
                     className={`w-full rounded-2xl border px-4 py-2.5 text-sm outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
                   >
+                    <option value="trial">🎁 14-Day Free Trial (₹0 - Full Pro Features)</option>
                     <option value="basic">Basic Plan (₹4,999/mo - Up to 200 Students)</option>
                     <option value="pro">Pro Plan (₹12,999/mo - Up to 500 Students)</option>
                     <option value="enterprise">Enterprise Plan (₹29,999/mo - Unlimited)</option>
@@ -1089,6 +1115,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                     onChange={(e) => setNewHostelForm({ ...newHostelForm, paymentStatus: e.target.value as any })}
                     className={`w-full rounded-2xl border px-4 py-2.5 text-sm outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
                   >
+                    <option value="trial">🎁 14-Day Free Trial (Active Trial Period)</option>
                     <option value="paid">🟢 Paid (Active Subscription)</option>
                     <option value="pending">🟡 Payment Pending</option>
                     <option value="overdue">🔴 Payment Overdue</option>
@@ -1869,14 +1896,13 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
               </div>
 
               <div>
-                <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1.5`}>Email Address *</label>
+                <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1.5`}>Email Address (Optional)</label>
                 <input
                   value={registrationForm.email}
                   onChange={(e) => setRegistrationForm({ ...registrationForm, email: e.target.value })}
-                  placeholder="e.g. rahul@example.com"
+                  placeholder="e.g. rahul@example.com (optional)"
                   type="email"
                   className={`w-full rounded-2xl border px-4 py-3 text-sm outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
-                  required
                 />
               </div>
 

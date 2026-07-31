@@ -283,12 +283,12 @@ class DemoStore {
     return active;
   }
 
-  createStudent(input: { name: string; email: string; phoneNumber?: string; roomNumber: string; rollNumber: string; mealPreference?: 'veg' | 'nonVeg' | 'vegan'; initialPassword?: string }) {
-    const normalizedEmail = input.email.trim().toLowerCase();
+  createStudent(input: { name: string; email?: string; phoneNumber?: string; roomNumber: string; rollNumber: string; mealPreference?: 'veg' | 'nonVeg' | 'vegan'; initialPassword?: string }) {
+    const studentEmail = (input.email || '').trim().toLowerCase() || `${input.rollNumber.trim().toLowerCase()}@scan2eat.local`;
     const normalizedRoll = input.rollNumber.trim().toLowerCase();
     const phone = input.phoneNumber?.trim() ?? `98765${Math.floor(10000 + Math.random() * 90000)}`;
 
-    const duplicateEmail = this.students.some((entry) => entry.email.trim().toLowerCase() === normalizedEmail);
+    const duplicateEmail = studentEmail.endsWith('@scan2eat.local') ? false : this.students.some((entry) => entry.email.trim().toLowerCase() === studentEmail);
     const duplicateRoll = this.students.some((entry) => entry.rollNumber.trim().toLowerCase() === normalizedRoll);
 
     if (duplicateEmail || duplicateRoll) {
@@ -299,7 +299,7 @@ class DemoStore {
     const createdStudent: StudentProfile = {
       id: studentId,
       name: input.name,
-      email: input.email,
+      email: studentEmail,
       phoneNumber: phone,
       roomNumber: input.roomNumber,
       rollNumber: input.rollNumber,
@@ -313,7 +313,7 @@ class DemoStore {
     this.students.push(createdStudent);
     this.users.push({
       id: studentId,
-      email: input.email,
+      email: studentEmail,
       phoneNumber: phone,
       passwordHash: defaultPasswordHash,
       role: 'student',
@@ -322,7 +322,7 @@ class DemoStore {
 
     return {
       student: createdStudent,
-      notification: `Login credentials sent to SMS (+91-${phone}) & Email (${input.email}). Password: password123`
+      notification: `Login credentials sent to SMS (+91-${phone}). Password: password123`
     };
   }
 
@@ -692,13 +692,16 @@ class DemoStore {
     location: string;
     contactEmail: string;
     contactPhone: string;
-    plan?: 'basic' | 'pro' | 'enterprise';
+    plan?: 'trial' | 'basic' | 'pro' | 'enterprise';
     maxStudents?: number;
-    paymentStatus?: 'paid' | 'pending' | 'overdue';
+    paymentStatus?: 'paid' | 'pending' | 'overdue' | 'trial';
     monthlyFee?: number;
     paymentReference?: string;
     nextRenewalDate?: string;
   }) {
+    const isTrial = input.plan === 'trial';
+    const trialDate = new Date();
+    trialDate.setDate(trialDate.getDate() + 14);
     const tenant = {
       id: `hostel-${Date.now()}`,
       hostelName: input.hostelName,
@@ -709,11 +712,11 @@ class DemoStore {
       plan: input.plan || ('pro' as const),
       status: 'active' as const,
       createdAt: new Date().toISOString().split('T')[0],
-      maxStudents: input.maxStudents || 500,
-      paymentStatus: input.paymentStatus || 'paid',
-      monthlyFee: input.monthlyFee || (input.plan === 'basic' ? 4999 : input.plan === 'enterprise' ? 29999 : 12999),
-      paymentReference: input.paymentReference || `TXN-${Math.floor(10000 + Math.random() * 90000)}-UPI`,
-      nextRenewalDate: input.nextRenewalDate || '2026-09-01'
+      maxStudents: input.maxStudents || (isTrial ? 250 : 500),
+      paymentStatus: isTrial ? 'trial' : (input.paymentStatus || 'paid'),
+      monthlyFee: isTrial ? 0 : (input.monthlyFee || (input.plan === 'basic' ? 4999 : input.plan === 'enterprise' ? 29999 : 12999)),
+      paymentReference: isTrial ? 'FREE-TRIAL-14DAYS' : (input.paymentReference || `TXN-${Math.floor(10000 + Math.random() * 90000)}-UPI`),
+      nextRenewalDate: input.nextRenewalDate || trialDate.toISOString().split('T')[0]
     };
     this.tenants.push(tenant as any);
     return tenant;
