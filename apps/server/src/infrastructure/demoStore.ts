@@ -733,7 +733,7 @@ class DemoStore {
       createdAt: new Date().toISOString().split('T')[0],
       maxStudents: input.maxStudents || (isTrial ? 250 : 500),
       paymentStatus: isTrial ? 'trial' : (input.paymentStatus || 'paid'),
-      monthlyFee: isTrial ? 0 : (input.monthlyFee || (input.plan === 'basic' ? 4999 : input.plan === 'enterprise' ? 29999 : 12999)),
+      monthlyFee: isTrial ? 0 : (input.monthlyFee ?? (input.plan === 'basic' ? 4999 : input.plan === 'enterprise' ? 29999 : 12999)),
       paymentReference: isTrial ? 'FREE-TRIAL-14DAYS' : (input.paymentReference || `TXN-${Math.floor(10000 + Math.random() * 90000)}-UPI`),
       nextRenewalDate: input.nextRenewalDate || trialDate.toISOString().split('T')[0]
     };
@@ -755,14 +755,28 @@ class DemoStore {
     return true;
   }
 
+  assignWardenHostel(adminId: string, hostelName: string) {
+    const admin = this.admins.find((a) => a.id === adminId);
+    if (!admin) return { ok: false, message: 'Warden not found' };
+    admin.hostelName = hostelName;
+    return { ok: true, message: `Warden ${admin.name} assigned to ${hostelName} successfully.`, admin };
+  }
+
   getHostelsWithStudents() {
     const lunchesCount = this.collections.length || 14;
-    return this.tenants.map((tenant) => {
-      const wardens = this.admins.filter((a) => a.hostelName === tenant.hostelName || a.id === 'admin-1');
+    return this.tenants.map((tenant, idx) => {
+      const wardens = this.admins.filter((a) => {
+        if (!a.hostelName) return false;
+        const hName = a.hostelName.trim().toLowerCase();
+        const tName = tenant.hostelName.trim().toLowerCase();
+        return hName === tName || hName.includes(tName) || tName.includes(hName);
+      });
+
+      const activeWardens = wardens.length > 0 ? wardens : (this.admins[idx] ? [this.admins[idx]] : (this.admins[0] ? [this.admins[0]] : []));
       const registeredStudents = this.students;
       return {
         ...tenant,
-        wardens,
+        wardens: activeWardens,
         registeredStudentsCount: registeredStudents.length,
         totalLunchesIssued: lunchesCount,
         students: registeredStudents

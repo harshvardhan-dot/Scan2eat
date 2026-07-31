@@ -29,7 +29,8 @@ import {
   getSuperAdminReviewsList,
   getDailyLunchBoxSummary,
   getAdminComplaints,
-  resolveComplaint
+  resolveComplaint,
+  assignWardenHostel
 } from '../lib/api';
 
 interface AdminPortalProps {
@@ -185,6 +186,19 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
       await loadData();
     } catch {
       setStatus('Failed to delete warden account.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAssignWardenHostel = async (adminId: string, hostelName: string) => {
+    setLoading(true);
+    try {
+      const res = await assignWardenHostel(adminId, hostelName);
+      setStatus(res.message);
+      await loadData();
+    } catch {
+      setStatus('Failed to assign warden to hostel.');
     } finally {
       setLoading(false);
     }
@@ -583,7 +597,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
   // -------------------------------------------------------------
   if (user.role === 'super_admin' || user.role === 'developer') {
     const totalMRR = tenants.reduce(
-      (acc, t) => acc + (t.monthlyFee || (t.plan === 'basic' ? 4999 : t.plan === 'enterprise' ? 29999 : 12999)),
+      (acc, t) => acc + (t.plan === 'trial' ? 0 : (t.monthlyFee ?? (t.plan === 'basic' ? 4999 : t.plan === 'enterprise' ? 29999 : 12999))),
       0
     );
 
@@ -797,7 +811,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {hostelsWithStudents.map((h) => {
                   const warden = h.wardens?.[0] || null;
-                  const fee = h.monthlyFee || (h.plan === 'basic' ? 4999 : h.plan === 'enterprise' ? 29999 : 12999);
+                  const fee = h.plan === 'trial' ? 0 : (h.monthlyFee ?? (h.plan === 'basic' ? 4999 : h.plan === 'enterprise' ? 29999 : 12999));
                   const pStatus = h.paymentStatus || 'paid';
                   const isSelected = selectedDevHostelId === h.id;
 
@@ -906,7 +920,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                 if (!targetHostel) return <p className="text-xs text-slate-300">No client hostels found.</p>;
 
                 const assignedWarden = targetHostel.wardens?.[0] || null;
-                const fee = targetHostel.monthlyFee || (targetHostel.plan === 'basic' ? 4999 : targetHostel.plan === 'enterprise' ? 29999 : 12999);
+                const fee = targetHostel.plan === 'trial' ? 0 : (targetHostel.monthlyFee ?? (targetHostel.plan === 'basic' ? 4999 : targetHostel.plan === 'enterprise' ? 29999 : 12999));
                 const pStatus = targetHostel.paymentStatus || 'paid';
                 const maxCap = targetHostel.maxStudents || 500;
 
@@ -1280,8 +1294,26 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                           <p>{adm.name}</p>
                           <p className={`text-xs font-normal ${mutedText}`}>{adm.email}</p>
                         </td>
-                        <td className="py-3.5 px-4 font-semibold text-cyan-400">
-                          {adm.hostelName || 'Hostel Residency'}
+                        <td className="py-3.5 px-4">
+                          <select
+                            value={adm.hostelName || ''}
+                            onChange={(e) => {
+                              const newHostel = e.target.value;
+                              if (newHostel) {
+                                void handleAssignWardenHostel(adm.id, newHostel);
+                              }
+                            }}
+                            className={`rounded-xl border px-3 py-1.5 text-xs font-bold outline-none cursor-pointer ${
+                              isDark ? 'border-slate-700 bg-slate-950 text-cyan-400 focus:border-amber-400' : 'border-violet-300 bg-white text-slate-900 focus:border-violet-500'
+                            }`}
+                          >
+                            <option value="">-- Assign Hostel --</option>
+                            {hostelsWithStudents.map((h) => (
+                              <option key={h.id} value={h.hostelName}>
+                                🏫 {h.hostelName}
+                              </option>
+                            ))}
+                          </select>
                         </td>
                         <td className="py-3.5 px-4 font-mono text-emerald-400">📱 {adm.phoneNumber || 'N/A'}</td>
                         <td className="py-3.5 px-4">

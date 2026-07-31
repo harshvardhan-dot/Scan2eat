@@ -299,3 +299,8 @@ export async function returnSecondLunchBox(studentId: string) {
   const { data } = await api.post(`/students/${studentId}/return-second-box`);
   return data;
 }
+
+export async function assignWardenHostel(adminId: string, hostelName: string) {
+  const { data } = await api.post(`/admin/super/admins/${adminId}/assign-hostel`, { hostelName });
+  return data;
+}

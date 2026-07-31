@@ -273,6 +273,19 @@ adminRouter.post('/super/wardens/:id/reject', (req, res) => {
   return res.json(result);
 });
 
+adminRouter.post('/super/admins/:id/assign-hostel', (req, res) => {
+  const user = (req as any).user;
+  if (user?.role !== 'super_admin' && user?.role !== 'admin') {
+    return res.status(403).json({ message: 'Super admin access required.' });
+  }
+  const { hostelName } = req.body;
+  if (!hostelName) {
+    return res.status(400).json({ message: 'Hostel name is required' });
+  }
+  const result = demoStore.assignWardenHostel(req.params.id, hostelName);
+  return res.json(result);
+});
+
 adminRouter.get('/super/hostels-students', (req, res) => {
   const user = (req as any).user;
   if (user?.role !== 'super_admin' && user?.role !== 'admin') {
