@@ -57,11 +57,11 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
             </div>
           </div>
           <div>
-            <div className={`text-xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-800'} group-hover:text-violet-400 transition-colors duration-200 flex items-center gap-1.5`}>
-              <span>Scan2eat</span>
+            <div className="text-xl font-extrabold tracking-tight flex items-center gap-1.5">
+              <span className="brand-text-animated">Scan2eat</span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 group-hover:bg-violet-500/30">↩ Login</span>
             </div>
-            <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-violet-500">
+            <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-violet-400">
               Hostel Meal Scanner
             </div>
           </div>

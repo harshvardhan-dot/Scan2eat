@@ -164,6 +164,30 @@ html.light body {
   animation: shimmer 4s linear infinite;
 }
 
+@keyframes brand-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.brand-text-animated {
+  background: linear-gradient(
+    120deg,
+    #38bdf8 0%,    /* cyan */
+    #34d399 20%,   /* emerald */
+    #fbbf24 40%,   /* amber gold */
+    #f43f5e 65%,   /* rose pink */
+    #a855f7 85%,   /* violet purple */
+    #38bdf8 100%   /* cyan loop */
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: brand-gradient-shift 4s ease-in-out infinite;
+  filter: drop-shadow(0 2px 14px rgba(56, 189, 248, 0.35));
+}
+
 /* ─── Animated gradient backgrounds ──────────────────────────────────────── */
 .gradient-animated {
   background-size: 200% 200%;
