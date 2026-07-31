@@ -525,16 +525,18 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200" htmlFor="mobileNumber">
-                  {selectedRole === 'developer' ? 'Developer Mobile / ID' : 'Mobile Number'}
+                  {selectedRole === 'developer' ? 'Developer ID' : 'Mobile Number'}
                 </label>
                 <input
                   id="mobileNumber"
-                  type="tel"
+                  type={selectedRole === 'developer' ? 'text' : 'tel'}
+                  autoCapitalize="none"
+                  autoCorrect="off"
                   required
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
-                  placeholder={selectedRole === 'developer' ? 'e.g. 0000000000' : 'e.g. 9876543210'}
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                  placeholder={selectedRole === 'developer' ? 'Enter Developer ID' : 'e.g. 9876543210'}
+                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none transition focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                 />
               </div>
 
