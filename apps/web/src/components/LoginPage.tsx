@@ -55,6 +55,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const [selectedRole, setSelectedRole] = useState<Role>('student');
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -557,15 +558,25 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     </button>
                   )}
                 </div>
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="w-full rounded-2xl border border-slate-600 bg-slate-950 pl-4 pr-16 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl border border-slate-700 bg-slate-900/90 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:text-white hover:border-slate-500 transition flex items-center gap-1 select-none"
+                    title={showPassword ? "Hide password" : "View password"}
+                  >
+                    <span>{showPassword ? '🙈 Hide' : '👁️ View'}</span>
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center justify-between pt-1">
