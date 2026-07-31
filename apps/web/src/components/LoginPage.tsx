@@ -239,7 +239,23 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
   };
 
-  const isDark = !document.documentElement.classList.contains('light');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('hostelos-theme');
+      if (stored === 'light' || stored === 'dark') return stored;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'dark';
+  });
+
+  const isDark = theme === 'dark';
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    document.documentElement.classList.toggle('light', nextTheme === 'light');
+    window.localStorage.setItem('hostelos-theme', nextTheme);
+  };
 
   return (
     <div className={`relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-all duration-500 overflow-hidden ${
@@ -293,40 +309,79 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
           isDark ? 'border-slate-700/70 bg-slate-900/60' : 'border-violet-200 bg-violet-50/50'
         }`}>
           <div>
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl overflow-hidden ring-2 ring-violet-500/40 animate-float">
-                  <img src="/logo.jpg" alt="Scan2eat" className="h-full w-full object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }}
-                  />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* Prominent Logo & Big App Title */}
+              <div className="flex items-center gap-3.5">
+                <div className="relative group">
+                  <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-violet-600 to-amber-500 opacity-70 blur-md group-hover:opacity-100 transition duration-500" />
+                  <div className="relative h-14 w-14 sm:h-16 sm:w-16 rounded-2xl overflow-hidden ring-2 ring-violet-400/80 shadow-2xl bg-slate-900 flex items-center justify-center">
+                    <img
+                      src="/logo.jpg"
+                      alt="Scan2eat Logo"
+                      className="h-full w-full object-cover scale-105"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement!;
+                        parent.innerHTML = `<div class="flex h-full w-full items-center justify-center bg-gradient-to-tr from-teal-500 to-emerald-500 text-slate-950 font-extrabold text-2xl">🍱</div>`;
+                      }}
+                    />
+                  </div>
                 </div>
-                <p className="text-xs font-bold uppercase tracking-[0.35em] text-shimmer">Scan2eat</p>
+                <div>
+                  <h2 className={`text-2xl sm:text-3xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
+                    <span>Scan2eat</span>
+                  </h2>
+                  <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-violet-500">
+                    Hostel Meal Scanner
+                  </p>
+                </div>
               </div>
 
-              {/* Language Switcher Pill */}
-              <div className="flex items-center gap-1 rounded-xl border border-slate-700/60 bg-slate-900/80 p-0.5 text-xs font-semibold">
+              {/* Controls: Dark/Light Mode Switcher + Language Switcher */}
+              <div className="flex items-center gap-2">
+                {/* Theme Toggle Button */}
                 <button
                   type="button"
-                  onClick={() => setLang('en')}
-                  className={`rounded-lg px-2 py-0.5 transition ${
-                    lang === 'en'
-                      ? 'bg-violet-600 text-white font-bold shadow'
-                      : 'text-slate-400 hover:text-white'
+                  onClick={toggleTheme}
+                  className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition shadow-md ${
+                    isDark
+                      ? 'border-amber-500/40 bg-slate-900/90 text-amber-300 hover:bg-slate-800'
+                      : 'border-violet-300 bg-white text-violet-900 hover:bg-violet-100'
                   }`}
+                  title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
                 >
-                  🇬🇧 EN
+                  <span>{isDark ? '☀️' : '🌙'}</span>
+                  <span>{isDark ? 'Light' : 'Dark'}</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setLang('hi')}
-                  className={`rounded-lg px-2 py-0.5 transition ${
-                    lang === 'hi'
-                      ? 'bg-amber-500 text-slate-950 font-extrabold shadow'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  🇮🇳 हिंदी
-                </button>
+
+                {/* Language Switcher Pill */}
+                <div className={`flex items-center gap-1 rounded-xl border p-0.5 text-xs font-semibold ${
+                  isDark ? 'border-slate-700/60 bg-slate-900/80' : 'border-violet-300 bg-white'
+                }`}>
+                  <button
+                    type="button"
+                    onClick={() => setLang('en')}
+                    className={`rounded-lg px-2 py-1 transition ${
+                      lang === 'en'
+                        ? 'bg-violet-600 text-white font-bold shadow'
+                        : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    🇬🇧 EN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLang('hi')}
+                    className={`rounded-lg px-2 py-1 transition ${
+                      lang === 'hi'
+                        ? 'bg-amber-500 text-slate-950 font-extrabold shadow'
+                        : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    🇮🇳 हिंदी
+                  </button>
+                </div>
               </div>
             </div>
 
