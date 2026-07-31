@@ -31,9 +31,13 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
         ? 'border-violet-800/30 bg-slate-900/60 shadow-2xl shadow-black/60'
         : 'border-violet-200/60 bg-white/80 shadow-lg shadow-violet-100/50'
     }`}>
-      {/* Logo + App Name */}
+      {/* Logo + App Name - Click to return to Login Page */}
       <div className="flex items-center gap-3">
-        <Link to="/" className="flex items-center gap-3 group">
+        <button
+          onClick={onLogout}
+          title="Click Scan2eat to return to Login Page"
+          className="flex items-center gap-3 group text-left cursor-pointer outline-none border-0 bg-transparent p-0"
+        >
           {/* Logo image with animated ring */}
           <div className="relative">
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-teal-400 to-emerald-500 opacity-0 group-hover:opacity-60 blur-md transition-all duration-500" />
@@ -53,14 +57,15 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
             </div>
           </div>
           <div>
-            <div className={`text-xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-800'} group-hover:text-violet-400 transition-colors duration-200`}>
-              Scan2eat
+            <div className={`text-xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-800'} group-hover:text-violet-400 transition-colors duration-200 flex items-center gap-1.5`}>
+              <span>Scan2eat</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 group-hover:bg-violet-500/30">↩ Login</span>
             </div>
             <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-violet-500">
               Hostel Meal Scanner
             </div>
           </div>
-        </Link>
+        </button>
       </div>
 
       {/* Navigation Pills */}

@@ -137,7 +137,26 @@ class DemoStore {
   }
 
   getStudentById(studentId: string) {
-    return this.students.find((student) => student.id === studentId);
+    let found = this.students.find((student) => student.id === studentId);
+    if (!found) {
+      const user = this.users.find((u) => u.id === studentId || u.phoneNumber === studentId || u.email === studentId);
+      if (user && user.role === 'student') {
+        found = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phoneNumber: user.phoneNumber || '9876543210',
+          roomNumber: 'A-101',
+          rollNumber: `R-${user.id.slice(-4)}`,
+          mealPreference: 'veg',
+          photoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80',
+          qrToken: `qr-${user.id}`,
+          role: 'student'
+        };
+        this.students.push(found);
+      }
+    }
+    return found;
   }
 
   getStudentByQrToken(token: string) {
