@@ -32,6 +32,7 @@ export function StudentPortal({ user, isDark }: StudentPortalProps) {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [isCheckedIn, setIsCheckedIn] = useState<boolean>(true);
   const [checkInMsg, setCheckInMsg] = useState<string>('');
+  const [confirmCheckInBox, setConfirmCheckInBox] = useState<boolean>(false);
 
   const [reviewForm, setReviewForm] = useState({
     taste: 5,
@@ -267,12 +268,24 @@ export function StudentPortal({ user, isDark }: StudentPortalProps) {
               </div>
             )}
 
+            <label className="mt-4 flex items-start gap-2.5 text-left cursor-pointer rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">
+              <input
+                type="checkbox"
+                checked={confirmCheckInBox}
+                onChange={(e) => setConfirmCheckInBox(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-amber-500 text-emerald-500 focus:ring-emerald-500 accent-emerald-500"
+              />
+              <span className="font-semibold leading-tight">
+                I confirm I am present in the hostel & request my fresh meal lunch box today.
+              </span>
+            </label>
+
             <button
               onClick={handleCheckIn}
-              disabled={loading}
-              className="mt-5 rounded-2xl bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 px-6 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:scale-[1.02] disabled:opacity-50"
+              disabled={loading || !confirmCheckInBox}
+              className="mt-4 w-full rounded-2xl bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 px-6 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              👉 Check In Now for Today's Lunch
+              {confirmCheckInBox ? "👉 Generate & Issue My QR Pass Now" : "🔒 Check the box above to generate QR Pass"}
             </button>
           </div>
         ) : (

@@ -53,8 +53,8 @@ interface LoginPageProps {
 export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<Role>('student');
-  const [mobileNumber, setMobileNumber] = useState('9876543210');
-  const [password, setPassword] = useState('password123');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -71,7 +71,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
   // Form mode: 'login' | 'forgot' | 'first_time' | 'register_admin'
   const [mode, setMode] = useState<'login' | 'forgot' | 'first_time' | 'register_admin'>('login');
-  const [requestMobile, setRequestMobile] = useState('9876543210');
+  const [requestMobile, setRequestMobile] = useState('');
   const [setupPassword, setSetupPassword] = useState('');
 
   // Warden Registration State
@@ -85,19 +85,8 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
   const handleSelectRole = (role: Role) => {
     setSelectedRole(role);
-    if (role === 'developer') {
-      setMobileNumber('harshdev');
-      setPassword('#harsh107');
-    } else if (role === 'admin') {
-      setMobileNumber('9876543213');
-      setPassword('password123');
-    } else if (role === 'mess_staff') {
-      setMobileNumber('9876543212');
-      setPassword('password123');
-    } else {
-      setMobileNumber('9876543210');
-      setPassword('password123');
-    }
+    setMobileNumber('');
+    setPassword('');
     setMode('login');
     setError('');
     setSuccessMessage('');

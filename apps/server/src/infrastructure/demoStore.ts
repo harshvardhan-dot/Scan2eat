@@ -40,87 +40,12 @@ class DemoStore {
     this.reviews = [];
     this.complaints = [];
     this.passwordResetRequests = [];
+    this.vanDrivers = [];
+    this.students = [];
+    this.messStaff = [];
+    this.admins = [];
+
     const today = new Date().toISOString();
-
-    this.vanDrivers = [
-      {
-        id: 'driver-1',
-        driverName: 'Ramesh Patil',
-        vehicleNumber: 'MH-12-AB-4567',
-        phoneNumber: '9822011223',
-        assignedRoute: 'Hostel Block A & B Delivery',
-        licenseNumber: 'DL-2022-88741',
-        status: 'active'
-      },
-      {
-        id: 'driver-2',
-        driverName: 'Suresh More',
-        vehicleNumber: 'MH-14-CD-8910',
-        phoneNumber: '9822033445',
-        assignedRoute: 'Hostel Block C & Mess Express',
-        licenseNumber: 'DL-2021-99632',
-        status: 'active'
-      }
-    ];
-
-    this.students = [
-      {
-        id: 'student-1',
-        name: 'Asha Patel',
-        email: 'student@example.com',
-        phoneNumber: '9876543210',
-        roomNumber: 'B-204',
-        rollNumber: 'R-101',
-        mealPreference: 'veg',
-        photoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
-        qrToken: 'qr-student-001',
-        role: 'student'
-      },
-      {
-        id: 'student-2',
-        name: 'Rohan Mehta',
-        email: 'rohan@example.com',
-        phoneNumber: '9876543211',
-        roomNumber: 'A-112',
-        rollNumber: 'R-102',
-        mealPreference: 'nonVeg',
-        photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
-        qrToken: 'qr-student-002',
-        role: 'student'
-      }
-    ];
-
-    this.messStaff = [
-      {
-        id: 'staff-1',
-        name: 'Nisha Rao',
-        email: 'staff@example.com',
-        phoneNumber: '9876543212',
-        role: 'mess_staff',
-        shift: 'lunch'
-      }
-    ];
-
-    this.admins = [
-      {
-        id: 'admin-1',
-        name: 'Priya Kumar',
-        email: 'admin@example.com',
-        phoneNumber: '9876543213',
-        role: 'admin',
-        hostelName: 'Sunrise Hostel',
-        status: 'active'
-      },
-      {
-        id: 'admin-super',
-        name: 'Developer System Admin',
-        email: 'developer@hostelos.com',
-        phoneNumber: '0000000000',
-        role: 'super_admin',
-        hostelName: 'HostelOS Developer Owner',
-        status: 'active'
-      }
-    ];
 
     this.sessions = [
       { id: 'session-1', type: 'breakfast', sessionDate: today, status: 'active' },
@@ -129,9 +54,6 @@ class DemoStore {
     ];
 
     this.users = [
-      { id: 'student-1', email: 'student@example.com', phoneNumber: '9876543210', passwordHash: defaultPasswordHash, role: 'student', name: 'Asha Patel', hasPasswordSet: true },
-      { id: 'staff-1', email: 'staff@example.com', phoneNumber: '9876543212', passwordHash: defaultPasswordHash, role: 'mess_staff', name: 'Nisha Rao', hasPasswordSet: true },
-      { id: 'admin-1', email: 'admin@example.com', phoneNumber: '9876543213', passwordHash: defaultPasswordHash, role: 'admin', name: 'Priya Kumar', hasPasswordSet: true },
       { id: 'admin-super', email: 'developer@hostelos.com', phoneNumber: '0000000000', passwordHash: defaultPasswordHash, role: 'super_admin', name: 'Developer System Admin', hasPasswordSet: true }
     ];
 
@@ -193,25 +115,6 @@ class DemoStore {
         ]
       }
     ];
-
-    this.complaints = [
-      {
-        id: 'complaint-101',
-        studentId: 'student-1',
-        studentName: 'Asha Patel',
-        roomNumber: 'B-204',
-        category: 'Food Quality',
-        subject: 'Rice was undercooked in lunch',
-        description: 'The jeera rice served today during lunch was slightly undercooked and cold. Kindly check with the kitchen staff.',
-        urgency: 'Medium',
-        status: 'In Progress',
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        response: 'Kitchen supervisor alerted to adjust steamer timings.'
-      }
-    ];
-
-    // Default meal opt-in for student-1 set to true for easy testing
-    this.mealOptIns.set('student-1', true);
   }
 
   reset() {
