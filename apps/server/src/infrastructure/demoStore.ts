@@ -662,6 +662,19 @@ class DemoStore {
     return { ok: true, message: `Warden registration for ${warden.name} rejected and removed.` };
   }
 
+  deleteWarden(adminId: string) {
+    const idx = this.admins.findIndex((a) => a.id === adminId);
+    if (idx === -1) return { ok: false, message: 'Warden account not found' };
+    const warden = this.admins[idx];
+    if (warden.role === 'super_admin') {
+      return { ok: false, message: 'System Developer Super Admin cannot be removed.' };
+    }
+    this.admins.splice(idx, 1);
+    const userIdx = this.users.findIndex((u) => u.id === adminId || u.phoneNumber === warden.phoneNumber);
+    if (userIdx !== -1) this.users.splice(userIdx, 1);
+    return { ok: true, message: `Warden account for ${warden.name} (${warden.hostelName}) has been permanently removed.` };
+  }
+
   toggleAdminStatus(adminId: string) {
     const admin = this.admins.find((a) => a.id === adminId);
     if (!admin) return { ok: false, message: 'Admin not found' };

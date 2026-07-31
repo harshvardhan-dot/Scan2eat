@@ -1,27 +1,32 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, requestPasswordReset, firstTimeSetup, registerAdmin, getPublicTenantsList } from '../lib/api';
+import { useTranslation, type Language } from '../lib/translations';
 
 type Role = 'student' | 'mess_staff' | 'admin' | 'developer';
 
-const roleMeta: Record<Role, { label: string; accent: string; badge: string }> = {
+const roleMeta: Record<Role, { label: string; icon: string; accent: string; badge: string }> = {
   student: {
     label: 'Student',
+    icon: '🎫',
     accent: 'from-cyan-500 to-sky-500 text-cyan-400 border-cyan-500/30',
     badge: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20'
   },
   mess_staff: {
     label: 'Mess Staff',
+    icon: '🍱',
     accent: 'from-emerald-500 to-teal-500 text-emerald-400 border-emerald-500/30',
     badge: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
   },
   admin: {
     label: 'Warden',
+    icon: '👮',
     accent: 'from-violet-500 to-fuchsia-500 text-violet-400 border-violet-500/30',
     badge: 'bg-violet-500/10 text-violet-300 border-violet-500/20'
   },
   developer: {
     label: 'Developer',
+    icon: '👑',
     accent: 'from-amber-500 to-orange-500 text-amber-400 border-amber-500/30',
     badge: 'bg-amber-500/10 text-amber-300 border-amber-500/20'
   }
@@ -52,6 +57,8 @@ interface LoginPageProps {
 
 export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const navigate = useNavigate();
+  const [lang, setLang] = useState<Language>('en');
+  const t = useTranslation(lang);
   const [selectedRole, setSelectedRole] = useState<Role>('student');
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
@@ -235,10 +242,47 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const isDark = !document.documentElement.classList.contains('light');
 
   return (
-    <div className={`relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-all duration-500 ${
+    <div className={`relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-all duration-500 overflow-hidden ${
       isDark ? roleBgStyles[selectedRole].dark : roleBgStyles[selectedRole].light
     }`}>
-      <div className={`w-full max-w-5xl flex flex-col gap-6 rounded-[32px] border p-6 backdrop-blur-xl lg:flex-row lg:p-8 ${
+      {/* Animated Background Glowing Orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div
+          className={`absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-40 transition-colors duration-700 animate-orb-1 ${
+            selectedRole === 'student'
+              ? 'bg-cyan-500'
+              : selectedRole === 'mess_staff'
+              ? 'bg-emerald-500'
+              : selectedRole === 'admin'
+              ? 'bg-violet-600'
+              : 'bg-amber-500'
+          }`}
+        />
+        <div
+          className={`absolute bottom-[-15%] right-[-10%] w-[600px] h-[600px] rounded-full blur-[140px] opacity-35 transition-colors duration-700 animate-orb-2 ${
+            selectedRole === 'student'
+              ? 'bg-teal-500'
+              : selectedRole === 'mess_staff'
+              ? 'bg-lime-500'
+              : selectedRole === 'admin'
+              ? 'bg-fuchsia-600'
+              : 'bg-orange-500'
+          }`}
+        />
+        <div
+          className={`absolute top-[30%] right-[20%] w-[350px] h-[350px] rounded-full blur-[100px] opacity-25 transition-colors duration-700 animate-orb-3 ${
+            selectedRole === 'student'
+              ? 'bg-sky-400'
+              : selectedRole === 'mess_staff'
+              ? 'bg-emerald-400'
+              : selectedRole === 'admin'
+              ? 'bg-purple-500'
+              : 'bg-yellow-400'
+          }`}
+        />
+      </div>
+
+      <div className={`relative z-10 w-full max-w-5xl flex flex-col gap-6 rounded-[32px] border p-6 backdrop-blur-xl lg:flex-row lg:p-8 ${
         isDark
           ? 'border-slate-700/70 bg-slate-900/60 shadow-[0_30px_90px_rgba(2,6,23,0.7)]'
           : 'border-violet-200 bg-white/95 shadow-2xl text-slate-900'
@@ -249,37 +293,66 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
           isDark ? 'border-slate-700/70 bg-slate-900/60' : 'border-violet-200 bg-violet-50/50'
         }`}>
           <div>
-            <div className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-xl overflow-hidden ring-2 ring-violet-500/40 animate-float">
-                <img src="/logo.jpg" alt="Scan2eat" className="h-full w-full object-cover"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }}
-                />
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className="h-9 w-9 rounded-xl overflow-hidden ring-2 ring-violet-500/40 animate-float">
+                  <img src="/logo.jpg" alt="Scan2eat" className="h-full w-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }}
+                  />
+                </div>
+                <p className="text-xs font-bold uppercase tracking-[0.35em] text-shimmer">Scan2eat</p>
               </div>
-              <p className="text-xs font-bold uppercase tracking-[0.35em] text-shimmer">Scan2eat</p>
+
+              {/* Language Switcher Pill */}
+              <div className="flex items-center gap-1 rounded-xl border border-slate-700/60 bg-slate-900/80 p-0.5 text-xs font-semibold">
+                <button
+                  type="button"
+                  onClick={() => setLang('en')}
+                  className={`rounded-lg px-2 py-0.5 transition ${
+                    lang === 'en'
+                      ? 'bg-violet-600 text-white font-bold shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🇬🇧 EN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLang('hi')}
+                  className={`rounded-lg px-2 py-0.5 transition ${
+                    lang === 'hi'
+                      ? 'bg-amber-500 text-slate-950 font-extrabold shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🇮🇳 हिंदी
+                </button>
+              </div>
             </div>
 
             <h1 className={`mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Hostel Meal Portal
+              {t('loginTitle')}
             </h1>
           </div>
 
           <div className="mt-8">
-            <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Select Login Role:</p>
+            <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t('selectRole')}</p>
             <div className="grid gap-3 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 stagger">
               {(Object.keys(roleMeta) as Role[]).map((role) => (
                 <button
                   key={role}
                   type="button"
                   onClick={() => handleSelectRole(role)}
-                  className={`animate-fade-up card-hover rounded-2xl border px-4 py-3 text-center text-sm transition-all duration-200 ${
+                  className={`animate-fade-up card-hover rounded-2xl border px-3 py-3 text-center text-xs sm:text-sm transition-all duration-300 ${
                     selectedRole === role
-                      ? `bg-gradient-to-r ${roleMeta[role].accent.split(' ')[0]} ${roleMeta[role].accent.split(' ')[1]} text-slate-950 font-bold shadow-lg scale-[1.03]`
+                      ? `bg-gradient-to-r ${roleMeta[role].accent.split(' ')[0]} ${roleMeta[role].accent.split(' ')[1]} text-slate-950 font-extrabold shadow-xl scale-[1.05] ring-2 ring-white/50`
                       : isDark
-                      ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-slate-600 hover:bg-slate-800/80'
-                      : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
+                      ? 'border-slate-700/80 bg-slate-900/70 text-slate-200 hover:border-slate-500 hover:bg-slate-800/90'
+                      : 'border-slate-300 bg-white/90 text-slate-700 hover:bg-slate-100 shadow-sm'
                   }`}
                 >
-                  <p className="font-bold">{roleMeta[role].label}</p>
+                  <span className="mr-1.5 text-sm sm:text-base">{roleMeta[role].icon}</span>
+                  <span className="font-bold">{roleMeta[role].label}</span>
                 </button>
               ))}
             </div>
@@ -525,7 +598,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200" htmlFor="mobileNumber">
-                  {selectedRole === 'developer' ? 'Developer ID' : 'Mobile Number'}
+                  {selectedRole === 'developer' ? t('developerId') : t('mobileNumber')}
                 </label>
                 <input
                   id="mobileNumber"
@@ -535,7 +608,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                   required
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
-                  placeholder={selectedRole === 'developer' ? 'Enter Developer ID' : 'e.g. 9876543210'}
+                  placeholder={selectedRole === 'developer' ? t('enterDeveloperId') : t('enterMobile')}
                   className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none transition focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                 />
               </div>
@@ -543,7 +616,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs font-semibold uppercase tracking-wider text-slate-200" htmlFor="password">
-                    Password
+                    {t('password')}
                   </label>
                   {selectedRole !== 'developer' && (
                     <button
@@ -556,7 +629,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                       }}
                       className="text-xs font-semibold text-cyan-400 hover:underline"
                     >
-                      Forgot password?
+                      {t('forgotPassword')}
                     </button>
                   )}
                 </div>
@@ -574,9 +647,9 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl border border-slate-700 bg-slate-900/90 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:text-white hover:border-slate-500 transition flex items-center gap-1 select-none"
-                    title={showPassword ? "Hide password" : "View password"}
+                    title={showPassword ? t('hidePassword') : t('viewPassword')}
                   >
-                    <span>{showPassword ? '🙈 Hide' : '👁️ View'}</span>
+                    <span>{showPassword ? `🙈 ${t('hidePassword')}` : `👁️ ${t('viewPassword')}`}</span>
                   </button>
                 </div>
               </div>
@@ -589,7 +662,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-cyan-500 focus:ring-cyan-500/20"
                   />
-                  <span>Remember me</span>
+                  <span>{t('rememberMe')}</span>
                 </label>
 
                 {selectedRole === 'student' && (
@@ -603,7 +676,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     }}
                     className="text-xs font-bold text-emerald-400 hover:underline"
                   >
-                    First Time Setup?
+                    {t('firstTimeSetup')}
                   </button>
                 )}
 
@@ -617,7 +690,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     }}
                     className="text-xs font-bold text-violet-400 hover:underline"
                   >
-                    Register New Warden?
+                    {t('newWardenRegister')}
                   </button>
                 )}
               </div>
@@ -635,7 +708,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     : 'bg-gradient-to-r from-cyan-500 to-sky-500 text-slate-950 shadow-cyan-500/20'
                 }`}
               >
-                {loading ? 'Authenticating...' : `Sign In as ${roleMeta[selectedRole].label}`}
+                {loading ? 'Authenticating...' : `${t('signIn')} (${roleMeta[selectedRole].label})`}
               </button>
             </form>
           )}

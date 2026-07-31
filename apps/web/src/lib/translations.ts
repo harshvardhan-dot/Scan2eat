@@ -78,6 +78,27 @@ export const translations = {
     hostelDirectory: "Hostel Directory & Analytics",
     hostelRegistration: "Hostel Onboarding",
     hostelRegistrationDesc: "Register new hostels on the platform with billing details.",
+
+    // Login Page
+    loginTitle: "Hostel Meal Portal",
+    loginSubtitle: "Digital meal authentication & hostel mess management system",
+    selectRole: "Select Login Role:",
+    signIn: "Sign In",
+    mobileNumber: "Mobile Number",
+    developerId: "Developer ID",
+    enterMobile: "e.g. 9876543210",
+    enterDeveloperId: "Enter Developer ID",
+    password: "Password",
+    rememberMe: "Remember me",
+    forgotPassword: "Forgot password?",
+    firstTimeSetup: "First Time Setup?",
+    newWardenRegister: "Register New Warden?",
+    viewPassword: "View",
+    hidePassword: "Hide",
+    roleStudent: "Student",
+    roleStaff: "Mess Staff",
+    roleWarden: "Warden",
+    roleDeveloper: "Developer"
   },
   hi: {
     tabHostels: "🏢 छात्रावास, सदस्यता और एनालिटिक्स",
@@ -156,6 +177,27 @@ export const translations = {
     hostelDirectory: "छात्रावास निर्देशिका और एनालिटिक्स",
     hostelRegistration: "छात्रावास पंजीकरण",
     hostelRegistrationDesc: "प्लेटफ़ॉर्म पर बिलिंग विवरण के साथ नए छात्रावासों को पंजीकृत करें।",
+
+    // Login Page
+    loginTitle: "छात्रावास भोजन पोर्टल",
+    loginSubtitle: "डिजिटल भोजन प्रमाणन और छात्रावास मेस प्रबंधन प्रणाली",
+    selectRole: "लॉगिन भूमिका चुनें:",
+    signIn: "साइन इन करें",
+    mobileNumber: "मोबाइल नंबर",
+    developerId: "डेवलपर आईडी",
+    enterMobile: "उदा. 9876543210",
+    enterDeveloperId: "डेवलपर आईडी दर्ज करें",
+    password: "पासवर्ड",
+    rememberMe: "मुझे याद रखें",
+    forgotPassword: "पासवर्ड भूल गए?",
+    firstTimeSetup: "पहली बार सेटअप?",
+    newWardenRegister: "नया वार्डन पंजीकृत करें?",
+    viewPassword: "देखें",
+    hidePassword: "छिपाएं",
+    roleStudent: "छात्र",
+    roleStaff: "मेस कर्मचारी",
+    roleWarden: "वार्डन",
+    roleDeveloper: "डेवलपर"
   }
 };
 

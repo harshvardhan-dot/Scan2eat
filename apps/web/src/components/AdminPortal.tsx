@@ -23,6 +23,7 @@ import {
   getPendingWardensList,
   approveWarden,
   rejectWarden,
+  deleteWardenAccount,
   getHostelsWithStudentsList,
   getHostelFoodRankings,
   getSuperAdminReviewsList,
@@ -165,6 +166,25 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
       await loadData();
     } catch {
       setStatus('Failed to reject warden.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteWarden = async (id: string, name: string) => {
+    const confirmFirst = window.confirm(`⚠️ Are you sure you want to permanently remove Warden "${name}"?`);
+    if (!confirmFirst) return;
+
+    const confirmSecond = window.confirm(`🚨 CRITICAL RE-CONFIRMATION:\nDeleting Warden "${name}" will revoke their login access immediately. Proceed with permanent deletion?`);
+    if (!confirmSecond) return;
+
+    setLoading(true);
+    try {
+      const res = await deleteWardenAccount(id);
+      setStatus(res.message);
+      await loadData();
+    } catch {
+      setStatus('Failed to delete warden account.');
     } finally {
       setLoading(false);
     }
@@ -1257,19 +1277,30 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                         </td>
                         <td className="py-3.5 px-4">
                           {adm.role !== 'super_admin' ? (
-                            <button
-                              onClick={() => handleToggleAdminStatus(adm.id)}
-                              disabled={loading}
-                              className={`rounded-xl border px-3 py-1 text-xs font-semibold transition ${
-                                adm.status === 'disabled'
-                                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
-                                  : 'border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
-                              }`}
-                            >
-                              {adm.status === 'disabled' ? 'Activate Warden' : 'Suspend Access'}
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleToggleAdminStatus(adm.id)}
+                                disabled={loading}
+                                className={`rounded-xl border px-3 py-1 text-xs font-semibold transition ${
+                                  adm.status === 'disabled'
+                                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
+                                    : 'border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20'
+                                }`}
+                              >
+                                {adm.status === 'disabled' ? 'Activate Warden' : 'Suspend Access'}
+                              </button>
+
+                              <button
+                                onClick={() => handleDeleteWarden(adm.id, adm.name)}
+                                disabled={loading}
+                                className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3 py-1 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition flex items-center gap-1"
+                                title="Permanently remove warden account"
+                              >
+                                <span>🗑️ Delete</span>
+                              </button>
+                            </div>
                           ) : (
-                            <span className="text-xs text-violet-400 italic">Developer Owner</span>
+                            <span className="text-xs text-violet-400 italic font-semibold">Developer Owner</span>
                           )}
                         </td>
                       </tr>

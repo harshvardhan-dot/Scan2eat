@@ -265,6 +265,11 @@ export async function rejectWarden(id: string) {
   return data;
 }
 
+export async function deleteWardenAccount(id: string) {
+  const { data } = await api.delete(`/admin/super/admins/${id}`);
+  return data;
+}
+
 export async function getHostelsWithStudentsList() {
   const { data } = await api.get('/admin/super/hostels-students');
   return data;

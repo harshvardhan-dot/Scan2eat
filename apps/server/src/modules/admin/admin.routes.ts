@@ -212,6 +212,16 @@ adminRouter.post('/super/admins/:id/toggle', (req, res) => {
   return res.json(result);
 });
 
+adminRouter.delete('/super/admins/:id', (req, res) => {
+  const user = (req as any).user;
+  if (user?.role !== 'super_admin' && user?.role !== 'admin') {
+    return res.status(403).json({ message: 'Super admin access required.' });
+  }
+  const result = demoStore.deleteWarden(req.params.id);
+  if (!result.ok) return res.status(400).json(result);
+  return res.json(result);
+});
+
 adminRouter.get('/super/tenants', (req, res) => {
   const user = (req as any).user;
   if (user?.role !== 'super_admin' && user?.role !== 'admin') {
