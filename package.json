@@ -1,0 +1,25 @@
+{
+  "name": "hostelos",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "node scripts/start-dev.js",
+    "dev:server": "npm --prefix apps/server run dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "build": "npm --prefix apps/server run build && npm --prefix apps/web run build",
+    "test": "npm --prefix apps/server test"
+  },
+  "description": "HostelOS is a production-oriented hostel management platform, beginning with a QR-based meal management module.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

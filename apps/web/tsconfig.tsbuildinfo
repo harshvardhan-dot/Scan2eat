@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/adminportal.tsx","./src/components/loginpage.tsx","./src/components/navbar.tsx","./src/components/qrpanel.tsx","./src/components/sidebar.tsx","./src/components/staffportal.tsx","./src/components/studentportal.tsx","./src/lib/api.ts","./src/lib/translations.ts"],"version":"5.9.3"}
