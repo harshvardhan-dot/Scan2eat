@@ -731,7 +731,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                       <p className="font-extrabold text-white text-base">{pw.name}</p>
                       <span className="rounded-full bg-violet-500/20 text-violet-300 text-[10px] font-semibold px-2 py-0.5">Applicant</span>
                     </div>
-                    <p className="text-xs text-cyan-300 font-semibold mt-1">🏫 Hostel: {pw.hostelName || 'Sunrise Student Residency'}</p>
+                    <p className="text-xs text-cyan-300 font-semibold mt-1">🏫 Hostel: {pw.hostelName || 'Hostel Residency'}</p>
                     <p className="text-xs text-slate-300 mt-0.5">📧 {pw.email}</p>
                     <p className="text-xs text-emerald-400 font-mono mt-0.5">📱 Mobile: {pw.phoneNumber}</p>
                   </div>
@@ -1148,7 +1148,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                   {devFilteredStudents.map((s) => (
                     <tr key={s.id} className="hover:bg-slate-800/30 transition">
                       <td className="py-3 px-4 font-bold text-white">{s.name}</td>
-                      <td className="py-3 px-4 font-semibold text-amber-300">Sunrise Student Residency</td>
+                      <td className="py-3 px-4 font-semibold text-amber-300">{(s as any).hostelName || 'Registered Hostel'}</td>
                       <td className="py-3 px-4 font-mono text-cyan-300">{s.roomNumber}</td>
                       <td className="py-3 px-4 font-mono text-slate-200">{s.rollNumber}</td>
                       <td className="py-3 px-4 font-mono text-emerald-400">📱 {s.phoneNumber || 'N/A'}</td>
@@ -1179,7 +1179,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                     <div key={pw.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-slate-900/80 p-4 text-xs">
                       <div>
                         <p className="font-bold text-white text-sm">{pw.name}</p>
-                        <p className="text-slate-300">Hostel: <span className="text-cyan-300 font-semibold">{pw.hostelName || 'Sunrise Student Residency'}</span></p>
+                        <p className="text-slate-300">Hostel: <span className="text-cyan-300 font-semibold">{pw.hostelName || 'Hostel Residency'}</span></p>
                         <p className="text-slate-300">Email: {pw.email} • Mobile: <span className="font-mono text-emerald-400">{pw.phoneNumber}</span></p>
                       </div>
 
@@ -1234,7 +1234,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                           <p className={`text-xs font-normal ${mutedText}`}>{adm.email}</p>
                         </td>
                         <td className="py-3.5 px-4 font-semibold text-cyan-400">
-                          {adm.hostelName || 'Sunrise Student Residency'}
+                          {adm.hostelName || 'Hostel Residency'}
                         </td>
                         <td className="py-3.5 px-4 font-mono text-emerald-400">📱 {adm.phoneNumber || 'N/A'}</td>
                         <td className="py-3.5 px-4">
@@ -1415,7 +1415,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-bold text-white text-sm">{r.studentName}</p>
-                          <p className="text-xs text-cyan-400 font-medium">🏫 {r.hostelName || 'Sunrise Student Residency'}</p>
+                          <p className="text-xs text-cyan-400 font-medium">🏫 {r.hostelName || 'Registered Hostel'}</p>
                         </div>
                         <span className="rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 text-sm font-extrabold">
                           ⭐ {r.rating} / 5

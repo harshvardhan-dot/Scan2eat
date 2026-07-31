@@ -616,40 +616,22 @@ class DemoStore {
     return { ok: true, message: `Account activated for ${user.name}! You can now sign in with your mobile number and password.` };
   }
 
-  private tenants = [
-    {
-      id: 'hostel-1',
-      hostelName: 'Sunrise Student Residency',
-      organizationName: 'Sunrise Educational Trust',
-      location: 'Mumbai, MH',
-      contactEmail: 'contact@sunriseresidency.com',
-      contactPhone: '9876543213',
-      plan: 'pro' as const,
-      status: 'active' as const,
-      createdAt: '2026-01-15',
-      maxStudents: 500,
-      paymentStatus: 'paid' as const,
-      monthlyFee: 12999,
-      paymentReference: 'TXN-98214-UPI',
-      nextRenewalDate: '2026-08-15'
-    },
-    {
-      id: 'hostel-2',
-      hostelName: 'Greenwood College Hostel',
-      organizationName: 'Greenwood Group',
-      location: 'Pune, MH',
-      contactEmail: 'admin@greenwoodhostels.com',
-      contactPhone: '9822000555',
-      plan: 'enterprise' as const,
-      status: 'active' as const,
-      createdAt: '2026-03-10',
-      maxStudents: 1200,
-      paymentStatus: 'paid' as const,
-      monthlyFee: 29999,
-      paymentReference: 'TXN-55410-NEFT',
-      nextRenewalDate: '2026-09-10'
-    }
-  ];
+  private tenants: Array<{
+    id: string;
+    hostelName: string;
+    organizationName: string;
+    location: string;
+    contactEmail: string;
+    contactPhone: string;
+    plan: 'basic' | 'pro' | 'enterprise';
+    status: 'active' | 'disabled';
+    createdAt: string;
+    maxStudents: number;
+    paymentStatus: 'paid' | 'pending' | 'overdue';
+    monthlyFee: number;
+    paymentReference: string;
+    nextRenewalDate: string;
+  }> = [];
 
   // Developer / Super Admin Platform Management
   listAllAdmins() {
@@ -814,11 +796,7 @@ class DemoStore {
   }
 
   getHostelFoodRankings() {
-    const hostelMap: Record<string, { totalRating: number; count: number; taste: number; quantity: number; freshness: number }> = {
-      'Sunrise Student Residency': { totalRating: 24, count: 5, taste: 24, quantity: 23, freshness: 24 },
-      'St. Xavier Residency': { totalRating: 18.4, count: 4, taste: 19, quantity: 18, freshness: 18 },
-      'Greenwood College Hostel': { totalRating: 12.6, count: 3, taste: 13, quantity: 12, freshness: 13 }
-    };
+    const hostelMap: Record<string, { totalRating: number; count: number; taste: number; quantity: number; freshness: number }> = {};
 
     for (const r of this.reviews) {
       const name = r.hostelName || 'Sunrise Student Residency';
