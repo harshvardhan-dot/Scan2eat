@@ -329,10 +329,10 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                   </div>
                 </div>
                 <div>
-                  <h2 className="text-3xl sm:text-4xl font-black tracking-tight flex items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-black tracking-[0.2em] uppercase flex items-center gap-2">
                     <span className="brand-text-animated">Scan2eat</span>
                   </h2>
-                  <p className="text-[10px] sm:text-xs font-extrabold uppercase tracking-[0.3em] text-violet-400">
+                  <p className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-[0.35em] text-violet-400">
                     Hostel Meal Scanner
                   </p>
                 </div>
