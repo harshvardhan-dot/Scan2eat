@@ -1,0 +1,375 @@
+import { useEffect, useRef, useState } from 'react';
+import { Html5Qrcode } from 'html5-qrcode';
+
+interface QrScannerProps {
+  onScanSuccess: (decodedText: string) => void;
+  onScanError?: (errorMsg: string) => void;
+  scannerId?: string;
+  defaultManualToken?: string;
+}
+
+export function QrScanner({
+  onScanSuccess,
+  onScanError,
+  scannerId = 'custom-qr-scanner',
+  defaultManualToken = 'qr-student-001'
+}: QrScannerProps) {
+  const [activeTab, setActiveTab] = useState<'camera' | 'upload' | 'manual'>('camera');
+  const [isScanning, setIsScanning] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [cameras, setCameras] = useState<Array<{ id: string; label: string }>>([]);
+  const [selectedCameraId, setSelectedCameraId] = useState<string>('');
+  const [manualToken, setManualToken] = useState(defaultManualToken);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [fileSuccess, setFileSuccess] = useState<string | null>(null);
+  const [lastScanned, setLastScanned] = useState<string | null>(null);
+
+  const html5QrcodeRef = useRef<Html5Qrcode | null>(null);
+  const isMountedRef = useRef(true);
+
+  // Initialize camera list
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    Html5Qrcode.getCameras()
+      .then((devices) => {
+        if (isMountedRef.current && devices && devices.length > 0) {
+          setCameras(devices);
+          const backCam = devices.find((d) => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'));
+          setSelectedCameraId(backCam ? backCam.id : devices[0].id);
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not enumerate cameras:', err);
+      });
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Handle live camera lifecycle
+  useEffect(() => {
+    if (activeTab !== 'camera') {
+      void stopScanner();
+      return;
+    }
+
+    let isSubscribed = true;
+
+    const startScanner = async () => {
+      setCameraError(null);
+      await stopScanner();
+
+      if (!isSubscribed) return;
+
+      try {
+        const scannerInstance = new Html5Qrcode(scannerId);
+        html5QrcodeRef.current = scannerInstance;
+
+        const config = {
+          fps: 10,
+          qrbox: { width: 220, height: 220 },
+          aspectRatio: 1.0,
+        };
+
+        const cameraConfig = selectedCameraId
+          ? { deviceId: { exact: selectedCameraId } }
+          : { facingMode: 'environment' };
+
+        await scannerInstance.start(
+          cameraConfig,
+          config,
+          (decodedText) => {
+            if (!isSubscribed) return;
+            setLastScanned(decodedText);
+            onScanSuccess(decodedText);
+          },
+          () => {
+            // Frame scan failure - safe to ignore
+          }
+        );
+
+        if (isSubscribed) {
+          setIsScanning(true);
+        }
+      } catch (err: any) {
+        console.error('Camera scan start error:', err);
+        if (isSubscribed) {
+          setIsScanning(false);
+          const msg = err?.message || (typeof err === 'string' ? String(err) : 'Camera access denied or unavailable.');
+          setCameraError(msg);
+          onScanError?.(msg);
+        }
+      }
+    };
+
+    void startScanner();
+
+    return () => {
+      isSubscribed = false;
+      void stopScanner();
+    };
+  }, [activeTab, selectedCameraId, scannerId]);
+
+  const stopScanner = async () => {
+    if (html5QrcodeRef.current) {
+      try {
+        if (html5QrcodeRef.current.isScanning) {
+          await html5QrcodeRef.current.stop();
+        }
+        html5QrcodeRef.current.clear();
+      } catch (err) {
+        console.warn('Scanner stop/clear warning:', err);
+      } finally {
+        html5QrcodeRef.current = null;
+        if (isMountedRef.current) {
+          setIsScanning(false);
+        }
+      }
+    }
+  };
+
+  // Handle File Upload Scan
+  const handleFileUpload = async (file: File) => {
+    setFileError(null);
+    setFileSuccess(null);
+
+    if (!file) return;
+
+    try {
+      const tempScanner = new Html5Qrcode(`temp-file-scanner-${scannerId}`, false);
+      const result = await tempScanner.scanFileV2(file, true);
+      tempScanner.clear();
+
+      if (result && result.decodedText) {
+        setFileSuccess(`Scanned: ${result.decodedText}`);
+        setLastScanned(result.decodedText);
+        onScanSuccess(result.decodedText);
+      } else {
+        setFileError('No QR code found in the image.');
+      }
+    } catch (err: any) {
+      console.error('File scan error:', err);
+      setFileError('Failed to read QR code from image. Please ensure the image is clear.');
+    }
+  };
+
+  const handleManualSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualToken.trim()) return;
+    setLastScanned(manualToken.trim());
+    onScanSuccess(manualToken.trim());
+  };
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      {/* Hidden container for file scanning */}
+      <div id={`temp-file-scanner-${scannerId}`} className="hidden" />
+
+      {/* Header & Tab Selector */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div>
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            QR Scanner & Verifier
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Scan student meal pass QR using live camera, image upload, or token
+          </p>
+        </div>
+
+        <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
+          <button
+            type="button"
+            onClick={() => setActiveTab('camera')}
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              activeTab === 'camera'
+                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            📷 Live Camera
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('upload')}
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              activeTab === 'upload'
+                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            🖼️ Upload Image
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('manual')}
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              activeTab === 'manual'
+                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            ⌨️ Manual Token
+          </button>
+        </div>
+      </div>
+
+      {/* Tab 1: Live Camera Feed */}
+      {activeTab === 'camera' && (
+        <div className="mt-4 space-y-3">
+          {cameras.length > 1 && (
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-slate-500 dark:text-slate-400 font-medium">Select Camera:</label>
+              <select
+                value={selectedCameraId}
+                onChange={(e) => setSelectedCameraId(e.target.value)}
+                className="text-xs rounded-md border border-slate-300 bg-slate-50 px-2 py-1 text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              >
+                {cameras.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.label || `Camera ${c.id}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {cameraError ? (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-200">
+              <p className="text-sm font-semibold flex items-center gap-2">
+                ⚠️ Camera Access Notice
+              </p>
+              <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">{cameraError}</p>
+              <p className="mt-2 text-xs font-medium text-amber-800 dark:text-amber-200">
+                Tip: You can switch to the <strong>Upload Image</strong> or <strong>Manual Token</strong> tab to verify meal passes without a physical camera!
+              </p>
+            </div>
+          ) : (
+            <div className="relative overflow-hidden rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center justify-center min-h-[260px]">
+              <div id={scannerId} className="w-full max-w-sm rounded-lg overflow-hidden" />
+
+              {!isScanning && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 p-4 text-center">
+                  <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin mb-2" />
+                  <p className="text-xs font-medium text-slate-300">Initializing camera feed...</p>
+                </div>
+              )}
+
+              {/* Viewfinder overlay graphics */}
+              {isScanning && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <div className="w-52 h-52 border-2 border-dashed border-emerald-400/80 rounded-xl relative shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-emerald-400" />
+                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-emerald-400" />
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-emerald-400" />
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-emerald-400" />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab 2: Upload Image File */}
+      {activeTab === 'upload' && (
+        <div className="mt-4 space-y-3">
+          <div className="rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center dark:border-slate-700 dark:bg-slate-800/50">
+            <div className="mx-auto w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl mb-3">
+              📁
+            </div>
+            <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+              Upload QR Code Image or Screenshot
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Supports PNG, JPG, JPEG, WEBP files
+            </p>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void handleFileUpload(file);
+              }}
+              className="mt-4 inline-block text-xs text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-emerald-700 dark:text-slate-300"
+            />
+          </div>
+
+          {fileError && (
+            <div className="rounded-md bg-rose-50 p-3 text-xs text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40">
+              ❌ {fileError}
+            </div>
+          )}
+
+          {fileSuccess && (
+            <div className="rounded-md bg-emerald-50 p-3 text-xs text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40">
+              ✅ {fileSuccess}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab 3: Manual Token Input & Instant Simulator */}
+      {activeTab === 'manual' && (
+        <div className="mt-4 space-y-4">
+          <form onSubmit={handleManualSubmit} className="flex gap-2">
+            <input
+              type="text"
+              value={manualToken}
+              onChange={(e) => setManualToken(e.target.value)}
+              placeholder="Enter QR token (e.g. qr-student-001)"
+              className="flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            />
+            <button
+              type="submit"
+              className="rounded-md bg-emerald-600 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-700 transition-colors"
+            >
+              Verify Token
+            </button>
+          </form>
+
+          {/* Quick Mock Tokens Selector for Mess Staff Testing */}
+          <div className="rounded-md bg-slate-50 p-3 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
+            <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
+              ⚡ Quick Test Tokens (Click to Scan):
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {['qr-student-001', 'qr-student-002', 'qr-student-003'].map((token) => (
+                <button
+                  key={token}
+                  type="button"
+                  onClick={() => {
+                    setManualToken(token);
+                    setLastScanned(token);
+                    onScanSuccess(token);
+                  }}
+                  className="rounded-md bg-white px-2.5 py-1 text-xs font-mono text-slate-700 border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600 dark:hover:border-emerald-400 dark:hover:text-emerald-300 transition-colors shadow-xs"
+                >
+                  {token}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Scanned Result Banner */}
+      {lastScanned && (
+        <div className="mt-3 flex items-center justify-between rounded-md bg-slate-100 px-3 py-2 text-xs dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+          <span className="text-slate-600 dark:text-slate-400">
+            Last Scanned Token: <strong className="font-mono text-emerald-600 dark:text-emerald-400">{lastScanned}</strong>
+          </span>
+          <button
+            type="button"
+            onClick={() => setLastScanned(null)}
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

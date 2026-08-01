@@ -9,12 +9,12 @@ interface NavbarProps {
   onLogout: () => void;
 }
 
-const roleMeta: Record<Role, { label: string; accent: string }> = {
-  student: { label: 'Student', accent: 'from-cyan-500 to-sky-500' },
-  mess_staff: { label: 'Mess Staff', accent: 'from-emerald-500 to-lime-500' },
-  admin: { label: 'Warden', accent: 'from-violet-500 to-fuchsia-500' },
-  super_admin: { label: 'Developer Owner', accent: 'from-amber-500 to-orange-500' },
-  developer: { label: 'Developer Owner', accent: 'from-amber-500 to-orange-500' }
+const roleMeta: Record<Role, { label: string; badgeClass: string }> = {
+  student: { label: 'Student', badgeClass: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20' },
+  mess_staff: { label: 'Mess Staff', badgeClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
+  admin: { label: 'Warden', badgeClass: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' },
+  super_admin: { label: 'Developer', badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
+  developer: { label: 'Developer', badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' }
 };
 
 export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
@@ -26,125 +26,101 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
   const userRole = user.role;
 
   return (
-    <header className={`navbar-slide-in flex flex-wrap items-center justify-between gap-4 rounded-3xl border p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 glass ${
+    <header className={`flex flex-wrap items-center justify-between gap-4 rounded-xl border p-3 sm:p-4 transition-all ${
       isDark
-        ? 'border-violet-800/30 bg-slate-900/60 shadow-2xl shadow-black/60'
-        : 'border-violet-200/60 bg-white/80 shadow-lg shadow-violet-100/50'
+        ? 'border-slate-800 bg-slate-900/90 shadow-sm'
+        : 'border-slate-200 bg-white/90 shadow-sm'
     }`}>
-      {/* Logo + App Name - Click to return to Login Page */}
+      {/* Brand Logo & Name */}
       <div className="flex items-center gap-3">
-        <button
-          onClick={onLogout}
-          title="Click Scan2eat to return to Login Page"
-          className="flex items-center gap-3 group text-left cursor-pointer outline-none border-0 bg-transparent p-0"
-        >
-          {/* Logo image with animated ring */}
-          <div className="relative">
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-teal-400 to-emerald-500 opacity-0 group-hover:opacity-60 blur-md transition-all duration-500" />
-            <div className="relative h-11 w-11 rounded-2xl overflow-hidden ring-2 ring-violet-500/30 group-hover:ring-violet-400/70 transition-all duration-300 shadow-lg shadow-slate-900/50">
-              <img
-                src="/logo.jpg"
-                alt="Scan2eat Logo"
-                className="h-full w-full object-cover scale-100 group-hover:scale-110 transition-transform duration-500"
-                onError={(e) => {
-                  // Fallback to emoji if image fails
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const parent = target.parentElement!;
-                  parent.innerHTML = `<div class="flex h-full w-full items-center justify-center bg-gradient-to-tr from-teal-500 to-emerald-500 text-slate-950 font-extrabold text-xl">🍱</div>`;
-                }}
-              />
-            </div>
+        <div className="h-10 w-10 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-lg shadow-sm">
+          🍱
+        </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
+              Scan2Eat
+            </span>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+              HostelOS
+            </span>
           </div>
-          <div>
-            <div className="text-base sm:text-lg font-black tracking-[0.18em] uppercase flex items-center gap-1.5">
-              <span className="brand-text-animated">Scan2eat</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 group-hover:bg-violet-500/30 tracking-normal normal-case">↩ Login</span>
-            </div>
-            <div className="text-[9px] font-extrabold uppercase tracking-[0.3em] text-violet-400">
-              Hostel Meal Scanner
-            </div>
-          </div>
-        </button>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Hostel Mess & Meal Operations</p>
+        </div>
       </div>
 
       {/* Navigation Pills */}
-      <nav className={`flex items-center gap-1 rounded-2xl border p-1 transition-colors ${
-        isDark ? 'bg-slate-900/50 border-slate-700/50' : 'bg-violet-50/80 border-violet-200'
+      <nav className={`flex items-center gap-1 rounded-lg border p-1 ${
+        isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-100 border-slate-200'
       }`}>
         {userRole === 'student' && (
           <Link
             to="/student"
-            className={`nav-pill rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
               location.pathname === '/student'
-                ? 'bg-gradient-to-r from-cyan-500 to-sky-500 text-slate-950 font-semibold shadow-md shadow-cyan-500/30'
-                : isDark ? 'text-slate-300 hover:text-white hover:bg-slate-800/70' : 'text-slate-600 hover:bg-violet-100 hover:text-slate-900'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            🎫 My Pass
+            🎫 Digital Meal Pass
           </Link>
         )}
 
-        {(userRole === 'mess_staff' || userRole === 'admin') && (
+        {(userRole === 'mess_staff' || userRole === 'admin' || userRole === 'developer') && (
           <Link
             to="/staff"
-            className={`nav-pill rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
               location.pathname === '/staff'
-                ? 'bg-gradient-to-r from-emerald-500 to-lime-500 text-slate-950 font-semibold shadow-md shadow-emerald-500/30'
-                : isDark ? 'text-slate-300 hover:text-white hover:bg-slate-800/70' : 'text-slate-600 hover:bg-violet-100 hover:text-slate-900'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            📋 Issue Desk
+            📋 Mess Issue Desk
           </Link>
         )}
 
         {(userRole === 'admin' || userRole === 'super_admin' || userRole === 'developer') && (
           <Link
             to="/admin"
-            className={`nav-pill rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
               location.pathname === '/admin'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold shadow-md shadow-amber-500/30'
-                : isDark ? 'text-slate-300 hover:text-white hover:bg-slate-800/70' : 'text-slate-600 hover:bg-violet-100 hover:text-slate-900'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            {userRole === 'admin' ? '🏠 Warden Dashboard' : '👑 Developer Portal'}
+            {userRole === 'admin' ? '🏠 Warden Admin' : '👑 Developer Admin'}
           </Link>
         )}
       </nav>
 
-      {/* Right side — user info + controls */}
+      {/* User Info & Theme Controls */}
       <div className="flex items-center gap-3">
-        <div className={`hidden md:flex flex-col text-right ${isDark ? 'text-slate-100' : 'text-slate-700'}`}>
-          <span className="text-sm font-semibold">{user.name}</span>
-          <span className={`text-[10px] font-bold inline-block bg-gradient-to-r ${roleMeta[userRole].accent} bg-clip-text text-transparent uppercase tracking-widest`}>
+        <div className="hidden sm:flex flex-col text-right">
+          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">{user.name}</span>
+          <span className={`text-[10px] font-medium border px-1.5 py-0.2 rounded-md ${roleMeta[userRole].badgeClass}`}>
             {roleMeta[userRole].label}
           </span>
         </div>
 
-        {/* Premium Light/Dark Theme Switcher Pill */}
+        {/* Theme Toggle Button */}
         <button
+          type="button"
           onClick={onToggleTheme}
-          className={`relative group inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-bold transition-all duration-300 shadow-md active:scale-95 ${
+          className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
             isDark
-              ? 'border-amber-500/40 bg-slate-900/90 text-amber-300 shadow-amber-500/10 hover:border-amber-400 hover:bg-slate-800'
-              : 'border-violet-300 bg-gradient-to-r from-violet-100 to-indigo-100 text-violet-900 shadow-violet-500/15 hover:border-violet-400 hover:from-violet-200 hover:to-indigo-200'
+              ? 'border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700'
+              : 'border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200'
           }`}
-          title={isDark ? "Switch to Light Theme" : "Switch to Dark Theme"}
-          aria-label="Toggle visual theme"
+          title="Toggle Theme"
         >
-          <span className={`flex h-5 w-5 items-center justify-center rounded-full transition-transform duration-300 group-hover:rotate-45 ${
-            isDark ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30' : 'bg-violet-600 text-white ring-1 ring-violet-400 shadow-sm'
-          }`}>
-            {isDark ? '☀️' : '🌙'}
-          </span>
-          <span className="font-semibold tracking-wide">
-            {isDark ? 'Light Mode' : 'Dark Mode'}
-          </span>
+          <span>{isDark ? '☀️' : '🌙'}</span>
+          <span>{isDark ? 'Light' : 'Dark'}</span>
         </button>
 
         <button
+          type="button"
           onClick={onLogout}
-          className="rounded-2xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/20 hover:border-rose-400/60 transition-all duration-200 active:scale-95"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-all"
         >
           Sign Out
         </button>

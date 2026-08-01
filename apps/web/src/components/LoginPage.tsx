@@ -5,49 +5,26 @@ import { useTranslation, type Language } from '../lib/translations';
 
 type Role = 'student' | 'mess_staff' | 'admin' | 'developer';
 
-const roleMeta: Record<Role, { label: string; icon: string; accent: string; badge: string }> = {
+const roleMeta: Record<Role, { label: string; icon: string; badge: string }> = {
   student: {
     label: 'Student',
     icon: '🎫',
-    accent: 'from-cyan-500 to-sky-500 text-cyan-400 border-cyan-500/30',
-    badge: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20'
+    badge: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20'
   },
   mess_staff: {
     label: 'Mess Staff',
     icon: '🍱',
-    accent: 'from-emerald-500 to-teal-500 text-emerald-400 border-emerald-500/30',
-    badge: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
+    badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
   },
   admin: {
     label: 'Warden',
     icon: '👮',
-    accent: 'from-violet-500 to-fuchsia-500 text-violet-400 border-violet-500/30',
-    badge: 'bg-violet-500/10 text-violet-300 border-violet-500/20'
+    badge: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20'
   },
   developer: {
     label: 'Developer',
     icon: '👑',
-    accent: 'from-amber-500 to-orange-500 text-amber-400 border-amber-500/30',
-    badge: 'bg-amber-500/10 text-amber-300 border-amber-500/20'
-  }
-};
-
-const roleBgStyles: Record<Role, { dark: string; light: string }> = {
-  student: {
-    dark: 'bg-[radial-gradient(ellipse_at_20%_20%,rgba(6,182,212,0.25),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(14,165,233,0.15),transparent_50%),linear-gradient(135deg,#03141f_0%,#092030_60%,#05121b_100%)] text-slate-100',
-    light: 'bg-gradient-to-br from-cyan-100/70 via-sky-50 to-slate-100 text-slate-900'
-  },
-  mess_staff: {
-    dark: 'bg-[radial-gradient(ellipse_at_20%_20%,rgba(16,185,129,0.25),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(20,184,166,0.15),transparent_50%),linear-gradient(135deg,#021711_0%,#06261d_60%,#031813_100%)] text-slate-100',
-    light: 'bg-gradient-to-br from-emerald-100/70 via-teal-50 to-slate-100 text-slate-900'
-  },
-  admin: {
-    dark: 'bg-[radial-gradient(ellipse_at_20%_20%,rgba(139,92,246,0.25),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(217,70,239,0.15),transparent_50%),linear-gradient(135deg,#0c061e_0%,#160e31_60%,#0e0920_100%)] text-slate-100',
-    light: 'bg-gradient-to-br from-violet-100/70 via-fuchsia-50 to-slate-100 text-slate-900'
-  },
-  developer: {
-    dark: 'bg-[radial-gradient(ellipse_at_20%_20%,rgba(245,158,11,0.28),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(217,119,6,0.18),transparent_50%),linear-gradient(135deg,#1c1103_0%,#2e1b05_60%,#180e02_100%)] text-slate-100',
-    light: 'bg-gradient-to-br from-amber-100/80 via-orange-50 to-amber-50 text-slate-900'
+    badge: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
   }
 };
 
@@ -60,8 +37,8 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const [lang, setLang] = useState<Language>('en');
   const t = useTranslation(lang);
   const [selectedRole, setSelectedRole] = useState<Role>('student');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [password, setPassword] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('9876543210');
+  const [password, setPassword] = useState('student123');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
@@ -77,12 +54,10 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
       .catch((err) => console.error('Failed to load registered hostels:', err));
   }, []);
 
-  // Form mode: 'login' | 'forgot' | 'first_time' | 'register_admin'
   const [mode, setMode] = useState<'login' | 'forgot' | 'first_time' | 'register_admin'>('login');
   const [requestMobile, setRequestMobile] = useState('');
   const [setupPassword, setSetupPassword] = useState('');
 
-  // Warden Registration State
   const [adminForm, setAdminForm] = useState({
     name: '',
     email: '',
@@ -93,11 +68,24 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
   const handleSelectRole = (role: Role) => {
     setSelectedRole(role);
-    setMobileNumber('');
-    setPassword('');
     setMode('login');
     setError('');
     setSuccessMessage('');
+
+    // Set demo default credentials based on role for fast testing
+    if (role === 'student') {
+      setMobileNumber('9876543210');
+      setPassword('student123');
+    } else if (role === 'mess_staff') {
+      setMobileNumber('9876543220');
+      setPassword('staff123');
+    } else if (role === 'admin') {
+      setMobileNumber('9876543299');
+      setPassword('admin123');
+    } else if (role === 'developer') {
+      setMobileNumber('9876543200');
+      setPassword('dev123');
+    }
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -122,7 +110,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
     try {
       const result = await login(phoneToUse, passToUse);
-      
+
       if (rememberMe) {
         localStorage.setItem('hostelos-token', result.token);
       } else {
@@ -207,7 +195,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     setError('');
     setSuccessMessage('');
 
-    if (!adminForm.name || !adminForm.email || !adminForm.phoneNumber || !adminForm.password) {
+    if (!adminForm.name || !adminForm.phoneNumber || !adminForm.password) {
       setError('Please fill in all required fields.');
       return;
     }
@@ -221,11 +209,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
           setMode('login');
         } else if (result.token) {
           setSuccessMessage(`Warden account created! Welcome ${result.user.name}.`);
-          if (rememberMe) {
-            localStorage.setItem('hostelos-token', result.token);
-          } else {
-            sessionStorage.setItem('hostelos-token', result.token);
-          }
+          localStorage.setItem('hostelos-token', result.token);
           onLoginSuccess?.(result.user, result.token);
           navigate('/admin');
         }
@@ -239,535 +223,381 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
   };
 
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = window.localStorage.getItem('hostelos-theme');
-      if (stored === 'light' || stored === 'dark') return stored;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return 'dark';
-  });
-
-  const isDark = theme === 'dark';
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    document.documentElement.classList.toggle('light', nextTheme === 'light');
-    window.localStorage.setItem('hostelos-theme', nextTheme);
-  };
-
   return (
-    <div className={`relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-all duration-500 overflow-hidden ${
-      isDark ? roleBgStyles[selectedRole].dark : roleBgStyles[selectedRole].light
-    }`}>
-      {/* Animated Background Glowing Orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div
-          className={`absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-40 transition-colors duration-700 animate-orb-1 ${
-            selectedRole === 'student'
-              ? 'bg-cyan-500'
-              : selectedRole === 'mess_staff'
-              ? 'bg-emerald-500'
-              : selectedRole === 'admin'
-              ? 'bg-violet-600'
-              : 'bg-amber-500'
-          }`}
-        />
-        <div
-          className={`absolute bottom-[-15%] right-[-10%] w-[600px] h-[600px] rounded-full blur-[140px] opacity-35 transition-colors duration-700 animate-orb-2 ${
-            selectedRole === 'student'
-              ? 'bg-teal-500'
-              : selectedRole === 'mess_staff'
-              ? 'bg-lime-500'
-              : selectedRole === 'admin'
-              ? 'bg-fuchsia-600'
-              : 'bg-orange-500'
-          }`}
-        />
-        <div
-          className={`absolute top-[30%] right-[20%] w-[350px] h-[350px] rounded-full blur-[100px] opacity-25 transition-colors duration-700 animate-orb-3 ${
-            selectedRole === 'student'
-              ? 'bg-sky-400'
-              : selectedRole === 'mess_staff'
-              ? 'bg-emerald-400'
-              : selectedRole === 'admin'
-              ? 'bg-purple-500'
-              : 'bg-yellow-400'
-          }`}
-        />
-      </div>
-
-      <div className={`relative z-10 w-full max-w-5xl flex flex-col gap-6 rounded-[32px] border p-6 backdrop-blur-xl lg:flex-row lg:p-8 ${
-        isDark
-          ? 'border-slate-700/70 bg-slate-900/60 shadow-[0_30px_90px_rgba(2,6,23,0.7)]'
-          : 'border-violet-200 bg-white/95 shadow-2xl text-slate-900'
-      }`}>
+    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
         
-        {/* Left Side: Brand & Role Selector */}
-        <div className={`flex-1 flex flex-col justify-between rounded-3xl border p-6 sm:p-8 ${
-          isDark ? 'border-slate-700/70 bg-slate-900/60' : 'border-violet-200 bg-violet-50/50'
-        }`}>
+        {/* Left Side: Brand Header & Role Tabs */}
+        <div className="lg:col-span-5 p-6 sm:p-8 bg-slate-900/80 border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col justify-between">
           <div>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              {/* Prominent Logo & Big App Title */}
-              <div className="flex items-center gap-3.5">
-                <div className="relative group">
-                  <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-violet-600 to-amber-500 opacity-70 blur-md group-hover:opacity-100 transition duration-500" />
-                  <div className="relative h-14 w-14 sm:h-16 sm:w-16 rounded-2xl overflow-hidden ring-2 ring-violet-400/80 shadow-2xl bg-slate-900 flex items-center justify-center">
-                    <img
-                      src="/logo.jpg"
-                      alt="Scan2eat Logo"
-                      className="h-full w-full object-cover scale-105"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const parent = target.parentElement!;
-                        parent.innerHTML = `<div class="flex h-full w-full items-center justify-center bg-gradient-to-tr from-teal-500 to-emerald-500 text-slate-950 font-extrabold text-2xl">🍱</div>`;
-                      }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-black tracking-[0.2em] uppercase flex items-center gap-2">
-                    <span className="brand-text-animated">Scan2eat</span>
-                  </h2>
-                  <p className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-[0.35em] text-violet-400">
-                    Hostel Meal Scanner
-                  </p>
-                </div>
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-12 w-12 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-2xl shadow-md">
+                🍱
               </div>
-
-              {/* Controls: Dark/Light Mode Switcher + Language Switcher */}
-              <div className="flex items-center gap-2">
-                {/* Theme Toggle Button */}
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition shadow-md ${
-                    isDark
-                      ? 'border-amber-500/40 bg-slate-900/90 text-amber-300 hover:bg-slate-800'
-                      : 'border-violet-300 bg-white text-violet-900 hover:bg-violet-100'
-                  }`}
-                  title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                >
-                  <span>{isDark ? '☀️' : '🌙'}</span>
-                  <span>{isDark ? 'Light' : 'Dark'}</span>
-                </button>
-
-                {/* Language Switcher Pill */}
-                <div className={`flex items-center gap-1 rounded-xl border p-0.5 text-xs font-semibold ${
-                  isDark ? 'border-slate-700/60 bg-slate-900/80' : 'border-violet-300 bg-white'
-                }`}>
-                  <button
-                    type="button"
-                    onClick={() => setLang('en')}
-                    className={`rounded-lg px-2 py-1 transition ${
-                      lang === 'en'
-                        ? 'bg-violet-600 text-white font-bold shadow'
-                        : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    🇬🇧 EN
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setLang('hi')}
-                    className={`rounded-lg px-2 py-1 transition ${
-                      lang === 'hi'
-                        ? 'bg-amber-500 text-slate-950 font-extrabold shadow'
-                        : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    🇮🇳 हिंदी
-                  </button>
-                </div>
+              <div>
+                <h1 className="text-xl font-bold text-white tracking-tight">Scan2Eat</h1>
+                <p className="text-xs text-slate-400">Hostel Mess Management</p>
               </div>
             </div>
 
-            <h1 className={`mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              {t('loginTitle')}
-            </h1>
-          </div>
+            <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+              Verify student meal entitlements, manage daily hostel mess operations, and track lunchbox returns in real-time.
+            </p>
 
-          <div className="mt-8">
-            <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t('selectRole')}</p>
-            <div className="grid gap-3 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 stagger">
+            {/* Role Switcher */}
+            <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">
+              Select Your Role:
+            </p>
+            <div className="grid grid-cols-2 gap-2">
               {(Object.keys(roleMeta) as Role[]).map((role) => (
                 <button
                   key={role}
                   type="button"
                   onClick={() => handleSelectRole(role)}
-                  className={`animate-fade-up card-hover rounded-2xl border px-3 py-3 text-center text-xs sm:text-sm transition-all duration-300 ${
+                  className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all ${
                     selectedRole === role
-                      ? `bg-gradient-to-r ${roleMeta[role].accent.split(' ')[0]} ${roleMeta[role].accent.split(' ')[1]} text-slate-950 font-extrabold shadow-xl scale-[1.05] ring-2 ring-white/50`
-                      : isDark
-                      ? 'border-slate-700/80 bg-slate-900/70 text-slate-200 hover:border-slate-500 hover:bg-slate-800/90'
-                      : 'border-slate-300 bg-white/90 text-slate-700 hover:bg-slate-100 shadow-sm'
+                      ? 'border-emerald-500 bg-emerald-950/40 text-emerald-400 shadow-xs'
+                      : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700 hover:text-slate-200'
                   }`}
                 >
-                  <span className="mr-1.5 text-sm sm:text-base">{roleMeta[role].icon}</span>
-                  <span className="font-bold">{roleMeta[role].label}</span>
+                  <span>{roleMeta[role].icon}</span>
+                  <span>{roleMeta[role].label}</span>
                 </button>
               ))}
+            </div>
+
+            {/* Language Switcher */}
+            <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-800">
+              <span className="text-xs text-slate-500">Language:</span>
+              <div className="flex items-center gap-1 rounded-md bg-slate-950 p-1 border border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setLang('en')}
+                  className={`px-2 py-1 text-xs font-medium rounded ${
+                    lang === 'en' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLang('hi')}
+                  className={`px-2 py-1 text-xs font-medium rounded ${
+                    lang === 'hi' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  हिंदी
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Demo Login Preset Buttons */}
+          <div className="mt-8 pt-4 border-t border-slate-800">
+            <p className="text-[11px] text-slate-500 font-medium mb-2">⚡ Demo Quick Presets:</p>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleSelectRole('student')}
+                className="px-2 py-1 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
+              >
+                Student Demo
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectRole('mess_staff')}
+                className="px-2 py-1 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
+              >
+                Staff Demo
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectRole('admin')}
+                className="px-2 py-1 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
+              >
+                Warden Demo
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Dynamic Form */}
-        <div className="w-full max-w-md flex flex-col justify-center rounded-3xl border border-slate-700/90 bg-slate-900/90 p-6 sm:p-8 shadow-2xl">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <span className={`inline-block rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${roleMeta[selectedRole].badge}`}>
-                {roleMeta[selectedRole].label} Portal
-              </span>
-              <h2 className="mt-2 text-2xl font-bold text-white">
-                {mode === 'login'
-                  ? 'Sign In'
-                  : mode === 'forgot'
-                  ? 'Request Password Reset'
-                  : mode === 'first_time'
-                  ? 'First Time Student Setup'
-                  : 'Register New Warden'}
-              </h2>
-            </div>
+        {/* Right Side: Auth Forms */}
+        <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-center">
+          <div className="mb-4">
+            <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-md border ${roleMeta[selectedRole].badge}`}>
+              {roleMeta[selectedRole].label} Sign In
+            </span>
           </div>
 
-          {successMessage ? (
-            <div className="mb-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-300 flex items-center gap-2">
-              <span>✅</span>
-              <span>{successMessage}</span>
+          {successMessage && (
+            <div className="mb-4 rounded-lg bg-emerald-950/60 border border-emerald-800 p-3 text-xs text-emerald-300">
+              ✅ {successMessage}
             </div>
-          ) : null}
+          )}
 
-          {error ? (
-            <div className="mb-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs text-rose-300 flex items-center gap-2">
-              <span>⚠️</span>
-              <span>{error}</span>
+          {error && (
+            <div className="mb-4 rounded-lg bg-rose-950/60 border border-rose-800 p-3 text-xs text-rose-300">
+              ⚠️ {error}
             </div>
-          ) : null}
+          )}
 
-          {/* MODE 1: REGISTER NEW WARDEN */}
-          {mode === 'register_admin' && (
-            <form onSubmit={handleAdminRegistration} className="space-y-3.5">
-              <p className="text-xs text-slate-300 leading-relaxed">
-                First time using Scan2eat? Create your Hostel Warden credentials below to gain instant management access.
-              </p>
+          {/* MODE 1: LOGIN FORM */}
+          {mode === 'login' && (
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={adminForm.name}
-                  onChange={(e) => setAdminForm({ ...adminForm, name: e.target.value })}
-                  placeholder="e.g. Dr. Rajesh Sharma"
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-violet-400"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
-                  Official Email (Optional)
-                </label>
-                <input
-                  type="email"
-                  value={adminForm.email}
-                  onChange={(e) => setAdminForm({ ...adminForm, email: e.target.value })}
-                  placeholder="e.g. rajesh@hostel.edu (optional)"
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-violet-400"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
-                  Mobile Number (For Sign In) *
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Mobile Number
                 </label>
                 <input
                   type="tel"
                   required
-                  value={adminForm.phoneNumber}
-                  onChange={(e) => setAdminForm({ ...adminForm, phoneNumber: e.target.value })}
-                  placeholder="e.g. 9876543299"
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-violet-400"
+                  value={mobileNumber}
+                  onChange={(e) => setMobileNumber(e.target.value)}
+                  placeholder="Enter 10-digit mobile number"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
-                  Password *
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={adminForm.password}
-                  onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
-                  placeholder="••••••••"
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-violet-400"
-                />
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-medium text-slate-300">
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setMode('forgot')}
+                    className="text-xs text-emerald-400 hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-200"
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
               </div>
 
-              <div>
-                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
-                  Select Registered Hostel Institution *
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2 text-xs text-slate-400">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="rounded border-slate-700 bg-slate-950 text-emerald-600 focus:ring-0"
+                  />
+                  Remember me
                 </label>
-                <select
-                  required
-                  value={adminForm.hostelName}
-                  onChange={(e) => setAdminForm({ ...adminForm, hostelName: e.target.value })}
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-violet-400"
-                >
-                  <option value="">-- Select Developer Registered Hostel --</option>
-                  {registeredTenants.map((t: any) => (
-                    <option key={t.id} value={t.hostelName}>
-                      🏫 {t.hostelName} ({t.organizationName} • {t.location})
-                    </option>
-                  ))}
-                </select>
+
+                {selectedRole === 'student' && (
+                  <button
+                    type="button"
+                    onClick={() => setMode('first_time')}
+                    className="text-xs text-sky-400 hover:underline"
+                  >
+                    First time setup?
+                  </button>
+                )}
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-500/20 hover:brightness-110 active:scale-[0.99] disabled:opacity-70"
+                className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors shadow-sm"
               >
-                {loading ? 'Registering Warden...' : 'Register & Authenticate Warden Account'}
+                {loading ? 'Authenticating...' : `Sign In as ${roleMeta[selectedRole].label}`}
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('login');
-                  setError('');
-                }}
-                className="w-full py-2 text-xs font-semibold text-slate-300 hover:text-white transition text-center"
-              >
-                ← Back to Sign In
-              </button>
+              {selectedRole === 'admin' && (
+                <div className="pt-2 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setMode('register_admin')}
+                    className="text-xs text-indigo-400 hover:underline"
+                  >
+                    Need to register a new Hostel Warden account?
+                  </button>
+                </div>
+              )}
             </form>
           )}
 
-          {/* MODE 2: FORGOT PASSWORD REQUEST TO WARDEN */}
+          {/* MODE 2: FORGOT PASSWORD */}
           {mode === 'forgot' && (
             <form onSubmit={handleForgotRequest} className="space-y-4">
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Enter your registered mobile number below. A password change request will be sent to the Hostel Warden for verification and reset.
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Enter your registered mobile number. A reset request will be dispatched to your hostel warden/administrator.
               </p>
+
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200" htmlFor="reqMobile">
+                <label className="block text-xs font-medium text-slate-300 mb-1">
                   Registered Mobile Number
                 </label>
                 <input
-                  id="reqMobile"
                   type="tel"
                   required
                   value={requestMobile}
                   onChange={(e) => setRequestMobile(e.target.value)}
                   placeholder="e.g. 9876543210"
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500"
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-orange-500/20 transition hover:brightness-110 active:scale-[0.99] disabled:opacity-70"
-              >
-                {loading ? 'Submitting Request...' : 'Send Password Change Request to Warden'}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('login');
-                  setError('');
-                }}
-                className="w-full py-2 text-xs font-semibold text-slate-300 hover:text-white transition text-center"
-              >
-                ← Back to Sign In
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMode('login')}
+                  className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  Request Reset
+                </button>
+              </div>
             </form>
           )}
 
           {/* MODE 3: FIRST TIME STUDENT SETUP */}
           {mode === 'first_time' && (
             <form onSubmit={handleFirstTimeSetup} className="space-y-4">
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Are you a new resident registered by the Warden? Enter your registered mobile number and create your password for first-time usage.
+              <p className="text-xs text-slate-400 leading-relaxed">
+                If your mobile number was pre-registered by your Warden, set your password here to activate your digital meal pass.
               </p>
+
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200" htmlFor="setupMobile">
-                  Warden-Registered Mobile Number
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Mobile Number
                 </label>
                 <input
-                  id="setupMobile"
                   type="tel"
                   required
                   value={requestMobile}
                   onChange={(e) => setRequestMobile(e.target.value)}
                   placeholder="e.g. 9876543210"
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200" htmlFor="setupPass">
-                  Create Initial Password
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Choose New Password
                 </label>
                 <input
-                  id="setupPass"
                   type="password"
                   required
                   value={setupPassword}
                   onChange={(e) => setSetupPassword(e.target.value)}
-                  placeholder="Choose initial password"
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition"
+                  placeholder="Minimum 4 characters"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500"
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-teal-500/20 transition hover:brightness-110 active:scale-[0.99] disabled:opacity-70"
-              >
-                {loading ? 'Activating Account...' : 'Set Password & Activate Account'}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('login');
-                  setError('');
-                }}
-                className="w-full py-2 text-xs font-semibold text-slate-300 hover:text-white transition text-center"
-              >
-                ← Back to Sign In
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMode('login')}
+                  className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700"
+                >
+                  Back to Sign In
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  Activate Pass
+                </button>
+              </div>
             </form>
           )}
 
-          {/* MODE 4: STANDARD LOGIN FORM */}
-          {mode === 'login' && (
-            <form onSubmit={handleSubmit} className="space-y-4">
+          {/* MODE 4: WARDEN REGISTRATION */}
+          {mode === 'register_admin' && (
+            <form onSubmit={handleAdminRegistration} className="space-y-3.5">
+              <p className="text-xs text-slate-400">
+                Register a new Hostel Warden account:
+              </p>
+
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200" htmlFor="mobileNumber">
-                  {selectedRole === 'developer' ? t('developerId') : t('mobileNumber')}
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Full Name
                 </label>
                 <input
-                  id="mobileNumber"
-                  type={selectedRole === 'developer' ? 'text' : 'tel'}
-                  autoCapitalize="none"
-                  autoCorrect="off"
+                  type="text"
                   required
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
-                  placeholder={selectedRole === 'developer' ? t('enterDeveloperId') : t('enterMobile')}
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none transition focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                  value={adminForm.name}
+                  onChange={(e) => setAdminForm({ ...adminForm, name: e.target.value })}
+                  placeholder="Dr. Rajesh Sharma"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs text-white"
                 />
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-200" htmlFor="password">
-                    {t('password')}
-                  </label>
-                  {selectedRole !== 'developer' && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRequestMobile(mobileNumber);
-                        setMode('forgot');
-                        setError('');
-                        setSuccessMessage('');
-                      }}
-                      className="text-xs font-semibold text-cyan-400 hover:underline"
-                    >
-                      {t('forgotPassword')}
-                    </button>
-                  )}
-                </div>
-                <div className="relative">
-                  <input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full rounded-2xl border border-slate-600 bg-slate-950 pl-4 pr-16 py-3.5 text-sm text-white placeholder:text-violet-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl border border-slate-700 bg-slate-900/90 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:text-white hover:border-slate-500 transition flex items-center gap-1 select-none"
-                    title={showPassword ? t('hidePassword') : t('viewPassword')}
-                  >
-                    <span>{showPassword ? `🙈 ${t('hidePassword')}` : `👁️ ${t('viewPassword')}`}</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-1">
-                <label className="flex items-center gap-2 text-xs font-medium text-slate-200 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-cyan-500 focus:ring-cyan-500/20"
-                  />
-                  <span>{t('rememberMe')}</span>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Mobile Number (Sign In ID)
                 </label>
-
-                {selectedRole === 'student' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRequestMobile(mobileNumber);
-                      setMode('first_time');
-                      setError('');
-                      setSuccessMessage('');
-                    }}
-                    className="text-xs font-bold text-emerald-400 hover:underline"
-                  >
-                    {t('firstTimeSetup')}
-                  </button>
-                )}
-
-                {selectedRole === 'admin' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode('register_admin');
-                      setError('');
-                      setSuccessMessage('');
-                    }}
-                    className="text-xs font-bold text-violet-400 hover:underline"
-                  >
-                    {t('newWardenRegister')}
-                  </button>
-                )}
+                <input
+                  type="tel"
+                  required
+                  value={adminForm.phoneNumber}
+                  onChange={(e) => setAdminForm({ ...adminForm, phoneNumber: e.target.value })}
+                  placeholder="9876543299"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs text-white"
+                />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className={`w-full rounded-2xl px-4 py-3.5 text-sm font-bold shadow-lg transition hover:brightness-110 active:scale-[0.99] disabled:opacity-70 ${
-                  selectedRole === 'developer'
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-amber-500/20'
-                    : selectedRole === 'admin'
-                    ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-violet-500/20'
-                    : selectedRole === 'mess_staff'
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-emerald-500/20'
-                    : 'bg-gradient-to-r from-cyan-500 to-sky-500 text-slate-950 shadow-cyan-500/20'
-                }`}
-              >
-                {loading ? 'Authenticating...' : `${t('signIn')} (${roleMeta[selectedRole].label})`}
-              </button>
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={adminForm.password}
+                  onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
+                  placeholder="Enter secure password"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs text-white"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setMode('login')}
+                  className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  Register Warden
+                </button>
+              </div>
             </form>
           )}
-        </div>
 
+        </div>
       </div>
     </div>
   );

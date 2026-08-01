@@ -69,20 +69,11 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#07050f] flex flex-col items-center justify-center gap-4">
-        <div className="animate-float">
-          <div className="h-16 w-16 rounded-2xl overflow-hidden ring-2 ring-violet-500/40 shadow-xl shadow-violet-900/50">
-            <img src="/logo.jpg" alt="Scan2eat" className="h-full w-full object-cover"
-              onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }}
-            />
-          </div>
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
+        <div className="h-12 w-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl font-bold shadow-md">
+          🍱
         </div>
-        <p className="text-violet-400 font-semibold tracking-widest text-sm uppercase animate-fade-in" style={{animationDelay:'0.3s'}}>Loading Scan2eat...</p>
-        <div className="flex gap-1.5">
-          {[0,1,2].map(i => (
-            <span key={i} className="h-2 w-2 rounded-full bg-violet-500 animate-bounce" style={{animationDelay:`${i*0.15}s`}} />
-          ))}
-        </div>
+        <p className="text-slate-300 font-medium tracking-wide text-sm">Loading Scan2Eat...</p>
       </div>
     );
   }
@@ -100,19 +91,10 @@ function AppContent() {
   const isDevOrAdmin = user!.role === 'admin' || user!.role === 'super_admin' || user!.role === 'developer';
 
   return (
-    <div className={`relative min-h-screen transition-colors duration-500 ${
-      isDark
-        ? 'bg-[radial-gradient(ellipse_at_20%_20%,rgba(139,92,246,0.12),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(245,158,11,0.07),transparent_50%),linear-gradient(135deg,#07050f_0%,#0f0b1e_60%,#0a0816_100%)] text-slate-100'
-        : 'bg-[radial-gradient(ellipse_at_top,rgba(167,139,250,0.15),transparent_60%),linear-gradient(160deg,#f5f3ff,#eef2ff)] text-slate-900'
-    } p-4 sm:p-6 lg:p-8`}>
-      {/* Ambient glow orbs */}
-      {isDark && (
-        <>
-          <div className="bg-orb w-96 h-96 bg-violet-600 top-[-10%] left-[-5%]" />
-          <div className="bg-orb w-72 h-72 bg-amber-500 bottom-[-8%] right-[-3%]" />
-        </>
-      )}
-      <div className="relative z-10 mx-auto max-w-7xl space-y-6">
+    <div className={`min-h-screen transition-colors duration-200 ${
+      isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+    } p-3 sm:p-6 lg:p-8`}>
+      <div className="mx-auto max-w-7xl space-y-6">
         <Navbar
           user={user}
           theme={theme}
