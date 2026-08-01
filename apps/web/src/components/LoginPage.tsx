@@ -89,9 +89,6 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     } else if (role === 'admin') {
       demoPhone = '9876543299';
       demoPass = 'warden123';
-    } else if (role === 'developer') {
-      demoPhone = 'DEV9999';
-      demoPass = 'dev123';
     }
 
     setSelectedRole(role);
@@ -355,13 +352,6 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                 className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all border border-slate-700 hover:border-emerald-500 shadow-xs"
               >
                 👮 Warden Demo
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('developer')}
-                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all border border-slate-700 hover:border-emerald-500 shadow-xs"
-              >
-                👑 Developer Demo
               </button>
             </div>
           </div>
