@@ -1,19 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
+import { useTranslation, Language } from '../lib/translations';
 
 interface QrScannerProps {
   onScanSuccess: (decodedText: string) => void;
   onScanError?: (errorMsg: string) => void;
   scannerId?: string;
   defaultManualToken?: string;
+  lang?: Language;
 }
 
 export function QrScanner({
   onScanSuccess,
   onScanError,
   scannerId = 'custom-qr-scanner',
-  defaultManualToken = 'qr-student-001'
+  defaultManualToken = 'qr-student-001',
+  lang = 'en'
 }: QrScannerProps) {
+  const t = useTranslation(lang);
   const [activeTab, setActiveTab] = useState<'camera' | 'upload' | 'manual'>('camera');
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -176,10 +180,10 @@ export function QrScanner({
         <div>
           <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            QR Scanner & Verifier
+            {t('qrScannerTitle')}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Scan student meal pass QR using live camera, image upload, or token
+            {t('qrScannerDesc')}
           </p>
         </div>
 
@@ -193,7 +197,7 @@ export function QrScanner({
                 : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
             }`}
           >
-            📷 Live Camera
+            {t('tabLiveCamera')}
           </button>
           <button
             type="button"
@@ -204,7 +208,7 @@ export function QrScanner({
                 : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
             }`}
           >
-            🖼️ Upload Image
+            {t('tabUploadImage')}
           </button>
           <button
             type="button"
@@ -215,7 +219,7 @@ export function QrScanner({
                 : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
             }`}
           >
-            ⌨️ Manual Token
+            {t('tabManualToken')}
           </button>
         </div>
       </div>
@@ -225,7 +229,7 @@ export function QrScanner({
         <div className="mt-4 space-y-3">
           {cameras.length > 1 && (
             <div className="flex items-center gap-2">
-              <label className="text-xs text-slate-500 dark:text-slate-400 font-medium">Select Camera:</label>
+              <label className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('selectCamera')}</label>
               <select
                 value={selectedCameraId}
                 onChange={(e) => setSelectedCameraId(e.target.value)}
@@ -246,9 +250,6 @@ export function QrScanner({
                 ⚠️ Camera Access Notice
               </p>
               <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">{cameraError}</p>
-              <p className="mt-2 text-xs font-medium text-amber-800 dark:text-amber-200">
-                Tip: You can switch to the <strong>Upload Image</strong> or <strong>Manual Token</strong> tab to verify meal passes without a physical camera!
-              </p>
             </div>
           ) : (
             <div className="relative overflow-hidden rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center justify-center min-h-[260px]">
@@ -285,10 +286,10 @@ export function QrScanner({
               📁
             </div>
             <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
-              Upload QR Code Image or Screenshot
+              {t('uploadQrPrompt')}
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Supports PNG, JPG, JPEG, WEBP files
+              {t('uploadQrSupport')}
             </p>
             <input
               type="file"
@@ -330,14 +331,14 @@ export function QrScanner({
               type="submit"
               className="rounded-md bg-emerald-600 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-700 transition-colors"
             >
-              Verify Token
+              {t('verifyTokenBtn')}
             </button>
           </form>
 
           {/* Quick Mock Tokens Selector for Mess Staff Testing */}
           <div className="rounded-md bg-slate-50 p-3 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
             <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-              ⚡ Quick Test Tokens (Click to Scan):
+              {t('quickTestTokens')}
             </p>
             <div className="flex flex-wrap gap-2">
               {['qr-student-001', 'qr-student-002', 'qr-student-003'].map((token) => (
@@ -363,7 +364,7 @@ export function QrScanner({
       {lastScanned && (
         <div className="mt-3 flex items-center justify-between rounded-md bg-slate-100 px-3 py-2 text-xs dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
           <span className="text-slate-600 dark:text-slate-400">
-            Last Scanned Token: <strong className="font-mono text-emerald-600 dark:text-emerald-400">{lastScanned}</strong>
+            {t('lastScannedToken')} <strong className="font-mono text-emerald-600 dark:text-emerald-400">{lastScanned}</strong>
           </span>
           <button
             type="button"

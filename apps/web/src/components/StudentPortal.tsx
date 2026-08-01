@@ -144,13 +144,13 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            Active Digital Student Pass
+            {t('studentPassBadge')}
           </div>
           <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-            👋 Welcome back, {student.name}!
+            {t('welcomeStudent')} {student.name}!
           </h1>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Room <strong className="text-slate-800 dark:text-slate-200">{student.roomNumber}</strong> • Roll <strong className="text-slate-800 dark:text-slate-200">{student.rollNumber}</strong> • Diet <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">{student.mealPreference}</strong>
+            {t('roomLabel')} <strong className="text-slate-800 dark:text-slate-200">{student.roomNumber}</strong> • {t('rollLabel')} <strong className="text-slate-800 dark:text-slate-200">{student.rollNumber}</strong> • {t('dietLabel')} <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">{student.mealPreference}</strong>
           </p>
         </div>
 
@@ -160,7 +160,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
             onClick={handleCopyToken}
             className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 transition-colors"
           >
-            {copied ? '✓ Token Copied' : '📋 Copy QR Code Token'}
+            {copied ? t('tokenCopied') : t('copyToken')}
           </button>
         </div>
       </div>
@@ -174,9 +174,9 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
               <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl">
                 ⏰
               </div>
-              <h3 className="text-base font-semibold text-slate-900 dark:text-white">Check-in Required for Lunch Pass</h3>
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">{t('checkInRequired')}</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Confirm your hostel attendance so mess staff can allocate your lunch box today.
+                {t('checkInDesc')}
               </p>
 
               {checkInMsg && (
@@ -192,16 +192,16 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
                   onChange={(e) => setConfirmCheckInBox(e.target.checked)}
                   className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-0"
                 />
-                <span>I confirm I am present in the hostel & request my meal box today.</span>
+                <span>{t('confirmCheckIn')}</span>
               </label>
 
               <button
                 type="button"
                 onClick={handleCheckIn}
-                disabled={loading || !confirmCheckInBox}
-                className="w-full rounded-lg bg-emerald-600 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                disabled={!confirmCheckInBox}
+                className="w-full rounded-lg bg-emerald-600 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-500 disabled:opacity-50 transition-colors"
               >
-                Generate My QR Pass
+                {t('generateQrPass')}
               </button>
             </div>
           ) : (
@@ -242,20 +242,19 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
 
             {currentStatus === 'issued' ? (
               <div className="rounded-lg bg-amber-50 p-3 text-xs text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-200 dark:border-amber-900/40">
-                <p className="font-semibold">Active Lunch Box Issued!</p>
-                <p className="mt-1">Issued at: {activeBox?.issuedAt ? new Date(activeBox.issuedAt).toLocaleTimeString() : 'Just now'}</p>
+                <p className="font-semibold">{t('activeBoxNotice')}</p>
+                <p className="mt-1">{t('issuedAtLabel')} {activeBox?.issuedAt ? new Date(activeBox.issuedAt).toLocaleTimeString() : 'Just now'}</p>
                 <p className="mt-2 text-[11px] text-amber-700 dark:text-amber-300">
-                  ⚠️ Please return your box to the mess counter after finishing your meal.
+                  {t('returnNotice')}
                 </p>
               </div>
             ) : currentStatus === 'returned' ? (
               <div className="rounded-lg bg-emerald-50 p-3 text-xs text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-200 dark:border-emerald-900/40">
-                <p className="font-semibold">Meal Box Returned & Cleaned!</p>
-                <p className="mt-1">Thank you for returning your box on time.</p>
+                <p className="font-semibold">{t('returnedNotice')}</p>
               </div>
             ) : (
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Show your QR code pass above at the mess counter to receive your meal box.
+                {t('showQrNotice')}
               </p>
             )}
           </div>
@@ -263,7 +262,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
           {/* Food Quality Review Form */}
           <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-              ⭐ Rate Today's Mess Food Quality
+              {t('rateFoodQuality')}
             </h3>
 
             {reviewMessage && (
@@ -275,7 +274,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
             <form onSubmit={handleReviewSubmit} className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Taste Rating</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">{t('tasteRating')}</label>
                   <select
                     value={reviewForm.taste}
                     onChange={(e) => setReviewForm({ ...reviewForm, taste: Number(e.target.value) })}
@@ -289,7 +288,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Quantity</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">{t('quantityRating')}</label>
                   <select
                     value={reviewForm.quantity}
                     onChange={(e) => setReviewForm({ ...reviewForm, quantity: Number(e.target.value) })}
@@ -303,12 +302,12 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
               </div>
 
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Comment / Feedback</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">{t('commentLabel')}</label>
                 <input
                   type="text"
                   value={reviewForm.comment}
                   onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                  placeholder="Share feedback on today's meal..."
+                  placeholder={t('shareFeedbackPlaceholder')}
                   className="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 />
               </div>
@@ -318,7 +317,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
                 disabled={reviewLoading}
                 className="w-full rounded-md bg-emerald-600 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors"
               >
-                Submit Feedback
+                {t('submitFeedback')}
               </button>
             </form>
           </div>
@@ -327,7 +326,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
 
       {/* Weekly Mess Menu */}
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-3">📅 Weekly Mess Menu Schedule</h3>
+        <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-3">{t('weeklyMenuSchedule')}</h3>
 
         <div className="flex flex-wrap gap-1.5 pb-4 border-b border-slate-100 dark:border-slate-800">
           {DAYS_OF_WEEK.map((day) => (

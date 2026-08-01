@@ -1,28 +1,28 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, requestPasswordReset, firstTimeSetup, registerAdmin, getPublicTenantsList } from '../lib/api';
-import { useTranslation, type Language } from '../lib/translations';
+import { useTranslation, translations, type Language } from '../lib/translations';
 
 type Role = 'student' | 'mess_staff' | 'admin' | 'developer';
 
-const roleMeta: Record<Role, { label: string; icon: string; badge: string }> = {
+const roleMeta: Record<Role, { labelKey: keyof typeof translations.en; icon: string; badge: string }> = {
   student: {
-    label: 'Student',
+    labelKey: 'roleStudent',
     icon: '🎫',
     badge: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20'
   },
   mess_staff: {
-    label: 'Mess Staff',
+    labelKey: 'roleStaff',
     icon: '🍱',
     badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
   },
   admin: {
-    label: 'Warden',
+    labelKey: 'roleWarden',
     icon: '👮',
     badge: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20'
   },
   developer: {
-    label: 'Developer',
+    labelKey: 'roleDeveloper',
     icon: '👑',
     badge: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
   }
@@ -39,8 +39,8 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
   const lang = propLang;
   const t = useTranslation(lang);
   const [selectedRole, setSelectedRole] = useState<Role>('student');
-  const [mobileNumber, setMobileNumber] = useState('9876543210');
-  const [password, setPassword] = useState('student123');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
@@ -73,21 +73,8 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     setMode('login');
     setError('');
     setSuccessMessage('');
-
-    // Set demo default credentials based on role for fast testing
-    if (role === 'student') {
-      setMobileNumber('9876543210');
-      setPassword('student123');
-    } else if (role === 'mess_staff') {
-      setMobileNumber('9876543220');
-      setPassword('staff123');
-    } else if (role === 'admin') {
-      setMobileNumber('9876543299');
-      setPassword('admin123');
-    } else if (role === 'developer') {
-      setMobileNumber('9876543200');
-      setPassword('dev123');
-    }
+    setMobileNumber('');
+    setPassword('');
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -258,12 +245,12 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
             </div>
 
             <div className="mb-6 rounded-lg bg-emerald-950/40 border border-emerald-800/40 p-3 text-xs text-emerald-300">
-              👋 <strong>Welcome!</strong> Sign in with your registered mobile number to manage or verify hostel meals in real-time.
+              {t('loginWelcomeMessage')}
             </div>
 
             {/* Role Switcher */}
             <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">
-              Select Your Role:
+              {t('selectRole')}
             </p>
             <div className="grid grid-cols-2 gap-2">
               {(Object.keys(roleMeta) as Role[]).map((role) => (
@@ -278,7 +265,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   }`}
                 >
                   <span>{roleMeta[role].icon}</span>
-                  <span>{roleMeta[role].label}</span>
+                  <span>{t(roleMeta[role].labelKey as any)}</span>
                 </button>
               ))}
             </div>
@@ -311,25 +298,37 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
 
           {/* Quick Demo Login Preset Buttons */}
           <div className="mt-8 pt-4 border-t border-slate-800">
-            <p className="text-[11px] text-slate-500 font-medium mb-2">⚡ Demo Quick Presets:</p>
+            <p className="text-[11px] text-slate-500 font-medium mb-2">{t('demoPresets')}</p>
             <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
-                onClick={() => handleSelectRole('student')}
+                onClick={() => {
+                  setSelectedRole('student');
+                  setMobileNumber('9876543210');
+                  setPassword('student123');
+                }}
                 className="px-2 py-1 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
               >
                 Student Demo
               </button>
               <button
                 type="button"
-                onClick={() => handleSelectRole('mess_staff')}
+                onClick={() => {
+                  setSelectedRole('mess_staff');
+                  setMobileNumber('9876543220');
+                  setPassword('staff123');
+                }}
                 className="px-2 py-1 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
               >
                 Staff Demo
               </button>
               <button
                 type="button"
-                onClick={() => handleSelectRole('admin')}
+                onClick={() => {
+                  setSelectedRole('admin');
+                  setMobileNumber('9876543299');
+                  setPassword('warden123');
+                }}
                 className="px-2 py-1 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
               >
                 Warden Demo
@@ -342,7 +341,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
         <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-center">
           <div className="mb-4">
             <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-md border ${roleMeta[selectedRole].badge}`}>
-              {roleMeta[selectedRole].label} Sign In
+              {t(roleMeta[selectedRole].labelKey as any)} {t('signIn')}
             </span>
           </div>
 
@@ -363,14 +362,14 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Mobile Number
+                  {t('mobileNumber')}
                 </label>
                 <input
                   type="tel"
                   required
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
-                  placeholder="Enter 10-digit mobile number"
+                  placeholder={t('enterMobile')}
                   className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500"
                 />
               </div>
@@ -378,14 +377,14 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="block text-xs font-medium text-slate-300">
-                    Password
+                    {t('password')}
                   </label>
                   <button
                     type="button"
                     onClick={() => setMode('forgot')}
                     className="text-xs text-emerald-400 hover:underline"
                   >
-                    Forgot password?
+                    {t('forgotPassword')}
                   </button>
                 </div>
                 <div className="relative">
@@ -394,7 +393,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter password"
+                    placeholder={t('enterPassword')}
                     className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 pr-10"
                   />
                   <button
@@ -402,52 +401,49 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-200"
                   >
-                    {showPassword ? 'Hide' : 'Show'}
+                    {showPassword ? '🙈' : '👁️'}
                   </button>
                 </div>
               </div>
 
               <div className="flex items-center justify-between pt-1">
-                <label className="flex items-center gap-2 text-xs text-slate-400">
+                <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="rounded border-slate-700 bg-slate-950 text-emerald-600 focus:ring-0"
                   />
-                  Remember me
+                  <span>{t('rememberMe')}</span>
                 </label>
-
-                {selectedRole === 'student' && (
-                  <button
-                    type="button"
-                    onClick={() => setMode('first_time')}
-                    className="text-xs text-sky-400 hover:underline"
-                  >
-                    First time setup?
-                  </button>
-                )}
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors shadow-sm"
+                className="w-full rounded-lg bg-emerald-600 py-3 text-sm font-semibold text-white hover:bg-emerald-500 transition-all shadow-md disabled:opacity-50"
               >
-                {loading ? 'Authenticating...' : `Sign In as ${roleMeta[selectedRole].label}`}
+                {loading ? '...' : t('signIn')}
               </button>
 
-              {selectedRole === 'admin' && (
-                <div className="pt-2 text-center">
+              <div className="pt-2 flex flex-col gap-1.5 text-center text-xs">
+                <button
+                  type="button"
+                  onClick={() => setMode('first_time')}
+                  className="text-emerald-400 hover:underline"
+                >
+                  {t('firstTimeSetup')}
+                </button>
+                {selectedRole === 'admin' && (
                   <button
                     type="button"
                     onClick={() => setMode('register_admin')}
-                    className="text-xs text-indigo-400 hover:underline"
+                    className="text-slate-400 hover:text-slate-200 hover:underline"
                   >
-                    Need to register a new Hostel Warden account?
+                    {t('newWardenRegister')}
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </form>
           )}
 

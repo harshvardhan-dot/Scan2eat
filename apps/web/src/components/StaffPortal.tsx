@@ -111,27 +111,23 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
       {/* Mess Daily Operations Metric Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Target Boxes Today</p>
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{t('targetBoxesToday')}</p>
           <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{summary?.lunchBoxesToBeMade ?? 0}</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">Based on check-in forecast</p>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs font-medium text-amber-600 dark:text-amber-400">Issued to Students</p>
+          <p className="text-xs font-medium text-amber-600 dark:text-amber-400">{t('issuedToStudents')}</p>
           <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{summary?.issuedCount ?? 0}</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">Handed over today</p>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Returned Boxes</p>
+          <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">{t('returnedBoxes')}</p>
           <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{summary?.returnedCount ?? 0}</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">Cleaned & returned</p>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs font-medium text-rose-600 dark:text-rose-400">Pending Return</p>
+          <p className="text-xs font-medium text-rose-600 dark:text-rose-400">{t('pendingReturn')}</p>
           <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{summary?.notReturnedCount ?? 0}</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">Still with students</p>
         </div>
       </div>
 
@@ -143,6 +139,7 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
             scannerId="staff-issue-desk-scanner"
             onScanSuccess={handleVerifyToken}
             defaultManualToken="qr-student-001"
+            lang={lang}
           />
         </div>
 
