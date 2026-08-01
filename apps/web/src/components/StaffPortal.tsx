@@ -5,15 +5,16 @@ import { useTranslation, Language } from '../lib/translations';
 
 interface StaffPortalProps {
   user: { id?: string; name: string; role: string };
-  isDark: boolean;
+  isDark?: boolean;
+  lang?: Language;
 }
 
-export function StaffPortal({ user, isDark }: StaffPortalProps) {
+export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
   const [scanResult, setScanResult] = useState<any>(null);
   const [status, setStatus] = useState('Ready to scan student QR pass');
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<any>(null);
-  const [lang, setLang] = useState<Language>('en');
+  const lang = propLang;
   const t = useTranslation(lang);
 
   const fetchSummary = async () => {
@@ -100,13 +101,6 @@ export function StaffPortal({ user, isDark }: StaffPortalProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <button 
-            type="button"
-            onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
-            className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-          >
-            {lang === 'en' ? 'हिंदी' : 'English'}
-          </button>
           <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs dark:border-slate-800 dark:bg-slate-950">
             <span className="text-slate-500 dark:text-slate-400">{t('operator')}: </span>
             <span className="font-semibold text-slate-900 dark:text-slate-100">{user.name}</span>

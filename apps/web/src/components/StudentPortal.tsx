@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import { getStudentStatus, getWeeklyMenu, submitFoodReview, studentCheckIn } from '../lib/api';
+import { useTranslation, type Language } from '../lib/translations';
 
 interface StudentPortalProps {
   user: { id?: string; name: string; email?: string; role: string };
-  isDark: boolean;
+  isDark?: boolean;
+  lang?: Language;
 }
 
 interface MenuItem {
@@ -22,7 +24,8 @@ interface DayMenu {
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-export function StudentPortal({ user }: StudentPortalProps) {
+export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
+  const t = useTranslation(lang);
   const [copied, setCopied] = useState(false);
   const [liveData, setLiveData] = useState<any>(null);
   const [weeklyMenu, setWeeklyMenu] = useState<DayMenu[]>([]);

@@ -30,11 +30,13 @@ const roleMeta: Record<Role, { label: string; icon: string; badge: string }> = {
 
 interface LoginPageProps {
   onLoginSuccess?: (user: { id?: string; name: string; email?: string; role: any }, token: string) => void;
+  lang?: Language;
+  onSelectLang?: (lang: Language) => void;
 }
 
-export function LoginPage({ onLoginSuccess }: LoginPageProps) {
+export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang }: LoginPageProps) {
   const navigate = useNavigate();
-  const [lang, setLang] = useState<Language>('en');
+  const lang = propLang;
   const t = useTranslation(lang);
   const [selectedRole, setSelectedRole] = useState<Role>('student');
   const [mobileNumber, setMobileNumber] = useState('9876543210');
@@ -283,22 +285,22 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
             {/* Language Switcher */}
             <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-800">
-              <span className="text-xs text-slate-500">Language:</span>
+              <span className="text-xs text-slate-400 font-medium">{t('switchLanguage')}:</span>
               <div className="flex items-center gap-1 rounded-md bg-slate-950 p-1 border border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setLang('en')}
-                  className={`px-2 py-1 text-xs font-medium rounded ${
-                    lang === 'en' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                  onClick={() => onSelectLang?.('en')}
+                  className={`px-2.5 py-1 text-xs font-medium rounded transition-all ${
+                    lang === 'en' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
                   English
                 </button>
                 <button
                   type="button"
-                  onClick={() => setLang('hi')}
-                  className={`px-2 py-1 text-xs font-medium rounded ${
-                    lang === 'hi' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                  onClick={() => onSelectLang?.('hi')}
+                  className={`px-2.5 py-1 text-xs font-medium rounded transition-all ${
+                    lang === 'hi' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
                   हिंदी

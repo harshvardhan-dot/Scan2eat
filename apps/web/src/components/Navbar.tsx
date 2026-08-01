@@ -1,25 +1,29 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation, Language } from '../lib/translations';
 
 type Role = 'student' | 'mess_staff' | 'admin' | 'super_admin' | 'developer';
 
 interface NavbarProps {
   user: { name: string; role: Role; email?: string } | null;
   theme: 'dark' | 'light';
+  lang: Language;
+  onSelectLang: (lang: Language) => void;
   onToggleTheme: () => void;
   onLogout: () => void;
 }
 
-const roleMeta: Record<Role, { label: string; badgeClass: string }> = {
-  student: { label: 'Student', badgeClass: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20' },
-  mess_staff: { label: 'Mess Staff', badgeClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
-  admin: { label: 'Warden', badgeClass: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' },
-  super_admin: { label: 'Developer', badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
-  developer: { label: 'Developer', badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' }
+const roleMeta: Record<Role, { labelKey: string; badgeClass: string }> = {
+  student: { labelKey: 'roleStudent', badgeClass: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20' },
+  mess_staff: { labelKey: 'roleStaff', badgeClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
+  admin: { labelKey: 'roleWarden', badgeClass: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' },
+  super_admin: { labelKey: 'roleDeveloper', badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
+  developer: { labelKey: 'roleDeveloper', badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' }
 };
 
-export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
+export function Navbar({ user, theme, lang, onSelectLang, onToggleTheme, onLogout }: NavbarProps) {
   const location = useLocation();
   const isDark = theme === 'dark';
+  const t = useTranslation(lang);
 
   if (!user) return null;
 
@@ -52,13 +56,13 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-lg font-black tracking-tight uppercase">
-              <span className="brand-text-animated">Scan2Eat</span>
+              <span className="brand-text-animated">{t('appName')}</span>
             </span>
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
               HostelOS
             </span>
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Hostel Mess & Meal Operations</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">{t('appSubtitle')}</p>
         </div>
       </div>
 
@@ -75,7 +79,7 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
                 : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            🎫 Digital Meal Pass
+            {t('navDigitalPass')}
           </Link>
         )}
 
@@ -88,7 +92,7 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
                 : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            📋 Mess Issue Desk
+            {t('navIssueDesk')}
           </Link>
         )}
 
@@ -101,21 +105,49 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
                 : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            {userRole === 'admin' ? '🏠 Warden Admin' : '👑 Developer Admin'}
+            {userRole === 'admin' ? t('navWardenAdmin') : t('navDevAdmin')}
           </Link>
         )}
       </nav>
 
-      {/* User Info & Theme Controls */}
-      <div className="flex items-center gap-3">
+      {/* Controls: Language Switcher, Theme Toggle & Sign Out */}
+      <div className="flex items-center gap-2 sm:gap-3">
         <div className="hidden sm:flex flex-col text-right">
           <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">{user.name}</span>
           <span className={`text-[10px] font-medium border px-1.5 py-0.2 rounded-md ${roleMeta[userRole].badgeClass}`}>
-            {roleMeta[userRole].label}
+            {t(roleMeta[userRole].labelKey as any)}
           </span>
         </div>
 
-        {/* Aesthetic Theme Toggle Button */}
+        {/* Global Language Toggle (EN / हिंदी) */}
+        <div className={`flex items-center rounded-lg border p-0.5 text-xs font-medium ${
+          isDark ? 'border-slate-700 bg-slate-800' : 'border-slate-300 bg-slate-100'
+        }`}>
+          <button
+            type="button"
+            onClick={() => onSelectLang('en')}
+            className={`px-2 py-1 rounded-md text-[11px] transition-all ${
+              lang === 'en'
+                ? 'bg-emerald-600 text-white font-semibold shadow-xs'
+                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectLang('hi')}
+            className={`px-2 py-1 rounded-md text-[11px] transition-all ${
+              lang === 'hi'
+                ? 'bg-emerald-600 text-white font-semibold shadow-xs'
+                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            हिंदी
+          </button>
+        </div>
+
+        {/* Theme Toggle Button */}
         <button
           type="button"
           onClick={onToggleTheme}
@@ -129,7 +161,7 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
           <span className="transition-transform duration-300 active:rotate-180">
             {isDark ? '☀️' : '🌙'}
           </span>
-          <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+          <span className="hidden md:inline">{isDark ? t('lightMode') : t('darkMode')}</span>
         </button>
 
         <button
@@ -137,7 +169,7 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
           onClick={onLogout}
           className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-all"
         >
-          Sign Out
+          {t('signOut')}
         </button>
       </div>
     </header>

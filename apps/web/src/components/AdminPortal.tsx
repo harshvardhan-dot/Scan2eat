@@ -35,7 +35,8 @@ import {
 
 interface AdminPortalProps {
   user: { id?: string; name: string; role: string };
-  isDark: boolean;
+  isDark?: boolean;
+  lang?: Language;
 }
 
 interface StudentItem {
@@ -43,10 +44,11 @@ interface StudentItem {
   name: string;
   email: string;
   phoneNumber?: string;
-  roomNumber: string;
   rollNumber: string;
+  roomNumber: string;
   mealPreference: string;
-  qrToken?: string;
+  subscriptionActive: boolean;
+  approvalStatus?: 'approved' | 'pending' | 'rejected';
 }
 
 interface MenuItem {
@@ -85,8 +87,8 @@ interface PasswordResetReqItem {
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-export function AdminPortal({ user, isDark }: AdminPortalProps) {
-  const [lang, setLang] = useState<Language>('en');
+export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: AdminPortalProps) {
+  const lang = propLang;
   const t = useTranslation(lang);
   const [dashboard, setDashboard] = useState<any>(null);
   const [reports, setReports] = useState<any>(null);
@@ -630,12 +632,6 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
             </div>
 
             <div className="flex gap-4 items-center">
-              <button 
-                onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
-                className="rounded-full border border-slate-600 bg-slate-900/80 px-4 py-1.5 text-sm font-medium text-emerald-400 hover:bg-slate-800 transition"
-              >
-                {lang === 'en' ? 'हिंदी में बदलें' : 'Switch to English'}
-              </button>
               <button
                 onClick={() => void loadData()}
                 disabled={loading}
@@ -1583,12 +1579,6 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
             </p>
           </div>
           <div className="flex gap-4 items-center">
-            <button 
-              onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
-              className="rounded-full border border-slate-600 bg-slate-900/80 px-4 py-1.5 text-sm font-medium text-emerald-400 hover:bg-slate-800 transition"
-            >
-              {lang === 'en' ? 'हिंदी में बदलें' : 'Switch to English'}
-            </button>
             <button
               onClick={() => void loadData()}
               disabled={loading}

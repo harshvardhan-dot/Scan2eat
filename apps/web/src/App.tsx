@@ -6,6 +6,7 @@ import { StudentPortal } from './components/StudentPortal';
 import { StaffPortal } from './components/StaffPortal';
 import { AdminPortal } from './components/AdminPortal';
 import { getMe } from './lib/api';
+import type { Language } from './lib/translations';
 
 type Role = 'student' | 'mess_staff' | 'admin' | 'super_admin' | 'developer';
 
@@ -22,6 +23,21 @@ function AppContent() {
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // App-wide Language state (persisted in localStorage)
+  const [lang, setLang] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('hostelos-lang');
+      if (stored === 'hi' || stored === 'en') return stored;
+    }
+    return 'en';
+  });
+
+  useEffect(() => {
+    window.localStorage.setItem('hostelos-lang', lang);
+  }, [lang]);
+
+  // App-wide Theme state
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window !== 'undefined') {
       const stored = window.localStorage.getItem('hostelos-theme');
@@ -118,7 +134,13 @@ function AppContent() {
   }
 
   if (!user && location.pathname === '/login') {
-    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+    return (
+      <LoginPage
+        onLoginSuccess={handleLoginSuccess}
+        lang={lang}
+        onSelectLang={(nextLang) => setLang(nextLang)}
+      />
+    );
   }
 
   const isDark = theme === 'dark';
@@ -132,6 +154,8 @@ function AppContent() {
         <Navbar
           user={user}
           theme={theme}
+          lang={lang}
+          onSelectLang={(nextLang) => setLang(nextLang)}
           onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           onLogout={handleLogout}
         />
@@ -140,14 +164,14 @@ function AppContent() {
           <Routes>
             <Route
               path="/student"
-              element={<StudentPortal user={user!} isDark={isDark} />}
+              element={<StudentPortal user={user!} isDark={isDark} lang={lang} />}
             />
 
             <Route
               path="/staff"
               element={
                 user!.role === 'mess_staff' || isDevOrAdmin ? (
-                  <StaffPortal user={user!} isDark={isDark} />
+                  <StaffPortal user={user!} isDark={isDark} lang={lang} />
                 ) : (
                   <Navigate to="/student" replace />
                 )
@@ -158,7 +182,7 @@ function AppContent() {
               path="/admin"
               element={
                 isDevOrAdmin ? (
-                  <AdminPortal user={user!} isDark={isDark} />
+                  <AdminPortal user={user!} isDark={isDark} lang={lang} />
                 ) : (
                   <Navigate to={user!.role === 'mess_staff' ? '/staff' : '/student'} replace />
                 )
