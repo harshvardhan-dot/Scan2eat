@@ -29,16 +29,16 @@ export async function loginUser(input: LoginInput) {
     return null;
   }
 
-  // Developer Admin Static Credentials Check (harshdev / #harsh107)
-  if (
-    query.toLowerCase() === 'harshdev' ||
-    query.toLowerCase() === 'harshbest' ||
-    query === '0000000000' ||
-    query.toLowerCase() === 'developer@hostelos.com'
-  ) {
-    if (input.password === '#harsh107' || input.password === 'harsh123456' || input.password === 'password123' || input.password === 'devadmin123') {
-      const devUser = demoStore.getDeveloperUser();
-      return createAuthResult(devUser);
+  // Demo shortcuts check
+  const isDemoStudent = query === '9876543210' && (input.password === 'student123' || input.password === 'password123');
+  const isDemoStaff = query === '9876543220' && (input.password === 'staff123' || input.password === 'password123');
+  const isDemoWarden = query === '9876543299' && (input.password === 'warden123' || input.password === 'password123');
+  const isDemoDev = (query.toUpperCase() === 'DEV9999' || query === '0000000000' || query.toLowerCase() === 'harshdev' || query.toLowerCase() === 'developer@hostelos.com') && (input.password === 'dev123' || input.password === '#harsh107' || input.password === 'password123');
+
+  if (isDemoStudent || isDemoStaff || isDemoWarden || isDemoDev) {
+    const user = demoStore.getUserByPhone(query) ?? demoStore.getUserByEmailOrPhone(query) ?? (isDemoDev ? demoStore.getDeveloperUser() : null);
+    if (user) {
+      return createAuthResult(user);
     }
   }
 

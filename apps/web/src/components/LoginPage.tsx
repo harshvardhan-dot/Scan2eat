@@ -77,6 +77,41 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     setPassword('');
   };
 
+  const handleDemoLogin = async (role: Role) => {
+    let demoPhone = '';
+    let demoPass = '';
+    if (role === 'student') {
+      demoPhone = '9876543210';
+      demoPass = 'student123';
+    } else if (role === 'mess_staff') {
+      demoPhone = '9876543220';
+      demoPass = 'staff123';
+    } else if (role === 'admin') {
+      demoPhone = '9876543299';
+      demoPass = 'warden123';
+    } else if (role === 'developer') {
+      demoPhone = 'DEV9999';
+      demoPass = 'dev123';
+    }
+
+    setSelectedRole(role);
+    setMobileNumber(demoPhone);
+    setPassword(demoPass);
+    setError('');
+    setSuccessMessage('');
+    setLoading(true);
+
+    try {
+      const result = await login(demoPhone, demoPass);
+      localStorage.setItem('hostelos-token', result.token);
+      onLoginSuccess?.(result.user, result.token);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Demo authentication failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError('');
@@ -302,36 +337,31 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
             <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
-                onClick={() => {
-                  setSelectedRole('student');
-                  setMobileNumber('9876543210');
-                  setPassword('student123');
-                }}
-                className="px-2 py-1 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
+                onClick={() => handleDemoLogin('student')}
+                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all border border-slate-700 hover:border-emerald-500 shadow-xs"
               >
-                Student Demo
+                🎫 Student Demo
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setSelectedRole('mess_staff');
-                  setMobileNumber('9876543220');
-                  setPassword('staff123');
-                }}
-                className="px-2 py-1 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
+                onClick={() => handleDemoLogin('mess_staff')}
+                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all border border-slate-700 hover:border-emerald-500 shadow-xs"
               >
-                Staff Demo
+                🍱 Staff Demo
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setSelectedRole('admin');
-                  setMobileNumber('9876543299');
-                  setPassword('warden123');
-                }}
-                className="px-2 py-1 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
+                onClick={() => handleDemoLogin('admin')}
+                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all border border-slate-700 hover:border-emerald-500 shadow-xs"
               >
-                Warden Demo
+                👮 Warden Demo
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDemoLogin('developer')}
+                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all border border-slate-700 hover:border-emerald-500 shadow-xs"
+              >
+                👑 Developer Demo
               </button>
             </div>
           </div>

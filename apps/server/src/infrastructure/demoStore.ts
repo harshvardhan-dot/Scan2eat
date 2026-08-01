@@ -53,9 +53,132 @@ class DemoStore {
       { id: 'session-3', type: 'dinner', sessionDate: today, status: 'scheduled' }
     ];
 
-    this.users = [
-      { id: 'admin-super', email: 'developer@hostelos.com', phoneNumber: '0000000000', passwordHash: defaultPasswordHash, role: 'super_admin', name: 'Developer System Admin', hasPasswordSet: true }
+    this.students = [
+      {
+        id: 'student-1',
+        name: 'Aarav Sharma',
+        email: 'aarav@scan2eat.local',
+        phoneNumber: '9876543210',
+        roomNumber: 'A-101',
+        rollNumber: 'R-2024-001',
+        mealPreference: 'veg',
+        photoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80',
+        qrToken: 'qr-student-001',
+        role: 'student'
+      },
+      {
+        id: 'student-2',
+        name: 'Ananya Verma',
+        email: 'ananya@scan2eat.local',
+        phoneNumber: '9876543211',
+        roomNumber: 'A-102',
+        rollNumber: 'R-2024-002',
+        mealPreference: 'nonVeg',
+        photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+        qrToken: 'qr-student-002',
+        role: 'student'
+      },
+      {
+        id: 'student-3',
+        name: 'Rohan Gupta',
+        email: 'rohan@scan2eat.local',
+        phoneNumber: '9876543212',
+        roomNumber: 'B-205',
+        rollNumber: 'R-2024-003',
+        mealPreference: 'veg',
+        photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+        qrToken: 'qr-student-003',
+        role: 'student'
+      }
     ];
+
+    this.messStaff = [
+      {
+        id: 'staff-1',
+        name: 'Ramesh Kumar (Mess Manager)',
+        email: 'ramesh.staff@scan2eat.local',
+        role: 'mess_staff',
+        shift: 'all'
+      }
+    ];
+
+    this.admins = [
+      {
+        id: 'admin-1',
+        name: 'Dr. Vikram Malhotra',
+        email: 'warden@sunrisehostel.com',
+        phoneNumber: '9876543299',
+        role: 'admin',
+        hostelName: 'Sunrise Student Residency',
+        status: 'active'
+      },
+      {
+        id: 'admin-super',
+        name: 'Developer System Admin',
+        email: 'developer@hostelos.com',
+        phoneNumber: '0000000000',
+        role: 'super_admin',
+        hostelName: 'Global Platform Control',
+        status: 'active'
+      }
+    ];
+
+    this.users = [
+      { id: 'student-1', email: 'aarav@scan2eat.local', phoneNumber: '9876543210', passwordHash: defaultPasswordHash, role: 'student', name: 'Aarav Sharma', hasPasswordSet: true },
+      { id: 'staff-1', email: 'ramesh.staff@scan2eat.local', phoneNumber: '9876543220', passwordHash: defaultPasswordHash, role: 'mess_staff', name: 'Ramesh Kumar (Mess Manager)', hasPasswordSet: true },
+      { id: 'admin-1', email: 'warden@sunrisehostel.com', phoneNumber: '9876543299', passwordHash: defaultPasswordHash, role: 'admin', name: 'Dr. Vikram Malhotra', hasPasswordSet: true },
+      { id: 'admin-super', email: 'developer@hostelos.com', phoneNumber: '0000000000', passwordHash: defaultPasswordHash, role: 'super_admin', name: 'Developer System Admin', hasPasswordSet: true },
+      { id: 'admin-dev-phone', email: 'dev@scan2eat.local', phoneNumber: 'DEV9999', passwordHash: defaultPasswordHash, role: 'super_admin', name: 'Harsh (Developer Owner)', hasPasswordSet: true }
+    ];
+
+    this.tenants = [
+      {
+        id: 'hostel-1',
+        hostelName: 'Sunrise Student Residency',
+        organizationName: 'Sunrise Group of Institutions',
+        location: 'North Campus, Delhi',
+        contactEmail: 'contact@sunrisehostel.com',
+        contactPhone: '9876543299',
+        plan: 'pro',
+        status: 'active',
+        createdAt: '2025-01-15',
+        maxStudents: 500,
+        paymentStatus: 'paid',
+        monthlyFee: 12999,
+        paymentReference: 'TXN-98712-UPI',
+        nextRenewalDate: '2026-12-31'
+      },
+      {
+        id: 'hostel-2',
+        hostelName: 'St. Xavier Boys Hostel',
+        organizationName: 'St. Xavier Educational Society',
+        location: 'Civil Lines, Jaipur',
+        contactEmail: 'admin@stxavierhostel.org',
+        contactPhone: '9811223344',
+        plan: 'basic',
+        status: 'active',
+        createdAt: '2025-02-01',
+        maxStudents: 350,
+        paymentStatus: 'paid',
+        monthlyFee: 4999,
+        paymentReference: 'TXN-45123-NEFT',
+        nextRenewalDate: '2026-11-30'
+      }
+    ];
+
+    // Seed 1 active lunchbox for student-1
+    this.lunchBoxes = [
+      {
+        id: 'box-demo-1',
+        studentId: 'student-1',
+        mealType: 'lunch',
+        currentStatus: 'issued',
+        issuedAt: new Date().toISOString(),
+        issuedByStaffId: 'staff-1'
+      }
+    ];
+
+    this.mealOptIns.set('student-1', true);
 
     this.weeklyMenu = [
       {
