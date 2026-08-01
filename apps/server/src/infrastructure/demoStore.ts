@@ -470,17 +470,18 @@ class DemoStore {
   }
 
   getReports() {
-    const returned = this.collections.filter((entry) => entry.status === 'collected').length;
-    const pending = this.collections.filter((entry) => entry.status === 'pending').length;
+    const issuedCount = this.lunchBoxes.filter((l) => l.currentStatus === 'issued' || l.currentStatus === 'returned').length;
+    const returnedCount = this.lunchBoxes.filter((l) => l.currentStatus === 'returned').length;
+    const outstandingCount = this.lunchBoxes.filter((l) => l.currentStatus === 'issued').length;
 
     return {
       totalStudents: this.students.length,
-      issuedToday: this.collections.length,
-      returnedToday: returned,
-      outstanding: pending,
+      issuedToday: issuedCount,
+      returnedToday: returnedCount,
+      outstanding: outstandingCount,
       lost: 0,
-      collectionPercentage: this.collections.length ? Number(((returned / this.collections.length) * 100).toFixed(1)) : 100,
-      recentTransactions: this.collections.slice(-5).map((entry) => ({ id: entry.id, studentId: entry.studentId, status: entry.status }))
+      collectionPercentage: issuedCount ? Number(((returnedCount / issuedCount) * 100).toFixed(1)) : 100,
+      recentTransactions: this.lunchBoxes.slice(-5).map((l) => ({ id: l.id, studentId: l.studentId, status: l.currentStatus }))
     };
   }
 
@@ -763,7 +764,7 @@ class DemoStore {
   }
 
   getHostelsWithStudents() {
-    const lunchesCount = this.collections.length || 14;
+    const lunchesCount = this.lunchBoxes.filter((l) => l.currentStatus === 'issued' || l.currentStatus === 'returned').length;
     return this.tenants.map((tenant, idx) => {
       const wardens = this.admins.filter((a) => {
         if (!a.hostelName) return false;

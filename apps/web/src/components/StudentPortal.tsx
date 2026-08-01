@@ -108,8 +108,9 @@ export function StudentPortal({ user }: StudentPortalProps) {
     void init();
 
     const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       void fetchStatus();
-    }, 4000);
+    }, 2000);
     return () => clearInterval(interval);
   }, [studentId]);
 

@@ -28,8 +28,9 @@ export function StaffPortal({ user, isDark }: StaffPortalProps) {
   useEffect(() => {
     void fetchSummary();
     const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       void fetchSummary();
-    }, 4000);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 

@@ -316,8 +316,9 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
   useEffect(() => {
     void loadData();
     const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       void loadData();
-    }, 3000);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
@@ -962,7 +963,7 @@ export function AdminPortal({ user, isDark }: AdminPortalProps) {
                         isDark ? 'border-amber-500/30 bg-amber-500/10' : 'border-amber-300 bg-amber-50/80'
                       }`}>
                         <span className="text-[11px] font-bold uppercase tracking-wider text-amber-500">🍱 Lunches Issued</span>
-                        <p className={`text-2xl font-extrabold ${headText} mt-1`}>{targetHostel.totalLunchesIssued ?? 14}</p>
+                        <p className={`text-2xl font-extrabold ${headText} mt-1`}>{targetHostel.totalLunchesIssued ?? 0}</p>
                         <p className="text-[11px] text-amber-600 font-semibold">Active Mess Deliveries</p>
                       </div>
                     </div>

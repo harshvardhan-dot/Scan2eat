@@ -92,7 +92,7 @@ function AppContent() {
 
   return (
     <div className={`min-h-screen transition-colors duration-200 ${
-      isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+      isDark ? 'bg-[#080d16] text-slate-100' : 'bg-[#f8fafc] text-slate-900'
     } p-3 sm:p-6 lg:p-8`}>
       <div className="mx-auto max-w-7xl space-y-6">
         <Navbar

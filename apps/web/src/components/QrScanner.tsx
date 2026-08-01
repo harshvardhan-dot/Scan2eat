@@ -26,6 +26,7 @@ export function QrScanner({
 
   const html5QrcodeRef = useRef<Html5Qrcode | null>(null);
   const isMountedRef = useRef(true);
+  const lastScanTimeRef = useRef<number>(0);
 
   // Initialize camera list
   useEffect(() => {
@@ -82,6 +83,9 @@ export function QrScanner({
           config,
           (decodedText) => {
             if (!isSubscribed) return;
+            const now = Date.now();
+            if (now - lastScanTimeRef.current < 2500) return;
+            lastScanTimeRef.current = now;
             setLastScanned(decodedText);
             onScanSuccess(decodedText);
           },

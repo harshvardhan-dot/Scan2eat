@@ -1,22 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Modern Grounded SaaS Design Tokens ───────────────────────────────────── */
+/* ─── Fresh Mint Emerald & Charcoal Navy Color Palette ────────────────────── */
 :root {
-  --bg-base: #0f172a;       /* Slate 900 */
-  --bg-surface: #1e293b;    /* Slate 800 */
-  --bg-card: #1e293b;
-  --border-subtle: #334155; /* Slate 700 */
-  --accent-primary: #10b981; /* Emerald 500 */
-  --accent-indigo: #6366f1;  /* Indigo 500 */
-  --accent-amber: #f59e0b;   /* Amber 500 */
+  --bg-base: #080d16;          /* Deep Charcoal Navy */
+  --bg-surface: #111927;       /* Card Surface */
+  --bg-card: #111927;
+  --border-subtle: #1f293d;    /* Subtle Slate-Navy Border */
+  --accent-mint: #10b981;      /* Fresh Mint Emerald */
+  --accent-mint-hover: #059669;
+  --accent-teal: #06b6d4;      /* Deep Sky Teal */
+  --accent-amber: #f59e0b;     /* Warm Gold Amber */
+  --accent-rose: #f43f5e;      /* Crimson Rose */
   --text-primary: #f8fafc;
   --text-muted: #94a3b8;
 
-  font-family: 'Inter', 'Outfit', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -51,7 +53,7 @@ html.light body {
   --text-muted: #64748b;
 }
 
-/* ─── Clean Professional Scrollbars ──────────────────────────────────────── */
+/* ─── Custom Fresh Mint Scrollbars ────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -60,11 +62,11 @@ html.light body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: #1e293b;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: #10b981;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -75,11 +77,11 @@ html.light body {
   scrollbar-width: none;
 }
 
-/* ─── Subtle Motion Keyframes ────────────────────────────────────────────── */
+/* ─── Motion Animations ─────────────────────────────────────────────────── */
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -96,66 +98,57 @@ html.light body {
 }
 
 .animate-fade-up {
-  animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .animate-fade-in {
-  animation: fadeIn 0.25s ease both;
+  animation: fadeIn 0.22s ease both;
 }
 .page-enter {
-  animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* ─── Clean UI Badges ─────────────────────────────────────────────────────── */
-.badge {
-  display: inline-flex;
-  items-center: center;
-  padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1;
-}
-
-.badge-emerald {
+/* ─── High-Contrast Mint Badges ──────────────────────────────────────────── */
+.badge-mint {
   background-color: rgba(16, 185, 129, 0.12);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
-.badge-indigo {
-  background-color: rgba(99, 102, 241, 0.12);
-  color: #6366f1;
-  border: 1px solid rgba(99, 102, 241, 0.25);
+.badge-teal {
+  background-color: rgba(6, 182, 212, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.3);
 }
 
 .badge-amber {
   background-color: rgba(245, 158, 11, 0.12);
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .badge-rose {
   background-color: rgba(244, 63, 94, 0.12);
-  color: #f43f5e;
-  border: 1px solid rgba(244, 63, 94, 0.25);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.3);
 }
 
-/* ─── Input focus state ────────────────────────────────────────────────---- */
+/* ─── Input focus glow ───────────────────────────────────────────────────── */
 input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
-  transition: box-shadow 0.15s ease;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+  transition: all 0.15s ease;
 }
 
-/* ─── Table Row Hover ───────────────────────────────────────────────────── */
+/* ─── Table Row Hover ────────────────────────────────────────────────────── */
 .table-row-hover {
   transition: background-color 0.15s ease;
 }
 .table-row-hover:hover {
-  background-color: rgba(241, 245, 249, 0.05);
+  background-color: rgba(16, 185, 129, 0.04);
 }
 html.light .table-row-hover:hover {
-  background-color: rgba(241, 245, 249, 0.7);
+  background-color: rgba(16, 185, 129, 0.06);
 }
