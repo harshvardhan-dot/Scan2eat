@@ -31,21 +31,34 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
         ? 'border-slate-800 bg-slate-900/90 shadow-sm'
         : 'border-slate-200 bg-white/90 shadow-sm'
     }`}>
-      {/* Brand Logo & Name */}
+      {/* Brand Logo & Animated Color Name */}
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-lg shadow-sm">
-          🍱
+        <div className="relative group">
+          <div className="h-10 w-10 rounded-lg overflow-hidden border border-emerald-500/30 bg-slate-900 flex items-center justify-center shadow-xs">
+            <img
+              src="/logo.jpg"
+              alt="Scan2Eat Logo"
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const parent = target.parentElement!;
+                parent.innerHTML = `<div class="flex h-full w-full items-center justify-center bg-emerald-600 text-white font-bold text-lg">🍱</div>`;
+              }}
+            />
+          </div>
         </div>
+
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
-              Scan2Eat
+            <span className="text-lg font-black tracking-tight uppercase">
+              <span className="brand-text-animated">Scan2Eat</span>
             </span>
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
               HostelOS
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Hostel Mess & Meal Operations</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Hostel Mess & Meal Operations</p>
         </div>
       </div>
 
@@ -102,7 +115,7 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
           </span>
         </div>
 
-        {/* Theme Toggle Button */}
+        {/* Aesthetic Theme Toggle Button */}
         <button
           type="button"
           onClick={onToggleTheme}
@@ -111,10 +124,12 @@ export function Navbar({ user, theme, onToggleTheme, onLogout }: NavbarProps) {
               ? 'border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700'
               : 'border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200'
           }`}
-          title="Toggle Theme"
+          title={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
         >
-          <span>{isDark ? '☀️' : '🌙'}</span>
-          <span>{isDark ? 'Light' : 'Dark'}</span>
+          <span className="transition-transform duration-300 active:rotate-180">
+            {isDark ? '☀️' : '🌙'}
+          </span>
+          <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
         </button>
 
         <button

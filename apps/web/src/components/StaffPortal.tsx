@@ -88,10 +88,12 @@ export function StaffPortal({ user, isDark }: StaffPortalProps) {
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            {t('messOperations')}
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            {t('messOperations')} • Live Issue Desk
           </div>
-          <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{t('staffScannerTitle')}</h1>
+          <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+            🍱 Welcome back, {user.name}!
+          </h1>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {t('staffScannerDesc')}
           </p>

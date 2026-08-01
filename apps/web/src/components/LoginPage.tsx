@@ -231,19 +231,33 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
         <div className="lg:col-span-5 p-6 sm:p-8 bg-slate-900/80 border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col justify-between">
           <div>
             {/* Header */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-12 w-12 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-2xl shadow-md">
-                🍱
+            <div className="flex items-center gap-3.5 mb-6">
+              <div className="relative group">
+                <div className="h-12 w-12 rounded-xl overflow-hidden border border-emerald-500/40 bg-slate-950 flex items-center justify-center shadow-md">
+                  <img
+                    src="/logo.jpg"
+                    alt="Scan2Eat Logo"
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement!;
+                      parent.innerHTML = `<div class="flex h-full w-full items-center justify-center bg-emerald-600 text-white font-bold text-xl">🍱</div>`;
+                    }}
+                  />
+                </div>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white tracking-tight">Scan2Eat</h1>
-                <p className="text-xs text-slate-400">Hostel Mess Management</p>
+                <h1 className="text-2xl font-black tracking-tight uppercase">
+                  <span className="brand-text-animated">Scan2Eat</span>
+                </h1>
+                <p className="text-xs text-emerald-400 font-semibold tracking-wide">HostelOS Meal Operations</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-              Verify student meal entitlements, manage daily hostel mess operations, and track lunchbox returns in real-time.
-            </p>
+            <div className="mb-6 rounded-lg bg-emerald-950/40 border border-emerald-800/40 p-3 text-xs text-emerald-300">
+              👋 <strong>Welcome!</strong> Sign in with your registered mobile number to manage or verify hostel meals in real-time.
+            </div>
 
             {/* Role Switcher */}
             <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">

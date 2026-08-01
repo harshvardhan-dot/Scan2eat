@@ -139,15 +139,15 @@ export function StudentPortal({ user }: StudentPortalProps) {
       {/* Student Profile & Pass Header */}
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700 dark:bg-sky-950/60 dark:text-sky-400 border border-sky-200 dark:border-sky-900/40">
-            <span className="h-2 w-2 rounded-full bg-sky-500" />
-            Digital Meal Pass
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            Active Digital Student Pass
           </div>
           <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Welcome, {student.name}
+            👋 Welcome back, {student.name}!
           </h1>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Room: <strong className="text-slate-700 dark:text-slate-200">{student.roomNumber}</strong> | Roll: <strong className="text-slate-700 dark:text-slate-200">{student.rollNumber}</strong> | Diet: <strong className="text-emerald-600 dark:text-emerald-400">{student.mealPreference}</strong>
+            Room <strong className="text-slate-800 dark:text-slate-200">{student.roomNumber}</strong> • Roll <strong className="text-slate-800 dark:text-slate-200">{student.rollNumber}</strong> • Diet <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">{student.mealPreference}</strong>
           </p>
         </div>
 
@@ -155,7 +155,7 @@ export function StudentPortal({ user }: StudentPortalProps) {
           <button
             type="button"
             onClick={handleCopyToken}
-            className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 transition-colors"
           >
             {copied ? '✓ Token Copied' : '📋 Copy QR Code Token'}
           </button>

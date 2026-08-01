@@ -69,11 +69,45 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
-        <div className="h-12 w-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl font-bold shadow-md">
-          🍱
+      <div className="min-h-screen bg-[#080d16] flex flex-col items-center justify-center gap-5 p-4">
+        {/* Animated Logo Container */}
+        <div className="relative group animate-float-logo">
+          <div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-indigo-500 opacity-60 blur-lg animate-pulse-glow" />
+          <div className="relative h-16 w-16 rounded-2xl overflow-hidden ring-2 ring-emerald-400/80 shadow-2xl bg-slate-900 flex items-center justify-center">
+            <img
+              src="/logo.jpg"
+              alt="Scan2Eat Logo"
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const parent = target.parentElement!;
+                parent.innerHTML = `<div class="flex h-full w-full items-center justify-center bg-emerald-600 text-white font-bold text-2xl">🍱</div>`;
+              }}
+            />
+          </div>
         </div>
-        <p className="text-slate-300 font-medium tracking-wide text-sm">Loading Scan2Eat...</p>
+
+        {/* Animated Brand Title & Loading Indicator */}
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-black tracking-wider uppercase">
+            <span className="brand-text-animated">Scan2Eat</span>
+          </h1>
+          <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 animate-fade-in">
+            HostelOS Meal Operations
+          </p>
+        </div>
+
+        {/* Bouncing Dots */}
+        <div className="flex gap-2 items-center mt-2">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-bounce shadow-sm shadow-emerald-500/50"
+              style={{ animationDelay: `${i * 0.15}s` }}
+            />
+          ))}
+        </div>
       </div>
     );
   }
