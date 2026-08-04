@@ -245,11 +245,17 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8">
-      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
-        
+    <div className="relative min-h-screen bg-[#080d16] flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden">
+      {/* Ambient Backdrop Orbs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-1/4 left-1/6 w-96 h-96 rounded-full bg-emerald-500/25 blur-[120px] animate-ambient-orb-1" />
+        <div className="absolute bottom-1/4 right-1/6 w-96 h-96 rounded-full bg-teal-500/25 blur-[130px] animate-ambient-orb-2" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-indigo-500/20 blur-[140px] animate-ambient-orb-3" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-0 glass-panel border border-white/15 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-2xl">
         {/* Left Side: Brand Header & Role Tabs */}
-        <div className="lg:col-span-5 p-6 sm:p-8 bg-slate-900/80 border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col justify-between">
+        <div className="lg:col-span-5 p-6 sm:p-8 bg-slate-950/40 backdrop-blur-md border-b lg:border-b-0 lg:border-r border-white/10 flex flex-col justify-between">
           <div>
             {/* Header */}
             <div className="flex items-center gap-3.5 mb-6">
@@ -390,7 +396,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
                   placeholder={t('enterMobile')}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500"
+                  className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm focus:border-emerald-500"
                 />
               </div>
 
@@ -414,7 +420,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={t('enterPassword')}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 pr-10"
+                    className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm focus:border-emerald-500 pr-10"
                   />
                   <button
                     type="button"
@@ -441,7 +447,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-emerald-600 py-3 text-sm font-semibold text-white hover:bg-emerald-500 transition-all shadow-md disabled:opacity-50"
+                className="w-full glass-button rounded-xl py-3 text-sm font-bold text-white shadow-lg disabled:opacity-50"
               >
                 {loading ? '...' : t('signIn')}
               </button>

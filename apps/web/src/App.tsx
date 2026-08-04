@@ -147,10 +147,23 @@ function AppContent() {
   const isDevOrAdmin = user!.role === 'admin' || user!.role === 'super_admin' || user!.role === 'developer';
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${
-      isDark ? 'bg-[#080d16] text-slate-100' : 'bg-[#f8fafc] text-slate-900'
-    } p-3 sm:p-6 lg:p-8`}>
-      <div className="mx-auto max-w-7xl space-y-6">
+    <div className={`relative min-h-screen transition-colors duration-200 ${
+      isDark ? 'bg-[#080d16] text-slate-100' : 'bg-[#f4f6fb] text-slate-900'
+    } p-3 sm:p-6 lg:p-8 overflow-hidden`}>
+      {/* Dynamic Ambient Glass Backdrops (Colorful Floating Spheres) */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className={`absolute -top-32 -left-32 w-96 h-96 rounded-full blur-[120px] opacity-40 animate-ambient-orb-1 ${
+          isDark ? 'bg-emerald-600/30' : 'bg-emerald-400/40'
+        }`} />
+        <div className={`absolute top-1/3 -right-32 w-96 h-96 rounded-full blur-[130px] opacity-30 animate-ambient-orb-2 ${
+          isDark ? 'bg-cyan-600/30' : 'bg-cyan-400/35'
+        }`} />
+        <div className={`absolute -bottom-32 left-1/3 w-[30rem] h-[30rem] rounded-full blur-[140px] opacity-25 animate-ambient-orb-3 ${
+          isDark ? 'bg-indigo-600/30' : 'bg-indigo-400/30'
+        }`} />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl space-y-6">
         <Navbar
           user={user}
           theme={theme}
