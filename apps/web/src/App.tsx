@@ -147,19 +147,19 @@ function AppContent() {
   const isDevOrAdmin = user!.role === 'admin' || user!.role === 'super_admin' || user!.role === 'developer';
 
   return (
-    <div className={`relative min-h-screen transition-colors duration-200 ${
-      isDark ? 'bg-[#080d16] text-slate-100' : 'bg-[#f4f6fb] text-slate-900'
-    } p-3 sm:p-6 lg:p-8 overflow-hidden`}>
-      {/* Dynamic Ambient Glass Backdrops (Colorful Floating Spheres) */}
+    <div className={`relative min-h-screen transition-colors duration-300 ${
+      isDark ? 'bg-gradient-to-b from-[#070d1a] via-[#111e38] to-[#1a2c54] text-slate-100' : 'bg-gradient-to-b from-[#94c3e8] via-[#bcdcfa] to-[#e4efff] text-slate-900'
+    } p-3 sm:p-6 lg:p-8 overflow-hidden font-sans`}>
+      {/* Reference Image Ambient Glass Mesh Backdrops */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className={`absolute -top-32 -left-32 w-96 h-96 rounded-full blur-[120px] opacity-40 animate-ambient-orb-1 ${
-          isDark ? 'bg-emerald-600/30' : 'bg-emerald-400/40'
+        <div className={`absolute -top-40 left-1/4 w-[36rem] h-[36rem] rounded-full blur-[140px] opacity-60 animate-ambient-orb-1 ${
+          isDark ? 'bg-indigo-600/40' : 'bg-sky-300/70'
         }`} />
-        <div className={`absolute top-1/3 -right-32 w-96 h-96 rounded-full blur-[130px] opacity-30 animate-ambient-orb-2 ${
-          isDark ? 'bg-cyan-600/30' : 'bg-cyan-400/35'
+        <div className={`absolute top-1/2 -right-40 w-[32rem] h-[32rem] rounded-full blur-[130px] opacity-50 animate-ambient-orb-2 ${
+          isDark ? 'bg-blue-600/30' : 'bg-purple-300/50'
         }`} />
-        <div className={`absolute -bottom-32 left-1/3 w-[30rem] h-[30rem] rounded-full blur-[140px] opacity-25 animate-ambient-orb-3 ${
-          isDark ? 'bg-indigo-600/30' : 'bg-indigo-400/30'
+        <div className={`absolute -bottom-40 left-10 w-[38rem] h-[38rem] rounded-full blur-[150px] opacity-40 animate-ambient-orb-3 ${
+          isDark ? 'bg-cyan-600/30' : 'bg-indigo-200/60'
         }`} />
       </div>
 

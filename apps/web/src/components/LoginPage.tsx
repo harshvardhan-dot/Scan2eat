@@ -465,7 +465,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full glass-button rounded-xl py-3 text-sm font-bold text-white shadow-lg disabled:opacity-50"
+                className="w-full btn-pill-dark text-sm shadow-2xl disabled:opacity-50 mt-2"
               >
                 {loading ? '...' : selectedRole === 'developer' ? '👑 Enter Developer Portal' : t('signIn')}
               </button>

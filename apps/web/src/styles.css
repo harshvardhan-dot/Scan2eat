@@ -329,3 +329,106 @@ select:focus {
 html.light .table-row-hover:hover {
   background-color: rgba(16, 185, 129, 0.08);
 }
+
+/* ─── Reference Image Layout & Aesthetic Tokens ────────────────────────────── */
+/* Super Glass Card (High Rounded Corners matching reference image) */
+.card-super-glass {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-top: 1.5px solid rgba(255, 255, 255, 1);
+  border-radius: 2.25rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.5);
+  color: #0f172a;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+html.dark .card-super-glass {
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 2.25rem;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+}
+
+.card-super-glass:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.12);
+}
+html.dark .card-super-glass:hover {
+  box-shadow: 0 24px 55px -10px rgba(0, 0, 0, 0.6);
+}
+
+/* Pitch-Black Full-Rounded Pill Button (Matching Reference "Start Task") */
+.btn-pill-dark {
+  background-color: #090d16;
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 700;
+  padding: 0.85rem 1.75rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.btn-pill-dark:hover {
+  background-color: #1e293b;
+  transform: scale(1.02);
+  box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.5);
+}
+
+.btn-pill-dark:active {
+  transform: scale(0.98);
+}
+
+/* Reference Calendar Day Strip (M T W T F S S) */
+.calendar-day-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+html.dark .calendar-day-strip {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.calendar-day-item {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.calendar-day-item.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transform: scale(1.1);
+}
+
+html.dark .calendar-day-item.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.2);
+}
+

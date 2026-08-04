@@ -589,11 +589,11 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
     );
   }
 
-  const cardClass = 'glass-card rounded-2xl p-5';
-  const panelClass = 'glass-panel rounded-2xl p-6';
+  const cardClass = 'card-super-glass rounded-[2.2rem] p-6';
+  const panelClass = 'card-super-glass rounded-[2.2rem] p-6 sm:p-8';
   const mutedText = isDark ? 'text-slate-400' : 'text-slate-600';
   const headText = isDark ? 'text-white' : 'text-slate-900';
-  const subBoxBg = isDark ? 'bg-slate-950/40 border border-white/10 text-slate-100 backdrop-blur-md rounded-xl' : 'bg-white/60 border border-slate-200 text-slate-900 backdrop-blur-md rounded-xl';
+  const subBoxBg = isDark ? 'bg-slate-950/40 border border-white/10 text-slate-100 backdrop-blur-md rounded-2xl' : 'bg-white/60 border border-slate-200 text-slate-900 backdrop-blur-md rounded-2xl';
 
   // -------------------------------------------------------------
   // DEDICATED DEVELOPER SYSTEM OWNER VIEW (super_admin / developer)

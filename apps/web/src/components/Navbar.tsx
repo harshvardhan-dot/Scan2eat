@@ -30,11 +30,11 @@ export function Navbar({ user, theme, lang, onSelectLang, onToggleTheme, onLogou
   const userRole = user.role;
 
   return (
-    <header className="glass-header flex flex-wrap items-center justify-between gap-4 rounded-2xl p-3 sm:p-4 transition-all">
+    <header className="card-super-glass flex flex-wrap items-center justify-between gap-4 rounded-[2rem] p-4 transition-all">
       {/* Brand Logo & Animated Color Name */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3.5">
         <div className="relative group">
-          <div className="h-10 w-10 rounded-xl overflow-hidden border border-emerald-500/30 bg-slate-900/80 backdrop-blur-md flex items-center justify-center shadow-lg shadow-emerald-500/10">
+          <div className="h-11 w-11 rounded-2xl overflow-hidden border border-emerald-500/30 bg-slate-900/80 backdrop-blur-md flex items-center justify-center shadow-lg shadow-emerald-500/10">
             <img
               src="/logo.jpg"
               alt="Scan2Eat Logo"
@@ -51,14 +51,17 @@ export function Navbar({ user, theme, lang, onSelectLang, onToggleTheme, onLogou
 
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-lg font-black tracking-tight uppercase">
+            <span className="text-xl font-black tracking-tight uppercase">
               <span className="brand-text-animated">{t('appName')}</span>
             </span>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 backdrop-blur-xs">
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-950 text-white dark:bg-emerald-500/20 dark:text-emerald-400 border border-transparent dark:border-emerald-500/30 shadow-xs">
               HostelOS
             </span>
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">{t('appSubtitle')}</p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">{t('appSubtitle')}</p>
+          </div>
         </div>
       </div>
 
