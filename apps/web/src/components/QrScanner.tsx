@@ -171,7 +171,7 @@ export function QrScanner({
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="card-super-glass rounded-[2.2rem] p-6 space-y-4">
       {/* Hidden container for file scanning */}
       <div id={`temp-file-scanner-${scannerId}`} className="hidden" />
 

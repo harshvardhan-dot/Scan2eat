@@ -591,9 +591,10 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
 
   const cardClass = 'card-super-glass rounded-[2.2rem] p-6';
   const panelClass = 'card-super-glass rounded-[2.2rem] p-6 sm:p-8';
+  const inputClass = 'w-full rounded-2xl glass-input px-4 py-2.5 text-sm transition-all backdrop-blur-md';
   const mutedText = isDark ? 'text-slate-400' : 'text-slate-600';
   const headText = isDark ? 'text-white' : 'text-slate-900';
-  const subBoxBg = isDark ? 'bg-slate-950/40 border border-white/10 text-slate-100 backdrop-blur-md rounded-2xl' : 'bg-white/60 border border-slate-200 text-slate-900 backdrop-blur-md rounded-2xl';
+  const subBoxBg = isDark ? 'bg-slate-900/40 border border-white/10 text-slate-100 backdrop-blur-xl rounded-2xl' : 'bg-white/40 border border-white/40 text-slate-900 backdrop-blur-xl rounded-2xl';
 
   // -------------------------------------------------------------
   // DEDICATED DEVELOPER SYSTEM OWNER VIEW (super_admin / developer)
@@ -1766,9 +1767,9 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
               </div>
             </div>
 
-            <div className="overflow-x-auto rounded-2xl border border-slate-700/70">
+            <div className="overflow-x-auto rounded-2xl border border-white/20 dark:border-white/10 backdrop-blur-md">
               <table className="w-full text-left text-sm">
-                <thead className={`text-xs uppercase tracking-wider ${isDark ? 'bg-slate-950 text-slate-300' : 'bg-violet-100 text-violet-900'}`}>
+                <thead className={`text-xs uppercase tracking-wider ${isDark ? 'bg-slate-900/60 text-slate-300' : 'bg-white/40 text-slate-800'} backdrop-blur-md border-b border-white/10`}>
                   <tr>
                     <th className="px-4 py-3.5">Student Name</th>
                     <th className="px-4 py-3.5">Room & Roll</th>

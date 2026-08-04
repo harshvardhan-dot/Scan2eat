@@ -17,9 +17,9 @@ export function QrPanel({ studentName, qrValue, onScan }: Props) {
   };
 
   return (
-    <div className="glass-card space-y-4 rounded-2xl p-5">
+    <div className="card-super-glass space-y-4 rounded-[2.2rem] p-6">
       {/* Student QR Display Section */}
-      <div className="rounded-xl border border-white/10 bg-slate-950/40 p-5 text-center backdrop-blur-md">
+      <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/30 dark:bg-slate-950/40 p-5 text-center backdrop-blur-xl">
         <div className="flex items-center justify-center gap-2 mb-3">
           <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
           <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">

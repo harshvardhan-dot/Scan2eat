@@ -499,7 +499,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
               </p>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Registered Mobile Number
                 </label>
                 <input
@@ -508,22 +508,22 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   value={requestMobile}
                   onChange={(e) => setRequestMobile(e.target.value)}
                   placeholder="e.g. 9876543210"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500"
+                  className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500"
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700"
+                  className="flex-1 rounded-full border border-white/20 bg-white/40 dark:bg-slate-800/60 px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-white/60 backdrop-blur-md transition-all shadow-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                  className="flex-1 btn-pill-dark text-xs py-3 disabled:opacity-50"
                 >
                   Request Reset
                 </button>
@@ -534,12 +534,12 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
           {/* MODE 3: FIRST TIME STUDENT SETUP */}
           {mode === 'first_time' && (
             <form onSubmit={handleFirstTimeSetup} className="space-y-4">
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 If your mobile number was pre-registered by your Warden, set your password here to activate your digital meal pass.
               </p>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Mobile Number
                 </label>
                 <input
@@ -548,12 +548,12 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   value={requestMobile}
                   onChange={(e) => setRequestMobile(e.target.value)}
                   placeholder="e.g. 9876543210"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500"
+                  className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Choose New Password
                 </label>
                 <input
@@ -562,22 +562,22 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   value={setupPassword}
                   onChange={(e) => setSetupPassword(e.target.value)}
                   placeholder="Minimum 4 characters"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-emerald-500"
+                  className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500"
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700"
+                  className="flex-1 rounded-full border border-white/20 bg-white/40 dark:bg-slate-800/60 px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-white/60 backdrop-blur-md transition-all shadow-sm"
                 >
                   Back to Sign In
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                  className="flex-1 btn-pill-dark text-xs py-3 disabled:opacity-50"
                 >
                   Activate Pass
                 </button>
@@ -588,12 +588,12 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
           {/* MODE 4: WARDEN REGISTRATION */}
           {mode === 'register_admin' && (
             <form onSubmit={handleAdminRegistration} className="space-y-3.5">
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Register a new Hostel Warden account:
               </p>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Full Name
                 </label>
                 <input
@@ -602,12 +602,12 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   value={adminForm.name}
                   onChange={(e) => setAdminForm({ ...adminForm, name: e.target.value })}
                   placeholder="Dr. Rajesh Sharma"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs text-white"
+                  className="w-full rounded-2xl glass-input px-4 py-2.5 text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Mobile Number (Sign In ID)
                 </label>
                 <input
@@ -616,12 +616,12 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   value={adminForm.phoneNumber}
                   onChange={(e) => setAdminForm({ ...adminForm, phoneNumber: e.target.value })}
                   placeholder="9876543299"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs text-white"
+                  className="w-full rounded-2xl glass-input px-4 py-2.5 text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Password
                 </label>
                 <input
@@ -630,22 +630,22 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   value={adminForm.password}
                   onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
                   placeholder="Enter secure password"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs text-white"
+                  className="w-full rounded-2xl glass-input px-4 py-2.5 text-xs"
                 />
               </div>
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700"
+                  className="flex-1 rounded-full border border-white/20 bg-white/40 dark:bg-slate-800/60 px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-white/60 backdrop-blur-md transition-all shadow-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                  className="flex-1 btn-pill-dark text-xs py-3 disabled:opacity-50"
                 >
                   Register Warden
                 </button>
