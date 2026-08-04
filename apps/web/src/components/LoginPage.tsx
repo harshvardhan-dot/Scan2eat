@@ -89,6 +89,9 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     } else if (role === 'admin') {
       demoPhone = '9876543299';
       demoPass = 'warden123';
+    } else if (role === 'developer') {
+      demoPhone = 'DEV9999';
+      demoPass = '#harsh107';
     }
 
     setSelectedRole(role);
@@ -118,11 +121,11 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     const passToUse = password;
 
     if (!phoneToUse) {
-      setError('Please enter your mobile number.');
+      setError(selectedRole === 'developer' ? 'Please enter your Developer ID.' : 'Please enter your mobile number.');
       return;
     }
 
-    if (!passToUse) {
+    if (selectedRole !== 'developer' && !passToUse) {
       setError('Please enter your password.');
       return;
     }
@@ -144,7 +147,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
       const targetRoute = isDevOrAdmin ? '/admin' : result.user.role === 'mess_staff' ? '/staff' : '/student';
       navigate(targetRoute);
     } catch (err: any) {
-      const serverMessage = err?.response?.data?.message || 'Invalid mobile number or password.';
+      const serverMessage = err?.response?.data?.message || 'Invalid credentials or ID.';
       setError(serverMessage);
     } finally {
       setLoading(false);
@@ -359,6 +362,13 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
               >
                 👮 Warden Demo
               </button>
+              <button
+                type="button"
+                onClick={() => handleDemoLogin('developer')}
+                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-all border border-amber-500/30 shadow-xs"
+              >
+                👑 Developer Demo
+              </button>
             </div>
           </div>
         </div>
@@ -366,19 +376,25 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
         {/* Right Side: Auth Forms */}
         <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-center">
           <div className="mb-4">
-            <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-md border ${roleMeta[selectedRole].badge}`}>
+            <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full border backdrop-blur-md ${roleMeta[selectedRole].badge}`}>
               {t(roleMeta[selectedRole].labelKey as any)} {t('signIn')}
             </span>
           </div>
 
+          {selectedRole === 'developer' && (
+            <div className="mb-4 rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-300 backdrop-blur-md">
+              👑 <strong>Developer Access Mode:</strong> Authentication via Developer ID only (`DEV9999` or `harsh dev`). Password is not required.
+            </div>
+          )}
+
           {successMessage && (
-            <div className="mb-4 rounded-lg bg-emerald-950/60 border border-emerald-800 p-3 text-xs text-emerald-300">
+            <div className="mb-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-300 backdrop-blur-md">
               ✅ {successMessage}
             </div>
           )}
 
           {error && (
-            <div className="mb-4 rounded-lg bg-rose-950/60 border border-rose-800 p-3 text-xs text-rose-300">
+            <div className="mb-4 rounded-xl bg-rose-500/10 border border-rose-500/20 p-3 text-xs text-rose-300 backdrop-blur-md">
               ⚠️ {error}
             </div>
           )}
@@ -387,50 +403,52 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
           {mode === 'login' && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
-                  {t('mobileNumber')}
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  {selectedRole === 'developer' ? 'Developer Access ID' : t('mobileNumber')}
                 </label>
                 <input
-                  type="tel"
+                  type="text"
                   required
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
-                  placeholder={t('enterMobile')}
+                  placeholder={selectedRole === 'developer' ? 'Enter Developer ID (e.g. DEV9999 or harsh dev)' : t('enterMobile')}
                   className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm focus:border-emerald-500"
                 />
               </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-medium text-slate-300">
-                    {t('password')}
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setMode('forgot')}
-                    className="text-xs text-emerald-400 hover:underline"
-                  >
-                    {t('forgotPassword')}
-                  </button>
+              {selectedRole !== 'developer' && (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-slate-300">
+                      {t('password')}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setMode('forgot')}
+                      className="text-xs text-emerald-400 hover:underline font-medium"
+                    >
+                      {t('forgotPassword')}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={t('enterPassword')}
+                      className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm focus:border-emerald-500 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-200"
+                    >
+                      {showPassword ? '🙈' : '👁️'}
+                    </button>
+                  </div>
                 </div>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={t('enterPassword')}
-                    className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm focus:border-emerald-500 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-200"
-                  >
-                    {showPassword ? '🙈' : '👁️'}
-                  </button>
-                </div>
-              </div>
+              )}
 
               <div className="flex items-center justify-between pt-1">
                 <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
@@ -449,7 +467,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                 disabled={loading}
                 className="w-full glass-button rounded-xl py-3 text-sm font-bold text-white shadow-lg disabled:opacity-50"
               >
-                {loading ? '...' : t('signIn')}
+                {loading ? '...' : selectedRole === 'developer' ? '👑 Enter Developer Portal' : t('signIn')}
               </button>
 
               <div className="pt-2 flex flex-col gap-1.5 text-center text-xs">

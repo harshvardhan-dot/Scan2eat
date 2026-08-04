@@ -16,7 +16,7 @@ api.interceptors.request.use((config) => {
 });
 
 // Auth
-export async function login(mobileNumber: string, password: string) {
+export async function login(mobileNumber: string, password?: string) {
   const { data } = await api.post('/auth/login', { mobileNumber, password });
   return data;
 }

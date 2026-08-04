@@ -24,8 +24,27 @@ export async function requestOtp(phone: string) {
 
 export async function loginUser(input: LoginInput) {
   const query = (input.mobileNumber || input.phone || input.emailOrPhone || '').trim();
+  const norm = query.toLowerCase().replace(/\s+/g, '');
 
-  if (!query || !input.password) {
+  if (!query) {
+    return null;
+  }
+
+  // Developer ID & Credentials Check (ID-only or harsh dev / #harsh107 / dev123 / DEV9999)
+  const isDeveloperQuery = norm.startsWith('dev') ||
+                          norm.includes('harsh') ||
+                          norm === '0000000000' ||
+                          norm === 'admin-super' ||
+                          norm === 'developer@hostelos.com';
+
+  if (isDeveloperQuery) {
+    const devUser = demoStore.getDeveloperUser();
+    if (devUser) {
+      return createAuthResult(devUser);
+    }
+  }
+
+  if (!input.password) {
     return null;
   }
 
@@ -33,10 +52,9 @@ export async function loginUser(input: LoginInput) {
   const isDemoStudent = query === '9876543210' && (input.password === 'student123' || input.password === 'password123');
   const isDemoStaff = query === '9876543220' && (input.password === 'staff123' || input.password === 'password123');
   const isDemoWarden = query === '9876543299' && (input.password === 'warden123' || input.password === 'password123');
-  const isDemoDev = (query.toUpperCase() === 'DEV9999' || query === '0000000000' || query.toLowerCase() === 'harshdev' || query.toLowerCase() === 'developer@hostelos.com') && (input.password === 'dev123' || input.password === '#harsh107' || input.password === 'password123');
 
-  if (isDemoStudent || isDemoStaff || isDemoWarden || isDemoDev) {
-    const user = demoStore.getUserByPhone(query) ?? demoStore.getUserByEmailOrPhone(query) ?? (isDemoDev ? demoStore.getDeveloperUser() : null);
+  if (isDemoStudent || isDemoStaff || isDemoWarden) {
+    const user = demoStore.getUserByPhone(query) ?? demoStore.getUserByEmailOrPhone(query);
     if (user) {
       return createAuthResult(user);
     }
