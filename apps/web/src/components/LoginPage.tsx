@@ -248,17 +248,17 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
   };
 
   return (
-    <div className="relative min-h-screen bg-[#080d16] flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden">
-      {/* Ambient Backdrop Orbs */}
+    <div className="relative min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden font-sans">
+      {/* Vibrant Ambient Glass Aurora Backdrops */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-1/4 left-1/6 w-96 h-96 rounded-full bg-emerald-500/25 blur-[120px] animate-ambient-orb-1" />
-        <div className="absolute bottom-1/4 right-1/6 w-96 h-96 rounded-full bg-teal-500/25 blur-[130px] animate-ambient-orb-2" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-indigo-500/20 blur-[140px] animate-ambient-orb-3" />
+        <div className="absolute top-1/6 left-1/5 w-[30rem] h-[30rem] rounded-full bg-emerald-400/30 dark:bg-emerald-500/20 blur-[130px] animate-ambient-orb-1" />
+        <div className="absolute bottom-1/6 right-1/5 w-[32rem] h-[32rem] rounded-full bg-cyan-400/30 dark:bg-teal-500/20 blur-[140px] animate-ambient-orb-2" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[34rem] h-[34rem] rounded-full bg-indigo-400/25 dark:bg-indigo-500/15 blur-[150px] animate-ambient-orb-3" />
       </div>
 
-      <div className="relative z-10 w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-0 glass-panel border border-white/15 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-2xl">
+      <div className="relative z-10 w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-0 card-super-glass rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/40 dark:border-white/10 backdrop-blur-3xl">
         {/* Left Side: Brand Header & Role Tabs */}
-        <div className="lg:col-span-5 p-6 sm:p-8 bg-slate-950/40 backdrop-blur-md border-b lg:border-b-0 lg:border-r border-white/10 flex flex-col justify-between">
+        <div className="lg:col-span-5 p-6 sm:p-8 bg-white/30 dark:bg-slate-950/40 backdrop-blur-2xl border-b lg:border-b-0 lg:border-r border-white/20 dark:border-white/10 flex flex-col justify-between">
           <div>
             {/* Header */}
             <div className="flex items-center gap-3.5 mb-6">
@@ -290,36 +290,36 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
             </div>
 
             {/* Role Switcher */}
-            <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">
+            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
               {t('selectRole')}
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               {(Object.keys(roleMeta) as Role[]).map((role) => (
                 <button
                   key={role}
                   type="button"
                   onClick={() => handleSelectRole(role)}
-                  className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all ${
+                  className={`flex items-center gap-2 p-3 rounded-2xl border text-xs font-semibold transition-all backdrop-blur-xl ${
                     selectedRole === role
-                      ? 'border-emerald-500 bg-emerald-950/40 text-emerald-400 shadow-xs'
-                      : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                      ? 'border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shadow-md shadow-emerald-500/10'
+                      : 'border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400 hover:border-emerald-500/30 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
-                  <span>{roleMeta[role].icon}</span>
+                  <span className="text-base">{roleMeta[role].icon}</span>
                   <span>{t(roleMeta[role].labelKey as any)}</span>
                 </button>
               ))}
             </div>
 
             {/* Language Switcher */}
-            <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-800">
-              <span className="text-xs text-slate-400 font-medium">{t('switchLanguage')}:</span>
-              <div className="flex items-center gap-1 rounded-md bg-slate-950 p-1 border border-slate-800">
+            <div className="mt-6 flex items-center justify-between pt-4 border-t border-white/20 dark:border-white/10">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('switchLanguage')}:</span>
+              <div className="flex items-center gap-1 rounded-full bg-white/40 dark:bg-slate-950/60 p-1 border border-white/20 dark:border-white/10 backdrop-blur-md">
                 <button
                   type="button"
                   onClick={() => onSelectLang?.('en')}
-                  className={`px-2.5 py-1 text-xs font-medium rounded transition-all ${
-                    lang === 'en' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
+                  className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${
+                    lang === 'en' ? 'bg-slate-950 text-white dark:bg-emerald-500 dark:text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
                   English
@@ -327,8 +327,8 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                 <button
                   type="button"
                   onClick={() => onSelectLang?.('hi')}
-                  className={`px-2.5 py-1 text-xs font-medium rounded transition-all ${
-                    lang === 'hi' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
+                  className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${
+                    lang === 'hi' ? 'bg-slate-950 text-white dark:bg-emerald-500 dark:text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
                   हिंदी
@@ -338,34 +338,34 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
           </div>
 
           {/* Quick Demo Login Preset Buttons */}
-          <div className="mt-8 pt-4 border-t border-slate-800">
-            <p className="text-[11px] text-slate-500 font-medium mb-2">{t('demoPresets')}</p>
-            <div className="flex flex-wrap gap-1.5">
+          <div className="mt-8 pt-4 border-t border-white/20 dark:border-white/10">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mb-2.5">{t('demoPresets')}</p>
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => handleDemoLogin('student')}
-                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all border border-slate-700 hover:border-emerald-500 shadow-xs"
+                className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-white/50 dark:bg-slate-900/60 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all border border-white/30 dark:border-emerald-500/30 shadow-xs backdrop-blur-md"
               >
                 🎫 Student Demo
               </button>
               <button
                 type="button"
                 onClick={() => handleDemoLogin('mess_staff')}
-                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all border border-slate-700 hover:border-emerald-500 shadow-xs"
+                className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-white/50 dark:bg-slate-900/60 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all border border-white/30 dark:border-emerald-500/30 shadow-xs backdrop-blur-md"
               >
                 🍱 Staff Demo
               </button>
               <button
                 type="button"
                 onClick={() => handleDemoLogin('admin')}
-                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all border border-slate-700 hover:border-emerald-500 shadow-xs"
+                className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-white/50 dark:bg-slate-900/60 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all border border-white/30 dark:border-emerald-500/30 shadow-xs backdrop-blur-md"
               >
                 👮 Warden Demo
               </button>
               <button
                 type="button"
                 onClick={() => handleDemoLogin('developer')}
-                className="px-2.5 py-1.5 text-[11px] font-semibold rounded bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-all border border-amber-500/30 shadow-xs"
+                className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/25 transition-all border border-amber-500/40 shadow-xs backdrop-blur-md"
               >
                 👑 Developer Demo
               </button>
@@ -376,25 +376,25 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
         {/* Right Side: Auth Forms */}
         <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-center">
           <div className="mb-4">
-            <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full border backdrop-blur-md ${roleMeta[selectedRole].badge}`}>
+            <span className={`inline-block text-xs font-bold px-4 py-1.5 rounded-full border backdrop-blur-md shadow-xs ${roleMeta[selectedRole].badge}`}>
               {t(roleMeta[selectedRole].labelKey as any)} {t('signIn')}
             </span>
           </div>
 
           {selectedRole === 'developer' && (
-            <div className="mb-4 rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-300 backdrop-blur-md">
+            <div className="mb-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3.5 text-xs text-amber-300 backdrop-blur-md">
               👑 <strong>Developer Access Mode:</strong> Authentication via Developer ID only (`DEV9999` or `harsh dev`). Password is not required.
             </div>
           )}
 
           {successMessage && (
-            <div className="mb-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-300 backdrop-blur-md">
+            <div className="mb-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3.5 text-xs text-emerald-300 backdrop-blur-md">
               ✅ {successMessage}
             </div>
           )}
 
           {error && (
-            <div className="mb-4 rounded-xl bg-rose-500/10 border border-rose-500/20 p-3 text-xs text-rose-300 backdrop-blur-md">
+            <div className="mb-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 p-3.5 text-xs text-rose-300 backdrop-blur-md">
               ⚠️ {error}
             </div>
           )}
@@ -403,7 +403,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
           {mode === 'login' && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   {selectedRole === 'developer' ? 'Developer Access ID' : t('mobileNumber')}
                 </label>
                 <input
@@ -412,20 +412,20 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
                   placeholder={selectedRole === 'developer' ? 'Enter Developer ID (e.g. DEV9999 or harsh dev)' : t('enterMobile')}
-                  className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm focus:border-emerald-500"
+                  className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500"
                 />
               </div>
 
               {selectedRole !== 'developer' && (
                 <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-slate-300">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                       {t('password')}
                     </label>
                     <button
                       type="button"
                       onClick={() => setMode('forgot')}
-                      className="text-xs text-emerald-400 hover:underline font-medium"
+                      className="text-xs text-emerald-500 dark:text-emerald-400 hover:underline font-semibold"
                     >
                       {t('forgotPassword')}
                     </button>
@@ -437,7 +437,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder={t('enterPassword')}
-                      className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm focus:border-emerald-500 pr-10"
+                      className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500 pr-10"
                     />
                     <button
                       type="button"
