@@ -15,18 +15,22 @@ messRouter.post('/scan', (req, res) => {
     return res.status(404).json({ message: `No student record found matching QR token "${qrToken}".` });
   }
 
+  const isAttending = demoStore.getMealOptIn(student.id);
+
   const activeSession =
     demoStore.listSessions().find((item) => item.type === mealType && item.status === 'active') ||
     demoStore.getActiveSession();
 
   const activeLunchBox = demoStore.getActiveLunchBoxForStudent(student.id);
-  const status = activeLunchBox ? 'issued' : 'pending';
+  const status = !isAttending ? 'not_opted_in' : activeLunchBox ? 'issued' : 'pending';
 
   return res.json({
     student,
     session: activeSession || { id: 'session-1', type: mealType || 'lunch', sessionDate: new Date().toISOString(), status: 'active' },
     status,
-    lunchBox: activeLunchBox ?? null
+    isAttending,
+    lunchBox: activeLunchBox ?? null,
+    message: !isAttending ? `⚠️ Student ${student.name} has NOT marked that they are going to college / attending today. QR pass is inactive!` : undefined
   });
 });
 

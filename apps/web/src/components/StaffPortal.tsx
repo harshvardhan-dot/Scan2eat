@@ -43,9 +43,16 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
     try {
       const result = await scanQr(tokenToVerify.trim(), 'lunch');
       setScanResult(result);
-      setStatus(result.status === 'issued' ? 'Meal box already issued for this session' : 'Student verified successfully');
-    } catch (err) {
-      setStatus('Error verifying student token. Ensure backend server is running.');
+      if (result.status === 'not_opted_in' || result.isAttending === false) {
+        setStatus(`⚠️ ${result.student?.name || 'Student'} has NOT clicked "Going to College" today. QR pass is INACTIVE!`);
+      } else if (result.status === 'issued') {
+        setStatus('Meal box already issued for this session');
+      } else {
+        setStatus('Student verified successfully');
+      }
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Error verifying student token. Ensure backend server is running.';
+      setStatus(msg);
     } finally {
       setLoading(false);
     }
@@ -53,6 +60,11 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
 
   const handleIssue = async () => {
     if (!scanResult?.student?.id) return;
+    if (scanResult.isAttending === false || scanResult.status === 'not_opted_in') {
+      setStatus(`❌ Cannot issue meal box: ${scanResult.student.name} has NOT clicked "Going to College" today.`);
+      return;
+    }
+
     setLoading(true);
     setStatus('Issuing meal box...');
     try {
@@ -60,8 +72,9 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
       setStatus(result.ok ? '✅ Meal box issued successfully' : result.message);
       setScanResult({ ...scanResult, status: result.ok ? 'issued' : scanResult.status });
       await fetchSummary();
-    } catch {
-      setStatus('Failed to issue meal box');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Failed to issue meal box';
+      setStatus(`❌ ${msg}`);
     } finally {
       setLoading(false);
     }
@@ -150,9 +163,17 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
               📋 {t('verificationResult')}
             </h3>
 
-            <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-3.5 mb-4 backdrop-blur-md">
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('systemStatus')}</p>
-              <p className="mt-1 text-xs font-bold text-emerald-400">{status}</p>
+            <div className={`rounded-2xl border p-3.5 mb-4 backdrop-blur-md ${
+              scanResult?.isAttending === false || scanResult?.status === 'not_opted_in'
+                ? 'bg-rose-500/10 border-rose-500/20 text-rose-300'
+                : 'bg-slate-950/40 border-white/10 text-emerald-400'
+            }`}>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t('systemStatus')}</p>
+              <p className={`mt-1 text-xs font-bold ${
+                scanResult?.isAttending === false || scanResult?.status === 'not_opted_in'
+                  ? 'text-rose-400'
+                  : 'text-emerald-400'
+              }`}>{status}</p>
             </div>
 
             {scanResult ? (
@@ -163,13 +184,23 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
                     <p className="text-xs text-slate-400">{scanResult.student?.email}</p>
                   </div>
                   <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
-                    scanResult.status === 'issued'
+                    scanResult.isAttending === false || scanResult.status === 'not_opted_in'
+                      ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                      : scanResult.status === 'issued'
                       ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                       : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                   }`}>
-                    {scanResult.status ?? 'Verified'}
+                    {scanResult.isAttending === false || scanResult.status === 'not_opted_in'
+                      ? 'Pass Inactive'
+                      : scanResult.status ?? 'Verified'}
                   </span>
                 </div>
+
+                {(scanResult.isAttending === false || scanResult.status === 'not_opted_in') && (
+                  <div className="rounded-2xl bg-rose-500/10 border border-rose-500/20 p-3 text-xs text-rose-300">
+                    ⚠️ Student has NOT clicked "Going to College" in their portal today. QR pass is locked!
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="rounded-2xl bg-white/5 p-3 border border-white/10 backdrop-blur-md">
@@ -194,8 +225,8 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
                   <button
                     type="button"
                     onClick={handleIssue}
-                    disabled={loading}
-                    className="flex-1 btn-pill-dark text-xs py-3 disabled:opacity-50"
+                    disabled={loading || scanResult.isAttending === false || scanResult.status === 'not_opted_in'}
+                    className="flex-1 btn-pill-dark text-xs py-3 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     🍱 {t('issueLunchBox')}
                   </button>

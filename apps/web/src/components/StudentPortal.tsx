@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
-import { getStudentStatus, getWeeklyMenu, submitFoodReview, studentCheckIn } from '../lib/api';
+import { getStudentStatus, getWeeklyMenu, submitFoodReview, studentCheckIn, setMealOptIn } from '../lib/api';
 import { useTranslation, type Language } from '../lib/translations';
 
 interface StudentPortalProps {
@@ -31,7 +31,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
   const [weeklyMenu, setWeeklyMenu] = useState<DayMenu[]>([]);
   const [selectedDay, setSelectedDay] = useState<string>('Monday');
   const [loading, setLoading] = useState(true);
-  const [isCheckedIn, setIsCheckedIn] = useState<boolean>(true);
+  const [isCheckedIn, setIsCheckedIn] = useState<boolean>(false);
   const [checkInMsg, setCheckInMsg] = useState<string>('');
   const [confirmCheckInBox, setConfirmCheckInBox] = useState<boolean>(false);
 
@@ -52,10 +52,25 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
     try {
       const res = await studentCheckIn(studentId, 'lunch');
       setIsCheckedIn(true);
-      setCheckInMsg(res.message);
+      setCheckInMsg(res.message || '✅ Confirmed going to college! Your QR Pass is now active.');
       await fetchStatus();
     } catch {
-      setCheckInMsg('Check-in failed. Please try again.');
+      setCheckInMsg('Failed to activate QR pass. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOptOut = async () => {
+    setLoading(true);
+    try {
+      await setMealOptIn(studentId, false);
+      setIsCheckedIn(false);
+      setConfirmCheckInBox(false);
+      setCheckInMsg('Marked as NOT going to college today. QR pass deactivated.');
+      await fetchStatus();
+    } catch {
+      setCheckInMsg('Failed to update status.');
     } finally {
       setLoading(false);
     }
@@ -88,6 +103,9 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
     try {
       const statusData = await getStudentStatus(studentId);
       setLiveData(statusData);
+      if (statusData?.isAttending !== undefined) {
+        setIsCheckedIn(Boolean(statusData.isAttending));
+      }
     } catch (err) {
       console.error('Failed to load student status', err);
     }
@@ -172,52 +190,66 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
         <div className="lg:col-span-5">
           {!isCheckedIn ? (
             <div className="card-super-glass rounded-[2.2rem] p-6 text-center space-y-4">
-              <div className="mx-auto w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center text-xl shadow-lg">
-                ⏰
+              <div className="mx-auto w-14 h-14 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center text-2xl shadow-lg">
+                🎓
               </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('checkInRequired')}</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Going to College Today?</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t('checkInDesc')}
+                Your meal QR Pass is currently <strong>locked</strong>. Please confirm that you are going to college / attending mess today to activate your QR pass.
               </p>
 
               {checkInMsg && (
-                <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-300 backdrop-blur-md">
+                <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-300 backdrop-blur-md">
                   {checkInMsg}
                 </div>
               )}
 
-              <label className="flex items-start gap-2 text-left cursor-pointer rounded-2xl border border-white/10 bg-slate-900/40 p-3.5 text-xs text-slate-300 backdrop-blur-md">
+              <label className="flex items-start gap-2 text-left cursor-pointer rounded-2xl border border-white/10 bg-slate-900/40 p-3.5 text-xs text-slate-300 backdrop-blur-md hover:border-emerald-500/40 transition">
                 <input
                   type="checkbox"
                   checked={confirmCheckInBox}
                   onChange={(e) => setConfirmCheckInBox(e.target.checked)}
-                  className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-600 focus:ring-0"
+                  className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-0"
                 />
-                <span>{t('confirmCheckIn')}</span>
+                <span>I confirm I am going to college today and request my mess meal pass.</span>
               </label>
 
               <button
                 type="button"
                 onClick={handleCheckIn}
-                disabled={!confirmCheckInBox}
+                disabled={!confirmCheckInBox || loading}
                 className="w-full btn-pill-dark text-xs py-3 disabled:opacity-50"
               >
-                {t('generateQrPass')}
+                🎓 I am Going to College — Activate QR Pass
               </button>
             </div>
           ) : (
-            <div className="card-super-glass rounded-[2.2rem] p-6 text-center">
-              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold mb-4">
-                <span>Today's pass</span>
-                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-0.5 rounded-full border border-emerald-500/20">Active</span>
+            <div className="card-super-glass rounded-[2.2rem] p-6 text-center space-y-3">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold mb-2">
+                <span>Today's Pass</span>
+                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-0.5 rounded-full border border-emerald-500/20 font-bold flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Going to College • Active Pass
+                </span>
               </div>
 
               <div className="mx-auto flex w-fit justify-center rounded-[1.8rem] bg-white p-5 shadow-2xl border border-white/30">
                 <QRCode value={student.qrToken ?? 'qr-student-001'} size={190} />
               </div>
 
-              <h4 className="mt-4 text-base font-extrabold text-slate-900 dark:text-white">{student.name}</h4>
-              <p className="mt-1 text-xs font-mono text-slate-500 dark:text-slate-400">Token: {student.qrToken}</p>
+              <h4 className="pt-2 text-base font-extrabold text-slate-900 dark:text-white">{student.name}</h4>
+              <p className="text-xs font-mono text-slate-500 dark:text-slate-400">Token: {student.qrToken}</p>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleOptOut}
+                  disabled={loading}
+                  className="text-xs text-slate-400 hover:text-rose-400 underline transition"
+                >
+                  Not going to college today? (Deactivate Pass)
+                </button>
+              </div>
             </div>
           )}
         </div>

@@ -18,6 +18,11 @@ export async function issueLunchBox(input: IssueLunchBoxInput) {
     return { ok: false, message: 'Student not found' };
   }
 
+  const isAttending = demoStore.getMealOptIn(input.studentId);
+  if (!isAttending) {
+    return { ok: false, message: `Cannot issue meal box: ${student.name} has NOT marked that they are going to college / attending today!` };
+  }
+
   const existing = demoStore.getActiveLunchBoxForStudent(input.studentId);
   if (existing) {
     return { ok: false, message: 'Lunch box already issued for this student' };
