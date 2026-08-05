@@ -2,6 +2,28 @@ import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useTranslation, Language } from '../lib/translations';
 
+export function parseQrToken(text: string): string {
+  if (!text) return '';
+  let cleaned = text.trim();
+  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+    cleaned = cleaned.slice(1, -1).trim();
+  }
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (typeof parsed === 'object' && parsed !== null) {
+      cleaned = parsed.qrToken || parsed.token || parsed.studentId || parsed.id || cleaned;
+    }
+  } catch {}
+  if (cleaned.includes('://')) {
+    try {
+      const url = new URL(cleaned);
+      const token = url.searchParams.get('qrToken') || url.searchParams.get('token') || url.pathname.split('/').filter(Boolean).pop();
+      if (token) cleaned = token;
+    } catch {}
+  }
+  return cleaned;
+}
+
 interface QrScannerProps {
   onScanSuccess: (decodedText: string) => void;
   onScanError?: (errorMsg: string) => void;
@@ -31,6 +53,7 @@ export function QrScanner({
   const html5QrcodeRef = useRef<Html5Qrcode | null>(null);
   const isMountedRef = useRef(true);
   const lastScanTimeRef = useRef<number>(0);
+  const startPromiseRef = useRef<Promise<void> | null>(null);
 
   // Initialize camera list
   useEffect(() => {
@@ -41,7 +64,11 @@ export function QrScanner({
         if (isMountedRef.current && devices && devices.length > 0) {
           setCameras(devices);
           const backCam = devices.find((d) => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'));
-          setSelectedCameraId(backCam ? backCam.id : devices[0].id);
+          if (backCam) {
+            setSelectedCameraId(backCam.id);
+          } else if (devices[0]?.id) {
+            setSelectedCameraId(devices[0].id);
+          }
         }
       })
       .catch((err) => {
@@ -53,77 +80,21 @@ export function QrScanner({
     };
   }, []);
 
-  // Handle live camera lifecycle
-  useEffect(() => {
-    if (activeTab !== 'camera') {
-      void stopScanner();
-      return;
+  const stopScanner = async () => {
+    // If a start action is currently in progress, wait for it to settle first
+    if (startPromiseRef.current) {
+      try {
+        await startPromiseRef.current;
+      } catch {
+        // ignore start failures
+      }
     }
 
-    let isSubscribed = true;
-
-    const startScanner = async () => {
-      setCameraError(null);
-      await stopScanner();
-
-      if (!isSubscribed) return;
-
-      try {
-        const scannerInstance = new Html5Qrcode(scannerId);
-        html5QrcodeRef.current = scannerInstance;
-
-        const config = {
-          fps: 10,
-          qrbox: { width: 220, height: 220 },
-          aspectRatio: 1.0,
-        };
-
-        const cameraConfig = selectedCameraId
-          ? { deviceId: { exact: selectedCameraId } }
-          : { facingMode: 'environment' };
-
-        await scannerInstance.start(
-          cameraConfig,
-          config,
-          (decodedText) => {
-            if (!isSubscribed) return;
-            const now = Date.now();
-            if (now - lastScanTimeRef.current < 2500) return;
-            lastScanTimeRef.current = now;
-            setLastScanned(decodedText);
-            onScanSuccess(decodedText);
-          },
-          () => {
-            // Frame scan failure - safe to ignore
-          }
-        );
-
-        if (isSubscribed) {
-          setIsScanning(true);
-        }
-      } catch (err: any) {
-        console.error('Camera scan start error:', err);
-        if (isSubscribed) {
-          setIsScanning(false);
-          const msg = err?.message || (typeof err === 'string' ? String(err) : 'Camera access denied or unavailable.');
-          setCameraError(msg);
-          onScanError?.(msg);
-        }
-      }
-    };
-
-    void startScanner();
-
-    return () => {
-      isSubscribed = false;
-      void stopScanner();
-    };
-  }, [activeTab, selectedCameraId, scannerId]);
-
-  const stopScanner = async () => {
     if (html5QrcodeRef.current) {
       try {
-        if (html5QrcodeRef.current.isScanning) {
+        const state = html5QrcodeRef.current.getState();
+        // State 2 = SCANNING, State 3 = PAUSED
+        if (state === 2 || state === 3 || html5QrcodeRef.current.isScanning) {
           await html5QrcodeRef.current.stop();
         }
         html5QrcodeRef.current.clear();
@@ -138,6 +109,87 @@ export function QrScanner({
     }
   };
 
+  // Handle live camera lifecycle
+  useEffect(() => {
+    if (activeTab !== 'camera') {
+      void stopScanner();
+      return;
+    }
+
+    let isSubscribed = true;
+
+    const startScanner = async () => {
+      setCameraError(null);
+      setIsScanning(false);
+
+      await stopScanner();
+
+      if (!isSubscribed) return;
+
+      const element = document.getElementById(scannerId);
+      if (!element) return;
+
+      try {
+        const scannerInstance = new Html5Qrcode(scannerId);
+        html5QrcodeRef.current = scannerInstance;
+
+        const config = {
+          fps: 10,
+          qrbox: { width: 220, height: 220 },
+          aspectRatio: 1.0,
+        };
+
+        const cameraConfig = selectedCameraId
+          ? selectedCameraId
+          : { facingMode: 'environment' };
+
+        const startPromise = scannerInstance.start(
+          cameraConfig,
+          config,
+          (rawDecodedText) => {
+            if (!isSubscribed || !isMountedRef.current) return;
+            const now = Date.now();
+            if (now - lastScanTimeRef.current < 2000) return;
+            lastScanTimeRef.current = now;
+
+            const normalizedToken = parseQrToken(rawDecodedText);
+            setLastScanned(normalizedToken);
+            onScanSuccess(normalizedToken);
+          },
+          () => {
+            // Frame scan failure - safe to ignore
+          }
+        );
+
+        startPromiseRef.current = startPromise as Promise<any>;
+        await startPromise;
+
+        if (isSubscribed) {
+          setIsScanning(true);
+        } else {
+          void stopScanner();
+        }
+      } catch (err: any) {
+        console.error('Camera scan start error:', err);
+        if (isSubscribed) {
+          setIsScanning(false);
+          const msg = err?.message || (typeof err === 'string' ? String(err) : 'Camera access denied or unavailable.');
+          setCameraError(msg);
+          onScanError?.(msg);
+        }
+      } finally {
+        startPromiseRef.current = null;
+      }
+    };
+
+    void startScanner();
+
+    return () => {
+      isSubscribed = false;
+      void stopScanner();
+    };
+  }, [activeTab, selectedCameraId, scannerId]);
+
   // Handle File Upload Scan
   const handleFileUpload = async (file: File) => {
     setFileError(null);
@@ -146,34 +198,42 @@ export function QrScanner({
     if (!file) return;
 
     try {
-      const tempScanner = new Html5Qrcode(`temp-file-scanner-${scannerId}`, false);
-      const result = await tempScanner.scanFileV2(file, true);
-      tempScanner.clear();
+      const tempContainerId = `temp-file-scanner-${scannerId}`;
+      const tempScanner = new Html5Qrcode(tempContainerId, false);
+      const result = await tempScanner.scanFileV2(file, false);
+      try {
+        tempScanner.clear();
+      } catch {}
 
       if (result && result.decodedText) {
-        setFileSuccess(`Scanned: ${result.decodedText}`);
-        setLastScanned(result.decodedText);
-        onScanSuccess(result.decodedText);
+        const normalizedToken = parseQrToken(result.decodedText);
+        setFileSuccess(`Scanned: ${normalizedToken}`);
+        setLastScanned(normalizedToken);
+        onScanSuccess(normalizedToken);
       } else {
         setFileError('No QR code found in the image.');
       }
     } catch (err: any) {
       console.error('File scan error:', err);
-      setFileError('Failed to read QR code from image. Please ensure the image is clear.');
+      setFileError('Failed to read QR code from image. Please ensure the image is clear and contains a valid QR code.');
     }
   };
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!manualToken.trim()) return;
-    setLastScanned(manualToken.trim());
-    onScanSuccess(manualToken.trim());
+    const token = parseQrToken(manualToken);
+    if (!token) return;
+    setLastScanned(token);
+    onScanSuccess(token);
   };
 
   return (
     <div className="card-super-glass rounded-[2.2rem] p-6 space-y-4">
-      {/* Hidden container for file scanning */}
-      <div id={`temp-file-scanner-${scannerId}`} className="hidden" />
+      {/* Off-screen container for file scanning */}
+      <div
+        id={`temp-file-scanner-${scannerId}`}
+        style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '1px', height: '1px', overflow: 'hidden' }}
+      />
 
       {/* Header & Tab Selector */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
@@ -378,3 +438,4 @@ export function QrScanner({
     </div>
   );
 }
+

@@ -285,20 +285,40 @@ class DemoStore {
   getStudentByQrToken(token: string) {
     if (!token) return undefined;
     let raw = token.trim();
+    if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
+      raw = raw.slice(1, -1).trim();
+    }
     try {
       const parsed = JSON.parse(raw);
-      if (parsed.qrToken) raw = parsed.qrToken;
-      else if (parsed.studentId) raw = parsed.studentId;
-      else if (parsed.id) raw = parsed.id;
+      if (typeof parsed === 'object' && parsed !== null) {
+        if (parsed.qrToken) raw = parsed.qrToken;
+        else if (parsed.token) raw = parsed.token;
+        else if (parsed.studentId) raw = parsed.studentId;
+        else if (parsed.id) raw = parsed.id;
+      }
     } catch {}
 
+    if (raw.includes('://')) {
+      try {
+        const url = new URL(raw);
+        const tokenParam = url.searchParams.get('qrToken') || url.searchParams.get('token') || url.pathname.split('/').filter(Boolean).pop();
+        if (tokenParam) raw = tokenParam;
+      } catch {}
+    }
+
     const q = raw.toLowerCase();
+    const qWithoutPrefix = q.replace(/^qr-/, '');
     const digits = raw.replace(/\D/g, '');
 
     return this.students.find((student) => {
-      if (student.qrToken && student.qrToken.toLowerCase() === q) return true;
-      if (student.id.toLowerCase() === q) return true;
-      if (student.rollNumber.toLowerCase() === q) return true;
+      const sQr = (student.qrToken || '').toLowerCase();
+      const sId = student.id.toLowerCase();
+      const sIdWithoutPrefix = sId.replace(/^student-/, '');
+      const sRoll = student.rollNumber.toLowerCase();
+
+      if (sQr === q || sQr === `qr-${q}` || sQr === `qr-${qWithoutPrefix}`) return true;
+      if (sId === q || sId === `student-${qWithoutPrefix}` || sIdWithoutPrefix === qWithoutPrefix) return true;
+      if (sRoll === q) return true;
       if (student.phoneNumber) {
         const pDigits = student.phoneNumber.replace(/\D/g, '');
         if (digits.length >= 10 && pDigits.endsWith(digits)) return true;
@@ -306,6 +326,7 @@ class DemoStore {
       return false;
     });
   }
+
 
   async createAdminUser(input: { name: string; email: string; phoneNumber: string; passwordHash: string; hostelName?: string; isDeveloperCreated?: boolean }) {
     const existing = this.getUserByPhone(input.phoneNumber) || this.getUserByEmailOrPhone(input.email);
