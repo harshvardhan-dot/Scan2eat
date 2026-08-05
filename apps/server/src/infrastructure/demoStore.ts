@@ -583,8 +583,37 @@ class DemoStore {
       dayItem.meals = meals;
       return dayItem;
     }
-    return null;
+    const newDay: DayMenu = { day: day as any, meals };
+    this.weeklyMenu.push(newDay);
+    return newDay;
   }
+
+  addOrUpdateMenuItem(input: { day: string; mealType: string; mainDish: string; sideDishes?: string[]; dietaryTags?: string[]; timing?: string }) {
+    const dayName = input.day.trim();
+    let dayItem = this.weeklyMenu.find((item) => item.day.toLowerCase() === dayName.toLowerCase());
+    if (!dayItem) {
+      dayItem = { day: dayName as any, meals: [] };
+      this.weeklyMenu.push(dayItem);
+    }
+
+    const newMeal = {
+      mealType: input.mealType as any,
+      mainDish: input.mainDish,
+      sideDishes: input.sideDishes || [],
+      dietaryTags: (input.dietaryTags || ['Veg']) as any,
+      timing: input.timing || '12:00 - 02:00 PM'
+    };
+
+    const existingMealIdx = dayItem.meals.findIndex((m) => m.mealType.toLowerCase() === input.mealType.toLowerCase());
+    if (existingMealIdx !== -1) {
+      dayItem.meals[existingMealIdx] = newMeal;
+    } else {
+      dayItem.meals.push(newMeal);
+    }
+
+    return dayItem;
+  }
+
 
   createComplaint(input: Omit<Complaint, 'id' | 'createdAt' | 'status'>) {
     const complaint: Complaint = {

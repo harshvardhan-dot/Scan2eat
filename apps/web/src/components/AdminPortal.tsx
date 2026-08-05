@@ -8,6 +8,7 @@ import {
   deleteStudent,
   getAdminMenu,
   updateDayMenu,
+  addMenuItem,
   bulkRegisterStudents,
   getPasswordResetRequests,
   resolvePasswordResetRequest,
@@ -258,6 +259,16 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
 
   // Bulk Menu JSON/CSV State
   const [menuUploadText, setMenuUploadText] = useState('');
+
+  // Add Single Meal Item Form State
+  const [newMealForm, setNewMealForm] = useState({
+    day: 'Monday',
+    mealType: 'lunch',
+    mainDish: '',
+    sideDishes: '',
+    dietaryTags: 'Veg',
+    timing: '12:30 PM - 02:30 PM'
+  });
 
   // Admin Direct Password Modal State
   const [editingPasswordUser, setEditingPasswordUser] = useState<{ id: string; name: string; phone: string } | null>(null);
@@ -521,6 +532,53 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
     } finally {
       setLoading(false);
     }
+  };
+
+  // Add Single Meal Item via Form
+  const handleAddSingleMealItem = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!newMealForm.mainDish.trim()) {
+      setStatus('Please enter a main dish name.');
+      return;
+    }
+    setLoading(true);
+    setStatus(`Adding ${newMealForm.mainDish} to ${newMealForm.day}...`);
+    try {
+      const sides = newMealForm.sideDishes.split(',').map((s) => s.trim()).filter(Boolean);
+      await addMenuItem({
+        day: newMealForm.day,
+        mealType: newMealForm.mealType,
+        mainDish: newMealForm.mainDish.trim(),
+        sideDishes: sides,
+        dietaryTags: [newMealForm.dietaryTags],
+        timing: newMealForm.timing.trim()
+      });
+      setStatus(`✅ Added "${newMealForm.mainDish}" to ${newMealForm.day} ${newMealForm.mealType}!`);
+      setNewMealForm({ ...newMealForm, mainDish: '', sideDishes: '' });
+      await loadData();
+    } catch {
+      setStatus('Failed to add menu item.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Dynamically add a meal slot to current day
+  const handleAddEmptyMealSlot = () => {
+    const newSlot: MenuItem = {
+      mealType: 'lunch' as any,
+      mainDish: 'Special Dish',
+      sideDishes: ['Rice', 'Dal'],
+      dietaryTags: ['Veg'],
+      timing: '12:30 PM - 02:30 PM'
+    };
+    setEditingMeals([...editingMeals, newSlot]);
+  };
+
+  // Remove meal slot from current day
+  const handleRemoveMealSlot = (index: number) => {
+    const updated = editingMeals.filter((_, idx) => idx !== index);
+    setEditingMeals(updated);
   };
 
   // Bulk Upload Weekly Menu (JSON or CSV)
@@ -2246,10 +2304,256 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
         </div>
       )}
 
-      {/* TAB 5: WEEKLY MENU & BULK MENU UPLOAD */}
+      {/* TAB 5: WEEKLY MENU MANAGEMENT FOR WARDEN */}
       {activeTab === 'menu' && (
         <div className="space-y-6">
-          {/* Bulk Menu Upload Box */}
+          {/* Quick Add Single Meal Form */}
+          <div className={`rounded-3xl border p-6 ${cardClass}`}>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <span>➕</span> Add New Menu Item
+                </h2>
+                <p className={`text-xs ${mutedText} mt-0.5`}>
+                  Quickly add or update a specific meal (Breakfast, Lunch, Snacks, Dinner) for any day.
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={handleAddSingleMealItem} className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+                <div>
+                  <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Day</label>
+                  <select
+                    value={newMealForm.day}
+                    onChange={(e) => setNewMealForm({ ...newMealForm, day: e.target.value })}
+                    className={`w-full rounded-2xl border px-3.5 py-2.5 text-xs outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                  >
+                    {DAYS_OF_WEEK.map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Meal Session</label>
+                  <select
+                    value={newMealForm.mealType}
+                    onChange={(e) => setNewMealForm({ ...newMealForm, mealType: e.target.value })}
+                    className={`w-full rounded-2xl border px-3.5 py-2.5 text-xs outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                  >
+                    <option value="breakfast">Breakfast 🍳</option>
+                    <option value="lunch">Lunch 🍱</option>
+                    <option value="snacks">Snacks / High Tea ☕</option>
+                    <option value="dinner">Dinner 🌙</option>
+                    <option value="special">Night Special ✨</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Main Dish</label>
+                  <input
+                    type="text"
+                    required
+                    value={newMealForm.mainDish}
+                    onChange={(e) => setNewMealForm({ ...newMealForm, mainDish: e.target.value })}
+                    placeholder="e.g. Paneer Tikka Masala"
+                    className={`w-full rounded-2xl border px-3.5 py-2.5 text-xs outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Side Dishes (comma sep)</label>
+                  <input
+                    type="text"
+                    value={newMealForm.sideDishes}
+                    onChange={(e) => setNewMealForm({ ...newMealForm, sideDishes: e.target.value })}
+                    placeholder="e.g. Jeera Rice, Butter Roti, Kheer"
+                    className={`w-full rounded-2xl border px-3.5 py-2.5 text-xs outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Diet Tag</label>
+                  <select
+                    value={newMealForm.dietaryTags}
+                    onChange={(e) => setNewMealForm({ ...newMealForm, dietaryTags: e.target.value as any })}
+                    className={`w-full rounded-2xl border px-3.5 py-2.5 text-xs outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                  >
+                    <option value="Veg">Veg</option>
+                    <option value="Non-Veg">Non-Veg</option>
+                    <option value="Vegan">Vegan</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Serving Timing</label>
+                  <input
+                    type="text"
+                    value={newMealForm.timing}
+                    onChange={(e) => setNewMealForm({ ...newMealForm, timing: e.target.value })}
+                    placeholder="e.g. 12:30 PM - 02:30 PM"
+                    className={`w-full rounded-2xl border px-3.5 py-2.5 text-xs outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="rounded-2xl bg-emerald-500 px-6 py-2.5 text-xs font-bold text-slate-950 shadow-md hover:bg-emerald-400 transition"
+                >
+                  ➕ Add Meal Item to {newMealForm.day}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Full Day Editor */}
+          <div className={`rounded-3xl border p-6 ${cardClass}`}>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <span>✏️</span> Manage {selectedDay} Menu Schedule
+                </h2>
+                <p className={`text-xs ${mutedText} mt-1`}>
+                  Modify dish details, timings, or add/remove meal slots for {selectedDay}.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleAddEmptyMealSlot}
+                  className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-2.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 transition"
+                >
+                  ➕ Add Meal Slot
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveMenu}
+                  disabled={loading}
+                  className="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg hover:scale-[1.01] transition"
+                >
+                  💾 Save {selectedDay} Menu
+                </button>
+              </div>
+            </div>
+
+            {/* Day Selector Strip with Meal Count */}
+            <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-700 pb-4">
+              {DAYS_OF_WEEK.map((day) => {
+                const dayMealsCount = weeklyMenu.find((m) => m.day.toLowerCase() === day.toLowerCase())?.meals?.length ?? 0;
+                return (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => setSelectedDay(day)}
+                    className={`rounded-2xl px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition ${
+                      selectedDay === day
+                        ? 'bg-cyan-500 text-slate-950 font-bold shadow-md'
+                        : `border border-slate-700 ${isDark ? 'bg-slate-950 text-slate-200 hover:bg-slate-800' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
+                    }`}
+                  >
+                    <span>{day}</span>
+                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${selectedDay === day ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>
+                      {dayMealsCount}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="space-y-6">
+              {editingMeals.length > 0 ? (
+                editingMeals.map((meal, index) => (
+                  <div key={index} className={`rounded-2xl border p-5 ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-violet-200 bg-slate-50'}`}>
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-800/40 pb-3">
+                      <div className="flex items-center gap-3">
+                        <select
+                          value={meal.mealType}
+                          onChange={(e) => handleMealChange(index, 'mealType', e.target.value)}
+                          className="rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-cyan-400 outline-none"
+                        >
+                          <option value="breakfast">🍳 Breakfast</option>
+                          <option value="lunch">🍱 Lunch</option>
+                          <option value="snacks">☕ Evening Snacks</option>
+                          <option value="dinner">🌙 Dinner</option>
+                          <option value="special">✨ Night Special</option>
+                        </select>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={meal.timing}
+                          onChange={(e) => handleMealChange(index, 'timing', e.target.value)}
+                          placeholder="e.g. 07:30 - 09:30 AM"
+                          className={`rounded-xl border px-3 py-1 text-xs outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMealSlot(index)}
+                          className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 text-xs text-rose-400 hover:bg-rose-500/20 transition"
+                          title="Remove Meal Slot"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-3">
+                      <div>
+                        <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Main Dish</label>
+                        <input
+                          type="text"
+                          value={meal.mainDish}
+                          onChange={(e) => handleMealChange(index, 'mainDish', e.target.value)}
+                          className={`w-full rounded-2xl border px-4 py-2.5 text-sm outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Side Dishes (comma separated)</label>
+                        <input
+                          type="text"
+                          value={meal.sideDishes ? meal.sideDishes.join(', ') : ''}
+                          onChange={(e) => handleMealChange(index, 'sideDishes', e.target.value)}
+                          className={`w-full rounded-2xl border px-4 py-2.5 text-sm outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Dietary Tag</label>
+                        <select
+                          value={meal.dietaryTags?.[0] ?? 'Veg'}
+                          onChange={(e) => handleMealChange(index, 'dietaryTags', e.target.value)}
+                          className={`w-full rounded-2xl border px-4 py-2.5 text-sm outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+                        >
+                          <option value="Veg">Veg</option>
+                          <option value="Non-Veg">Non-Veg</option>
+                          <option value="Vegan">Vegan</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 border border-dashed border-slate-700 rounded-2xl">
+                  <p className="text-xs text-slate-400">No meal slots configured for {selectedDay}.</p>
+                  <button
+                    type="button"
+                    onClick={handleAddEmptyMealSlot}
+                    className="mt-3 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-4 py-2 text-xs font-bold hover:bg-cyan-500/20 transition"
+                  >
+                    ➕ Add First Meal Slot for {selectedDay}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bulk Menu JSON Upload & Backup Box */}
           <div className={`rounded-3xl border p-6 ${cardClass}`}>
             <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
               <span>📤</span> Bulk Upload Weekly Menu (JSON)
@@ -2267,103 +2571,23 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
                 className={`w-full rounded-2xl border p-4 font-mono text-xs outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
               ></textarea>
 
-              <button
-                onClick={handleBulkUploadMenu}
-                disabled={loading}
-                className="rounded-2xl bg-gradient-to-r from-cyan-500 to-sky-500 px-5 py-2.5 font-bold text-slate-950 shadow-md transition hover:scale-[1.01]"
-              >
-                Upload Full Weekly Menu
-              </button>
-            </div>
-          </div>
-
-          {/* Single Day Editor */}
-          <div className={`rounded-3xl border p-6 ${cardClass}`}>
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <div>
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <span>✏️</span> Edit Day Menu ({selectedDay})
-                </h2>
-                <p className={`text-xs ${mutedText} mt-1`}>Configure main dishes, sides, and timings for {selectedDay}.</p>
-              </div>
-              <button
-                onClick={handleSaveMenu}
-                disabled={loading}
-                className="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2.5 font-bold text-slate-950 shadow-lg hover:scale-[1.01] transition"
-              >
-                💾 Save {selectedDay} Menu
-              </button>
-            </div>
-
-            {/* Day Selector */}
-            <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-700 pb-4">
-              {DAYS_OF_WEEK.map((day) => (
+              <div className="flex flex-wrap gap-2">
                 <button
-                  key={day}
-                  onClick={() => setSelectedDay(day)}
-                  className={`rounded-2xl px-4 py-2 text-sm font-semibold transition ${
-                    selectedDay === day
-                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-md'
-                      : `border border-slate-700 ${isDark ? 'bg-slate-950 text-slate-200 hover:bg-slate-800' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
-                  }`}
+                  type="button"
+                  onClick={handleBulkUploadMenu}
+                  disabled={loading}
+                  className="rounded-2xl bg-gradient-to-r from-cyan-500 to-sky-500 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-md transition hover:scale-[1.01]"
                 >
-                  {day}
+                  Upload Full Weekly Menu
                 </button>
-              ))}
-            </div>
-
-            <div className="space-y-6">
-              {editingMeals.map((meal, index) => (
-                <div key={meal.mealType} className={`rounded-2xl border p-5 ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-violet-200 bg-slate-50'}`}>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-bold uppercase tracking-wider text-cyan-400">
-                      {meal.mealType === 'breakfast' ? '🍳 Breakfast' : meal.mealType === 'lunch' ? '🍱 Lunch' : '🌙 Dinner'}
-                    </span>
-                    <input
-                      type="text"
-                      value={meal.timing}
-                      onChange={(e) => handleMealChange(index, 'timing', e.target.value)}
-                      placeholder="e.g. 07:30 - 09:30 AM"
-                      className={`rounded-xl border px-3 py-1 text-xs outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
-                    />
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div>
-                      <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Main Dish</label>
-                      <input
-                        type="text"
-                        value={meal.mainDish}
-                        onChange={(e) => handleMealChange(index, 'mainDish', e.target.value)}
-                        className={`w-full rounded-2xl border px-4 py-2.5 text-sm outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Side Dishes (comma separated)</label>
-                      <input
-                        type="text"
-                        value={meal.sideDishes ? meal.sideDishes.join(', ') : ''}
-                        onChange={(e) => handleMealChange(index, 'sideDishes', e.target.value)}
-                        className={`w-full rounded-2xl border px-4 py-2.5 text-sm outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={`block text-xs font-semibold uppercase ${mutedText} mb-1`}>Dietary Tag</label>
-                      <select
-                        value={meal.dietaryTags?.[0] ?? 'Veg'}
-                        onChange={(e) => handleMealChange(index, 'dietaryTags', e.target.value)}
-                        className={`w-full rounded-2xl border px-4 py-2.5 text-sm outline-none ${isDark ? 'border-slate-600 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}
-                      >
-                        <option value="Veg">Veg</option>
-                        <option value="Non-Veg">Non-Veg</option>
-                        <option value="Vegan">Vegan</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => setMenuUploadText(JSON.stringify(weeklyMenu, null, 2))}
+                  className="rounded-2xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 hover:bg-slate-700 transition"
+                >
+                  📋 Copy Current Weekly Menu to Editor
+                </button>
+              </div>
             </div>
           </div>
         </div>

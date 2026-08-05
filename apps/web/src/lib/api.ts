@@ -178,10 +178,16 @@ export async function updateDayMenu(day: string, meals: any[]) {
   return data;
 }
 
+export async function addMenuItem(payload: { day: string; mealType: string; mainDish: string; sideDishes?: string[]; dietaryTags?: string[]; timing?: string }) {
+  const { data } = await api.post('/admin/menu/item', payload);
+  return data;
+}
+
 export async function uploadWeeklyMenuBulk(menuData: any[]) {
   const { data } = await api.post('/admin/menu/bulk', menuData);
   return data;
 }
+
 
 // Student
 export async function getStudentStatus(studentId: string) {

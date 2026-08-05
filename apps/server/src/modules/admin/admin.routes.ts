@@ -176,9 +176,18 @@ adminRouter.get('/menu', (_req, res) => {
 adminRouter.put('/menu/:day', (req, res) => {
   const updated = demoStore.updateDayMenu(req.params.day, req.body.meals);
   if (!updated) {
-    return res.status(404).json({ message: 'Day not found' });
+    return res.status(404).json({ message: 'Failed to update menu' });
   }
   return res.json(updated);
+});
+
+adminRouter.post('/menu/item', (req, res) => {
+  const { day, mealType, mainDish, sideDishes, dietaryTags, timing } = req.body;
+  if (!day || !mealType || !mainDish) {
+    return res.status(400).json({ message: 'Day, mealType, and mainDish are required.' });
+  }
+  const updated = demoStore.addOrUpdateMenuItem({ day, mealType, mainDish, sideDishes, dietaryTags, timing });
+  return res.json({ ok: true, message: `Added ${mainDish} to ${day} ${mealType}!`, dayMenu: updated });
 });
 
 adminRouter.post('/menu/bulk', (req, res) => {
@@ -193,6 +202,7 @@ adminRouter.post('/menu/bulk', (req, res) => {
   }
   return res.json({ ok: true, message: 'Full weekly menu updated successfully!' });
 });
+
 
 // Super Admin Platform Owner Controls
 adminRouter.get('/super/admins', (req, res) => {
