@@ -1,0 +1,227 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  student
+  mess_staff
+  admin
+  super_admin
+}
+
+enum MealPreference {
+  veg
+  nonVeg
+  vegan
+}
+
+enum BoxStatus {
+  issued
+  returned
+  lost
+  pending
+}
+
+enum UrgencyLevel {
+  Low
+  Medium
+  High
+}
+
+enum ComplaintStatus {
+  Open
+  InProgress
+  Resolved
+}
+
+enum TenantPlan {
+  basic
+  pro
+  enterprise
+}
+
+enum TenantStatus {
+  active
+  suspended
+  trial
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  phoneNumber    String?  @unique
+  passwordHash   String
+  role           UserRole @default(student)
+  name           String
+  hasPasswordSet Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("users")
+}
+
+model HostelTenant {
+  id               String       @id @default(uuid())
+  hostelName       String
+  organizationName String
+  location         String
+  contactEmail     String
+  contactPhone     String
+  plan             TenantPlan   @default(pro)
+  status           TenantStatus @default(active)
+  maxStudents      Int          @default(500)
+  paymentStatus    String?      @default("paid")
+  monthlyFee       Float?       @default(0)
+  paymentReference String?
+  nextRenewalDate  String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@map("hostel_tenants")
+}
+
+model StudentProfile {
+  id             String         @id @default(uuid())
+  name           String
+  email          String         @unique
+  phoneNumber    String?
+  roomNumber     String
+  rollNumber     String         @unique
+  mealPreference MealPreference @default(veg)
+  photoUrl       String
+  qrToken        String         @unique
+  isAttending    Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("student_profiles")
+}
+
+model MessStaffProfile {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  phoneNumber String?
+  role        String   @default("mess_staff")
+  shift       String   @default("all")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("mess_staff_profiles")
+}
+
+model AdminProfile {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  phoneNumber String?
+  role        UserRole @default(admin)
+  hostelName  String   @default("Sunrise Student Residency")
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("admin_profiles")
+}
+
+model LunchBoxRecord {
+  id                String    @id @default(uuid())
+  studentId         String
+  mealType          String    @default("lunch")
+  currentStatus     BoxStatus @default(issued)
+  issuedAt          DateTime  @default(now())
+  issuedByStaffId   String
+  returnedAt        DateTime?
+  returnedByStaffId String?
+
+  @@index([studentId])
+  @@index([currentStatus])
+  @@map("lunch_box_records")
+}
+
+model MealSession {
+  id          String   @id @default(uuid())
+  type        String
+  sessionDate String
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+
+  @@map("meal_sessions")
+}
+
+model WeeklyDayMenu {
+  id        String   @id @default(uuid())
+  day       String   @unique
+  mealsJson String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@map("weekly_day_menus")
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  studentId   String
+  sessionId   String?
+  rating      Float
+  taste       Int      @default(5)
+  quantity    Int      @default(5)
+  freshness   Int      @default(5)
+  temperature Int      @default(5)
+  tags        String?
+  comment     String?
+  returnCount Int      @default(1)
+  createdAt   DateTime @default(now())
+
+  @@index([studentId])
+  @@map("reviews")
+}
+
+model Complaint {
+  id          String          @id @default(uuid())
+  studentId   String
+  studentName String
+  roomNumber  String
+  category    String
+  subject     String
+  description String          @db.Text
+  urgency     UrgencyLevel    @default(Medium)
+  status      ComplaintStatus @default(Open)
+  response    String?         @db.Text
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([studentId])
+  @@map("complaints")
+}
+
+model VanDriver {
+  id            String   @id @default(uuid())
+  driverName    String
+  vehicleNumber String
+  phoneNumber   String
+  assignedRoute String
+  licenseNumber String?
+  status        String   @default("active")
+  createdAt     DateTime @default(now())
+
+  @@map("van_drivers")
+}
+
+model PasswordResetRequest {
+  id          String    @id @default(uuid())
+  userId      String?
+  name        String
+  phoneNumber String
+  role        UserRole
+  status      String    @default("pending")
+  note        String?
+  requestedAt DateTime  @default(now())
+  resolvedAt  DateTime?
+
+  @@map("password_reset_requests")
+}
