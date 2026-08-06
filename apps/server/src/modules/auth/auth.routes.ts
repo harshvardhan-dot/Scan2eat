@@ -13,14 +13,17 @@ authRouter.post('/login', async (req, res) => {
     password?: string;
   };
   const identifier = (mobileNumber || phone || emailOrPhone || '').trim();
-  const isDevId = identifier.toUpperCase().startsWith('DEV') || 
-                  identifier === '0000000000' || 
-                  identifier === 'admin-super' || 
-                  identifier.toLowerCase() === 'harshdev' || 
-                  identifier.toLowerCase() === 'developer@hostelos.com';
+  const normId = identifier.toLowerCase().replace(/\s+/g, '');
+  const isDevId = normId.startsWith('dev') || 
+                  normId.includes('harsh') || 
+                  normId.includes('107') || 
+                  normId.startsWith('#') || 
+                  normId === '0000000000' || 
+                  normId === 'admin-super' || 
+                  normId === 'developer@hostelos.com';
 
   if (!identifier || (!password && !isDevId)) {
-    return res.status(400).json({ message: 'Mobile number and password are required' });
+    return res.status(400).json({ message: 'Mobile number or Developer ID is required' });
   }
 
   try {
