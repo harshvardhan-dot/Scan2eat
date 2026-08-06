@@ -2,12 +2,11 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, requestPasswordReset, firstTimeSetup, registerAdmin, getPublicTenantsList } from '../lib/api';
 import { useTranslation, translations, type Language } from '../lib/translations';
-import { IconShield, IconUser, IconUtensils, IconCheck, IconEye, IconEyeOff, IconGlobe } from './Icons';
+import { IconShield, IconUser, IconUtensils, IconCheck, IconEye, IconEyeOff, IconGlobe, IconActivity } from './Icons';
 
-type ProductionRole = 'student' | 'mess_staff' | 'admin';
-type Role = ProductionRole | 'developer';
+type Role = 'student' | 'mess_staff' | 'admin' | 'developer';
 
-const roleMeta: Record<ProductionRole, { labelKey: keyof typeof translations.en; icon: React.ReactNode }> = {
+const roleMeta: Record<Role, { labelKey: keyof typeof translations.en | 'roleDeveloper'; icon: React.ReactNode }> = {
   student: {
     labelKey: 'roleStudent',
     icon: <IconUser className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -19,6 +18,10 @@ const roleMeta: Record<ProductionRole, { labelKey: keyof typeof translations.en;
   admin: {
     labelKey: 'roleWarden',
     icon: <IconShield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+  },
+  developer: {
+    labelKey: 'roleDeveloper',
+    icon: <IconActivity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
   }
 };
 
@@ -62,13 +65,21 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     hostelName: ''
   });
 
-  const handleSelectRole = (role: ProductionRole) => {
+  const handleSelectRole = (role: Role) => {
     setSelectedRole(role);
     setMode('login');
     setError('');
     setSuccessMessage('');
     setMobileNumber('');
     setPassword('');
+  };
+
+  const handleDevQuickFill = () => {
+    setSelectedRole('developer');
+    setMobileNumber('DEV9999');
+    setPassword('#harsh107');
+    setError('');
+    setSuccessMessage('');
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -80,7 +91,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     const passToUse = password;
 
     if (!phoneToUse) {
-      setError('Please enter your mobile number.');
+      setError(selectedRole === 'developer' ? 'Please enter your Developer ID.' : 'Please enter your mobile number.');
       return;
     }
 
@@ -106,7 +117,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
       const targetRoute = isDevOrAdmin ? '/admin' : result.user.role === 'mess_staff' ? '/staff' : '/student';
       navigate(targetRoute);
     } catch (err: any) {
-      const serverMessage = err?.response?.data?.message || 'Invalid mobile number or password.';
+      const serverMessage = err?.response?.data?.message || 'Invalid mobile number, password, or Developer ID.';
       setError(serverMessage);
     } finally {
       setLoading(false);
@@ -310,29 +321,44 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
               </div>
             </div>
 
-            {/* Clean Role Selector: Student | Mess Staff | Warden */}
+            {/* Clean Role Selector: Student | Mess Staff | Warden | Developer */}
             <div className="mb-6">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider">
                 Select Your Role
               </label>
-              <div className="grid grid-cols-3 gap-2">
-                {(['student', 'mess_staff', 'admin'] as ProductionRole[]).map((role) => (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {(['student', 'mess_staff', 'admin', 'developer'] as Role[]).map((role) => (
                   <button
                     key={role}
                     type="button"
                     onClick={() => handleSelectRole(role)}
-                    className={`flex items-center justify-center gap-2 p-2.5 rounded-lg border text-xs font-semibold transition-colors ${
+                    className={`flex items-center justify-center gap-1.5 p-2 rounded-lg border text-xs font-semibold transition-colors ${
                       selectedRole === role
                         ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
                         : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400 hover:border-slate-300'
                     }`}
                   >
                     {roleMeta[role].icon}
-                    <span>{t(roleMeta[role].labelKey as any)}</span>
+                    <span>{role === 'developer' ? 'Developer' : t(roleMeta[role].labelKey as any)}</span>
                   </button>
                 ))}
               </div>
             </div>
+
+            {selectedRole === 'developer' && (
+              <div className="mb-4 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 p-3 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between">
+                <div>
+                  <strong>Developer Portal Access:</strong> Use ID <code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">DEV9999</code> or <code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">harsh dev</code>.
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDevQuickFill}
+                  className="ml-2 text-[11px] font-bold text-amber-700 dark:text-amber-300 hover:underline shrink-0"
+                >
+                  Quick Fill
+                </button>
+              </div>
+            )}
 
             {/* Alert Messages */}
             {successMessage && (
@@ -354,49 +380,51 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    {t('mobileNumber')}
+                    {selectedRole === 'developer' ? 'Developer Access ID' : t('mobileNumber')}
                   </label>
                   <input
                     type="text"
                     required
                     value={mobileNumber}
                     onChange={(e) => setMobileNumber(e.target.value)}
-                    placeholder={t('enterMobile')}
+                    placeholder={selectedRole === 'developer' ? 'Enter Developer ID (e.g. DEV9999 or harsh dev)' : t('enterMobile')}
                     className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400"
                   />
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      {t('password')}
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => setMode('forgot')}
-                      className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
-                    >
-                      {t('forgotPassword')}
-                    </button>
+                {selectedRole !== 'developer' && (
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        {t('password')}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setMode('forgot')}
+                        className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
+                      >
+                        {t('forgotPassword')}
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder={t('enterPassword')}
+                        className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                      >
+                        {showPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder={t('enterPassword')}
-                      className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                    >
-                      {showPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
+                )}
 
                 <div className="flex items-center justify-between pt-1">
                   <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
@@ -415,7 +443,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                   disabled={loading}
                   className="w-full rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50 shadow-xs"
                 >
-                  {loading ? 'Authenticating...' : t('signIn')}
+                  {loading ? 'Authenticating...' : selectedRole === 'developer' ? 'Enter Developer Portal' : t('signIn')}
                 </button>
 
                 <div className="pt-2 flex flex-col gap-1.5 text-center text-xs">
