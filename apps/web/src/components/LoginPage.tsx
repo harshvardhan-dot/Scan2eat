@@ -460,13 +460,15 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                 </button>
 
                 <div className="pt-2 flex flex-col gap-1.5 text-center text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setMode('first_time')}
-                    className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
-                  >
-                    {t('firstTimeSetup')}
-                  </button>
+                  {selectedRole === 'student' && (
+                    <button
+                      type="button"
+                      onClick={() => setMode('first_time')}
+                      className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
+                    >
+                      {t('firstTimeSetup')}
+                    </button>
+                  )}
                   {selectedRole === 'admin' && (
                     <button
                       type="button"
