@@ -2,29 +2,23 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, requestPasswordReset, firstTimeSetup, registerAdmin, getPublicTenantsList } from '../lib/api';
 import { useTranslation, translations, type Language } from '../lib/translations';
+import { IconShield, IconUser, IconUtensils, IconCheck, IconEye, IconEyeOff, IconGlobe } from './Icons';
 
-type Role = 'student' | 'mess_staff' | 'admin' | 'developer';
+type ProductionRole = 'student' | 'mess_staff' | 'admin';
+type Role = ProductionRole | 'developer';
 
-const roleMeta: Record<Role, { labelKey: keyof typeof translations.en; icon: string; badge: string }> = {
+const roleMeta: Record<ProductionRole, { labelKey: keyof typeof translations.en; icon: React.ReactNode }> = {
   student: {
     labelKey: 'roleStudent',
-    icon: '🎫',
-    badge: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20'
+    icon: <IconUser className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
   },
   mess_staff: {
     labelKey: 'roleStaff',
-    icon: '🍱',
-    badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+    icon: <IconUtensils className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
   },
   admin: {
     labelKey: 'roleWarden',
-    icon: '👮',
-    badge: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20'
-  },
-  developer: {
-    labelKey: 'roleDeveloper',
-    icon: '👑',
-    badge: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+    icon: <IconShield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
   }
 };
 
@@ -46,7 +40,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [registeredTenants, setRegisteredTenants] = useState<any[]>([]);
+  const [, setRegisteredTenants] = useState<any[]>([]);
 
   useEffect(() => {
     getPublicTenantsList()
@@ -68,48 +62,13 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     hostelName: ''
   });
 
-  const handleSelectRole = (role: Role) => {
+  const handleSelectRole = (role: ProductionRole) => {
     setSelectedRole(role);
     setMode('login');
     setError('');
     setSuccessMessage('');
     setMobileNumber('');
     setPassword('');
-  };
-
-  const handleDemoLogin = async (role: Role) => {
-    let demoPhone = '';
-    let demoPass = '';
-    if (role === 'student') {
-      demoPhone = '9876543210';
-      demoPass = 'student123';
-    } else if (role === 'mess_staff') {
-      demoPhone = '9876543220';
-      demoPass = 'staff123';
-    } else if (role === 'admin') {
-      demoPhone = '9876543299';
-      demoPass = 'warden123';
-    } else if (role === 'developer') {
-      demoPhone = 'DEV9999';
-      demoPass = '#harsh107';
-    }
-
-    setSelectedRole(role);
-    setMobileNumber(demoPhone);
-    setPassword(demoPass);
-    setError('');
-    setSuccessMessage('');
-    setLoading(true);
-
-    try {
-      const result = await login(demoPhone, demoPass);
-      localStorage.setItem('hostelos-token', result.token);
-      onLoginSuccess?.(result.user, result.token);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Demo authentication failed.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -121,7 +80,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     const passToUse = password;
 
     if (!phoneToUse) {
-      setError(selectedRole === 'developer' ? 'Please enter your Developer ID.' : 'Please enter your mobile number.');
+      setError('Please enter your mobile number.');
       return;
     }
 
@@ -147,7 +106,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
       const targetRoute = isDevOrAdmin ? '/admin' : result.user.role === 'mess_staff' ? '/staff' : '/student';
       navigate(targetRoute);
     } catch (err: any) {
-      const serverMessage = err?.response?.data?.message || 'Invalid credentials or ID.';
+      const serverMessage = err?.response?.data?.message || 'Invalid mobile number or password.';
       setError(serverMessage);
     } finally {
       setLoading(false);
@@ -248,184 +207,174 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden font-sans">
-      {/* Vibrant Ambient Glass Aurora Backdrops */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-1/6 left-1/5 w-[30rem] h-[30rem] rounded-full bg-emerald-400/30 dark:bg-emerald-500/20 blur-[130px] animate-ambient-orb-1" />
-        <div className="absolute bottom-1/6 right-1/5 w-[32rem] h-[32rem] rounded-full bg-cyan-400/30 dark:bg-teal-500/20 blur-[140px] animate-ambient-orb-2" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[34rem] h-[34rem] rounded-full bg-indigo-400/25 dark:bg-indigo-500/15 blur-[150px] animate-ambient-orb-3" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-0 card-super-glass rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/40 dark:border-white/10 backdrop-blur-3xl">
-        {/* Left Side: Brand Header & Role Tabs */}
-        <div className="lg:col-span-5 p-6 sm:p-8 bg-white/30 dark:bg-slate-950/40 backdrop-blur-2xl border-b lg:border-b-0 lg:border-r border-white/20 dark:border-white/10 flex flex-col justify-between">
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900 font-sans">
+      <div className="w-full max-w-5xl bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        {/* Left Column: SaaS Branding & Benefits */}
+        <div className="lg:col-span-5 bg-slate-900 text-white p-8 sm:p-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800">
           <div>
-            {/* Header */}
-            <div className="flex items-center gap-3.5 mb-6">
-              <div className="relative group">
-                <div className="h-12 w-12 rounded-xl overflow-hidden border border-emerald-500/40 bg-slate-950 flex items-center justify-center shadow-md">
-                  <img
-                    src="/logo.jpg"
-                    alt="Scan2Eat Logo"
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      const parent = target.parentElement!;
-                      parent.innerHTML = `<div class="flex h-full w-full items-center justify-center bg-emerald-600 text-white font-bold text-xl">🍱</div>`;
-                    }}
-                  />
-                </div>
+            {/* Logo & Brand Name */}
+            <div className="flex items-center gap-3 mb-8">
+              <div className="h-10 w-10 rounded-lg bg-emerald-600 text-white font-bold text-lg flex items-center justify-center shadow-xs">
+                S2E
               </div>
               <div>
-                <h1 className="text-2xl font-black tracking-tight uppercase">
-                  <span className="brand-text-animated">Scan2Eat</span>
-                </h1>
-                <p className="text-xs text-emerald-400 font-semibold tracking-wide">HostelOS Meal Operations</p>
+                <span className="text-xl font-extrabold tracking-tight text-white uppercase">Scan2Eat</span>
+                <p className="text-[11px] font-medium text-emerald-400">HostelOS Meal Operations</p>
               </div>
             </div>
 
-            <div className="mb-6 rounded-lg bg-emerald-950/40 border border-emerald-800/40 p-3 text-xs text-emerald-300">
-              {t('loginWelcomeMessage')}
-            </div>
-
-            {/* Role Switcher */}
-            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
-              {t('selectRole')}
+            {/* Main Headline */}
+            <h2 className="text-2xl font-extrabold text-white tracking-tight leading-snug mb-3">
+              Smarter meal operations for hostels.
+            </h2>
+            <p className="text-sm text-slate-300 leading-relaxed mb-8">
+              Streamline mess verification, track food preparation in real time, and eliminate unauthorized meal access with instant QR validation.
             </p>
-            <div className="grid grid-cols-2 gap-2.5">
-              {(Object.keys(roleMeta) as Role[]).map((role) => (
-                <button
-                  key={role}
-                  type="button"
-                  onClick={() => handleSelectRole(role)}
-                  className={`flex items-center gap-2 p-3 rounded-2xl border text-xs font-semibold transition-all backdrop-blur-xl ${
-                    selectedRole === role
-                      ? 'border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shadow-md shadow-emerald-500/10'
-                      : 'border-white/20 dark:border-white/10 bg-white/40 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400 hover:border-emerald-500/30 hover:text-slate-900 dark:hover:text-slate-200'
-                  }`}
-                >
-                  <span className="text-base">{roleMeta[role].icon}</span>
-                  <span>{t(roleMeta[role].labelKey as any)}</span>
-                </button>
-              ))}
-            </div>
 
-            {/* Language Switcher */}
-            <div className="mt-6 flex items-center justify-between pt-4 border-t border-white/20 dark:border-white/10">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('switchLanguage')}:</span>
-              <div className="flex items-center gap-1 rounded-full bg-white/40 dark:bg-slate-950/60 p-1 border border-white/20 dark:border-white/10 backdrop-blur-md">
+            {/* Understated Benefits */}
+            <div className="space-y-4 pt-4 border-t border-slate-800">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 rounded-full bg-emerald-500/10 p-1 text-emerald-400">
+                  <IconCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-100">QR meal verification</h4>
+                  <p className="text-xs text-slate-400 mt-0.5">Instant scan and student identity verification at mess counters.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 rounded-full bg-emerald-500/10 p-1 text-emerald-400">
+                  <IconCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-100">Live meal tracking</h4>
+                  <p className="text-xs text-slate-400 mt-0.5">Real-time counts for lunch boxes issued, returned, and pending.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 rounded-full bg-emerald-500/10 p-1 text-emerald-400">
+                  <IconCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-100">Simple hostel operations</h4>
+                  <p className="text-xs text-slate-400 mt-0.5">Automated student rosters, food quality reviews, and warden controls.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer note */}
+          <div className="mt-10 pt-4 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>Powered by HostelOS</span>
+            <span className="font-semibold text-emerald-400">v2.4 Production</span>
+          </div>
+        </div>
+
+        {/* Right Column: Authentication Form */}
+        <div className="lg:col-span-7 p-8 sm:p-10 flex flex-col justify-center bg-white dark:bg-slate-800">
+          <div className="max-w-md mx-auto w-full">
+            {/* Top Bar with Language Selector */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Welcome back</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Sign in to your Scan2Eat portal</p>
+              </div>
+
+              {/* Language Switcher */}
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700/60 p-1 rounded-lg border border-slate-200 dark:border-slate-600">
+                <IconGlobe className="w-3.5 h-3.5 text-slate-500 ml-1" />
                 <button
                   type="button"
                   onClick={() => onSelectLang?.('en')}
-                  className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${
-                    lang === 'en' ? 'bg-slate-950 text-white dark:bg-emerald-500 dark:text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  className={`px-2 py-0.5 text-xs font-semibold rounded ${
+                    lang === 'en'
+                      ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                   }`}
                 >
-                  English
+                  EN
                 </button>
                 <button
                   type="button"
                   onClick={() => onSelectLang?.('hi')}
-                  className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${
-                    lang === 'hi' ? 'bg-slate-950 text-white dark:bg-emerald-500 dark:text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  className={`px-2 py-0.5 text-xs font-semibold rounded ${
+                    lang === 'hi'
+                      ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                   }`}
                 >
                   हिंदी
                 </button>
               </div>
             </div>
-          </div>
 
-          {/* Quick Demo Login Preset Buttons */}
-          <div className="mt-8 pt-4 border-t border-white/20 dark:border-white/10">
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mb-2.5">{t('demoPresets')}</p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('student')}
-                className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-white/50 dark:bg-slate-900/60 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all border border-white/30 dark:border-emerald-500/30 shadow-xs backdrop-blur-md"
-              >
-                🎫 Student Demo
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('mess_staff')}
-                className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-white/50 dark:bg-slate-900/60 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all border border-white/30 dark:border-emerald-500/30 shadow-xs backdrop-blur-md"
-              >
-                🍱 Staff Demo
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('admin')}
-                className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-white/50 dark:bg-slate-900/60 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all border border-white/30 dark:border-emerald-500/30 shadow-xs backdrop-blur-md"
-              >
-                👮 Warden Demo
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('developer')}
-                className="px-3 py-1.5 text-[11px] font-bold rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/25 transition-all border border-amber-500/40 shadow-xs backdrop-blur-md"
-              >
-                👑 Developer Demo
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side: Auth Forms */}
-        <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-center">
-          <div className="mb-4">
-            <span className={`inline-block text-xs font-bold px-4 py-1.5 rounded-full border backdrop-blur-md shadow-xs ${roleMeta[selectedRole].badge}`}>
-              {t(roleMeta[selectedRole].labelKey as any)} {t('signIn')}
-            </span>
-          </div>
-
-          {selectedRole === 'developer' && (
-            <div className="mb-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3.5 text-xs text-amber-300 backdrop-blur-md">
-              👑 <strong>Developer Access Mode:</strong> Authentication via Developer ID only (`DEV9999` or `harsh dev`). Password is not required.
-            </div>
-          )}
-
-          {successMessage && (
-            <div className="mb-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3.5 text-xs text-emerald-300 backdrop-blur-md">
-              ✅ {successMessage}
-            </div>
-          )}
-
-          {error && (
-            <div className="mb-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 p-3.5 text-xs text-rose-300 backdrop-blur-md">
-              ⚠️ {error}
-            </div>
-          )}
-
-          {/* MODE 1: LOGIN FORM */}
-          {mode === 'login' && (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                  {selectedRole === 'developer' ? 'Developer Access ID' : t('mobileNumber')}
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
-                  placeholder={selectedRole === 'developer' ? 'Enter Developer ID (e.g. DEV9999 or harsh dev)' : t('enterMobile')}
-                  className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500"
-                />
+            {/* Clean Role Selector: Student | Mess Staff | Warden */}
+            <div className="mb-6">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider">
+                Select Your Role
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['student', 'mess_staff', 'admin'] as ProductionRole[]).map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => handleSelectRole(role)}
+                    className={`flex items-center justify-center gap-2 p-2.5 rounded-lg border text-xs font-semibold transition-colors ${
+                      selectedRole === role
+                        ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                        : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                    }`}
+                  >
+                    {roleMeta[role].icon}
+                    <span>{t(roleMeta[role].labelKey as any)}</span>
+                  </button>
+                ))}
               </div>
+            </div>
 
-              {selectedRole !== 'developer' && (
+            {/* Alert Messages */}
+            {successMessage && (
+              <div className="mb-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 p-3 text-xs text-emerald-800 dark:text-emerald-200 flex items-center gap-2">
+                <IconCheck className="w-4 h-4 shrink-0 text-emerald-600" />
+                <span>{successMessage}</span>
+              </div>
+            )}
+
+            {error && (
+              <div className="mb-4 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 p-3 text-xs text-rose-800 dark:text-rose-200 flex items-center gap-2">
+                <span className="shrink-0 font-bold">⚠️</span>
+                <span>{error}</span>
+              </div>
+            )}
+
+            {/* MODE 1: LOGIN FORM */}
+            {mode === 'login' && (
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    {t('mobileNumber')}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={mobileNumber}
+                    onChange={(e) => setMobileNumber(e.target.value)}
+                    placeholder={t('enterMobile')}
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
                     <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                       {t('password')}
                     </label>
                     <button
                       type="button"
                       onClick={() => setMode('forgot')}
-                      className="text-xs text-emerald-500 dark:text-emerald-400 hover:underline font-semibold"
+                      className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
                     >
                       {t('forgotPassword')}
                     </button>
@@ -437,222 +386,222 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder={t('enterPassword')}
-                      className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500 pr-10"
+                      className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 pr-10"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-200"
+                      className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                     >
-                      {showPassword ? '🙈' : '👁️'}
+                      {showPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
-              )}
 
-              <div className="flex items-center justify-between pt-1">
-                <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="rounded border-slate-700 bg-slate-950 text-emerald-600 focus:ring-0"
-                  />
-                  <span>{t('rememberMe')}</span>
-                </label>
-              </div>
+                <div className="flex items-center justify-between pt-1">
+                  <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span>{t('rememberMe')}</span>
+                  </label>
+                </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full btn-pill-dark text-sm shadow-2xl disabled:opacity-50 mt-2"
-              >
-                {loading ? '...' : selectedRole === 'developer' ? '👑 Enter Developer Portal' : t('signIn')}
-              </button>
-
-              <div className="pt-2 flex flex-col gap-1.5 text-center text-xs">
                 <button
-                  type="button"
-                  onClick={() => setMode('first_time')}
-                  className="text-emerald-400 hover:underline"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50 shadow-xs"
                 >
-                  {t('firstTimeSetup')}
+                  {loading ? 'Authenticating...' : t('signIn')}
                 </button>
-                {selectedRole === 'admin' && (
+
+                <div className="pt-2 flex flex-col gap-1.5 text-center text-xs">
                   <button
                     type="button"
-                    onClick={() => setMode('register_admin')}
-                    className="text-slate-400 hover:text-slate-200 hover:underline"
+                    onClick={() => setMode('first_time')}
+                    className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
                   >
-                    {t('newWardenRegister')}
+                    {t('firstTimeSetup')}
                   </button>
-                )}
-              </div>
-            </form>
-          )}
+                  {selectedRole === 'admin' && (
+                    <button
+                      type="button"
+                      onClick={() => setMode('register_admin')}
+                      className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:underline"
+                    >
+                      {t('newWardenRegister')}
+                    </button>
+                  )}
+                </div>
+              </form>
+            )}
 
-          {/* MODE 2: FORGOT PASSWORD */}
-          {mode === 'forgot' && (
-            <form onSubmit={handleForgotRequest} className="space-y-4">
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Enter your registered mobile number. A reset request will be dispatched to your hostel warden/administrator.
-              </p>
+            {/* MODE 2: FORGOT PASSWORD */}
+            {mode === 'forgot' && (
+              <form onSubmit={handleForgotRequest} className="space-y-4">
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Enter your registered mobile number. A password reset request will be dispatched to your hostel warden or administrator.
+                </p>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Registered Mobile Number
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={requestMobile}
-                  onChange={(e) => setRequestMobile(e.target.value)}
-                  placeholder="e.g. 9876543210"
-                  className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Registered Mobile Number
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={requestMobile}
+                    onChange={(e) => setRequestMobile(e.target.value)}
+                    placeholder="e.g. 9876543210"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white"
+                  />
+                </div>
 
-              <div className="flex gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setMode('login')}
-                  className="flex-1 rounded-full border border-white/20 bg-white/40 dark:bg-slate-800/60 px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-white/60 backdrop-blur-md transition-all shadow-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 btn-pill-dark text-xs py-3 disabled:opacity-50"
-                >
-                  Request Reset
-                </button>
-              </div>
-            </form>
-          )}
+                <div className="flex gap-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setMode('login')}
+                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-xs font-semibold disabled:opacity-50"
+                  >
+                    Request Reset
+                  </button>
+                </div>
+              </form>
+            )}
 
-          {/* MODE 3: FIRST TIME STUDENT SETUP */}
-          {mode === 'first_time' && (
-            <form onSubmit={handleFirstTimeSetup} className="space-y-4">
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                If your mobile number was pre-registered by your Warden, set your password here to activate your digital meal pass.
-              </p>
+            {/* MODE 3: FIRST TIME STUDENT SETUP */}
+            {mode === 'first_time' && (
+              <form onSubmit={handleFirstTimeSetup} className="space-y-4">
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  If your mobile number was pre-registered by your Warden, set your password here to activate your digital meal pass.
+                </p>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Mobile Number
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={requestMobile}
-                  onChange={(e) => setRequestMobile(e.target.value)}
-                  placeholder="e.g. 9876543210"
-                  className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Mobile Number
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={requestMobile}
+                    onChange={(e) => setRequestMobile(e.target.value)}
+                    placeholder="e.g. 9876543210"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Choose New Password
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={setupPassword}
-                  onChange={(e) => setSetupPassword(e.target.value)}
-                  placeholder="Minimum 4 characters"
-                  className="w-full rounded-2xl glass-input px-4 py-3 text-sm focus:border-emerald-500"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Choose New Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={setupPassword}
+                    onChange={(e) => setSetupPassword(e.target.value)}
+                    placeholder="Minimum 4 characters"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white"
+                  />
+                </div>
 
-              <div className="flex gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setMode('login')}
-                  className="flex-1 rounded-full border border-white/20 bg-white/40 dark:bg-slate-800/60 px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-white/60 backdrop-blur-md transition-all shadow-sm"
-                >
-                  Back to Sign In
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 btn-pill-dark text-xs py-3 disabled:opacity-50"
-                >
-                  Activate Pass
-                </button>
-              </div>
-            </form>
-          )}
+                <div className="flex gap-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setMode('login')}
+                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200"
+                  >
+                    Back to Sign In
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-xs font-semibold disabled:opacity-50"
+                  >
+                    Activate Pass
+                  </button>
+                </div>
+              </form>
+            )}
 
-          {/* MODE 4: WARDEN REGISTRATION */}
-          {mode === 'register_admin' && (
-            <form onSubmit={handleAdminRegistration} className="space-y-3.5">
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Register a new Hostel Warden account:
-              </p>
+            {/* MODE 4: WARDEN REGISTRATION */}
+            {mode === 'register_admin' && (
+              <form onSubmit={handleAdminRegistration} className="space-y-3.5">
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Register a new Hostel Warden account:
+                </p>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={adminForm.name}
-                  onChange={(e) => setAdminForm({ ...adminForm, name: e.target.value })}
-                  placeholder="Dr. Rajesh Sharma"
-                  className="w-full rounded-2xl glass-input px-4 py-2.5 text-xs"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={adminForm.name}
+                    onChange={(e) => setAdminForm({ ...adminForm, name: e.target.value })}
+                    placeholder="Dr. Rajesh Sharma"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Mobile Number (Sign In ID)
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={adminForm.phoneNumber}
-                  onChange={(e) => setAdminForm({ ...adminForm, phoneNumber: e.target.value })}
-                  placeholder="9876543299"
-                  className="w-full rounded-2xl glass-input px-4 py-2.5 text-xs"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Mobile Number (Sign In ID)
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={adminForm.phoneNumber}
+                    onChange={(e) => setAdminForm({ ...adminForm, phoneNumber: e.target.value })}
+                    placeholder="9876543299"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={adminForm.password}
-                  onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
-                  placeholder="Enter secure password"
-                  className="w-full rounded-2xl glass-input px-4 py-2.5 text-xs"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={adminForm.password}
+                    onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
+                    placeholder="Enter secure password"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white"
+                  />
+                </div>
 
-              <div className="flex gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setMode('login')}
-                  className="flex-1 rounded-full border border-white/20 bg-white/40 dark:bg-slate-800/60 px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-white/60 backdrop-blur-md transition-all shadow-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 btn-pill-dark text-xs py-3 disabled:opacity-50"
-                >
-                  Register Warden
-                </button>
-              </div>
-            </form>
-          )}
+                <div className="flex gap-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setMode('login')}
+                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-xs font-semibold disabled:opacity-50"
+                  >
+                    Register Warden
+                  </button>
+                </div>
+              </form>
+            )}
 
+          </div>
         </div>
       </div>
     </div>

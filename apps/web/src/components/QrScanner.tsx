@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useTranslation, Language } from '../lib/translations';
+import { IconCamera, IconUpload, IconQr } from './Icons';
 
 export function parseQrToken(text: string): string {
   if (!text) return '';
@@ -81,19 +82,15 @@ export function QrScanner({
   }, []);
 
   const stopScanner = async () => {
-    // If a start action is currently in progress, wait for it to settle first
     if (startPromiseRef.current) {
       try {
         await startPromiseRef.current;
-      } catch {
-        // ignore start failures
-      }
+      } catch {}
     }
 
     if (html5QrcodeRef.current) {
       try {
         const state = html5QrcodeRef.current.getState();
-        // State 2 = SCANNING, State 3 = PAUSED
         if (state === 2 || state === 3 || html5QrcodeRef.current.isScanning) {
           await html5QrcodeRef.current.stop();
         }
@@ -135,7 +132,7 @@ export function QrScanner({
 
         const config = {
           fps: 10,
-          qrbox: { width: 220, height: 220 },
+          qrbox: { width: 240, height: 240 },
           aspectRatio: 1.0,
         };
 
@@ -156,9 +153,7 @@ export function QrScanner({
             setLastScanned(normalizedToken);
             onScanSuccess(normalizedToken);
           },
-          () => {
-            // Frame scan failure - safe to ignore
-          }
+          () => {}
         );
 
         startPromiseRef.current = startPromise as Promise<any>;
@@ -228,7 +223,7 @@ export function QrScanner({
   };
 
   return (
-    <div className="card-super-glass rounded-[2.2rem] p-6 space-y-4">
+    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs space-y-4">
       {/* Off-screen container for file scanning */}
       <div
         id={`temp-file-scanner-${scannerId}`}
@@ -236,50 +231,53 @@ export function QrScanner({
       />
 
       {/* Header & Tab Selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-700">
         <div>
-          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
             {t('qrScannerTitle')}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             {t('qrScannerDesc')}
           </p>
         </div>
 
-        <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
+        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
           <button
             type="button"
             onClick={() => setActiveTab('camera')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded transition-colors ${
               activeTab === 'camera'
-                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
             }`}
           >
-            {t('tabLiveCamera')}
+            <IconCamera className="w-3.5 h-3.5" />
+            <span>{t('tabLiveCamera')}</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('upload')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded transition-colors ${
               activeTab === 'upload'
-                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
             }`}
           >
-            {t('tabUploadImage')}
+            <IconUpload className="w-3.5 h-3.5" />
+            <span>{t('tabUploadImage')}</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('manual')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded transition-colors ${
               activeTab === 'manual'
-                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
             }`}
           >
-            {t('tabManualToken')}
+            <IconQr className="w-3.5 h-3.5" />
+            <span>Manual Input</span>
           </button>
         </div>
       </div>
@@ -289,11 +287,11 @@ export function QrScanner({
         <div className="mt-4 space-y-3">
           {cameras.length > 1 && (
             <div className="flex items-center gap-2">
-              <label className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('selectCamera')}</label>
+              <label className="text-xs text-slate-600 dark:text-slate-400 font-semibold">{t('selectCamera')}:</label>
               <select
                 value={selectedCameraId}
                 onChange={(e) => setSelectedCameraId(e.target.value)}
-                className="text-xs rounded-md border border-slate-300 bg-slate-50 px-2 py-1 text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1 text-slate-800 dark:text-slate-200"
               >
                 {cameras.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -306,26 +304,26 @@ export function QrScanner({
 
           {cameraError ? (
             <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-200">
-              <p className="text-sm font-semibold flex items-center gap-2">
+              <p className="text-xs font-bold flex items-center gap-2">
                 ⚠️ Camera Access Notice
               </p>
               <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">{cameraError}</p>
             </div>
           ) : (
-            <div className="relative overflow-hidden rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center justify-center min-h-[260px]">
-              <div id={scannerId} className="w-full max-w-sm rounded-lg overflow-hidden" />
+            <div className="relative overflow-hidden rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center justify-center min-h-[300px]">
+              <div id={scannerId} className="w-full max-w-md rounded-lg overflow-hidden" />
 
               {!isScanning && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 p-4 text-center">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 p-4 text-center">
                   <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin mb-2" />
-                  <p className="text-xs font-medium text-slate-300">Initializing camera feed...</p>
+                  <p className="text-xs font-semibold text-slate-300">Initializing scanner camera...</p>
                 </div>
               )}
 
-              {/* Viewfinder overlay graphics */}
+              {/* Viewfinder overlay */}
               {isScanning && (
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <div className="w-52 h-52 border-2 border-dashed border-emerald-400/80 rounded-xl relative shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                  <div className="w-56 h-56 border-2 border-emerald-500 rounded-lg relative">
                     <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-emerald-400" />
                     <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-emerald-400" />
                     <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-emerald-400" />
@@ -341,11 +339,9 @@ export function QrScanner({
       {/* Tab 2: Upload Image File */}
       {activeTab === 'upload' && (
         <div className="mt-4 space-y-3">
-          <div className="rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center dark:border-slate-700 dark:bg-slate-800/50">
-            <div className="mx-auto w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl mb-3">
-              📁
-            </div>
-            <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+          <div className="rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-8 text-center">
+            <IconUpload className="mx-auto w-10 h-10 text-emerald-600 mb-2" />
+            <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
               {t('uploadQrPrompt')}
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -358,25 +354,25 @@ export function QrScanner({
                 const file = e.target.files?.[0];
                 if (file) void handleFileUpload(file);
               }}
-              className="mt-4 inline-block text-xs text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-emerald-700 dark:text-slate-300"
+              className="mt-4 inline-block text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-emerald-700"
             />
           </div>
 
           {fileError && (
-            <div className="rounded-md bg-rose-50 p-3 text-xs text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40">
+            <div className="rounded-lg bg-rose-50 dark:bg-rose-950/40 p-3 text-xs text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40">
               ❌ {fileError}
             </div>
           )}
 
           {fileSuccess && (
-            <div className="rounded-md bg-emerald-50 p-3 text-xs text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40">
+            <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/40 p-3 text-xs text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40">
               ✅ {fileSuccess}
             </div>
           )}
         </div>
       )}
 
-      {/* Tab 3: Manual Token Input & Instant Simulator */}
+      {/* Tab 3: Manual Token Input */}
       {activeTab === 'manual' && (
         <div className="mt-4 space-y-4">
           <form onSubmit={handleManualSubmit} className="flex gap-2">
@@ -384,52 +380,29 @@ export function QrScanner({
               type="text"
               value={manualToken}
               onChange={(e) => setManualToken(e.target.value)}
-              placeholder="Enter QR token (e.g. qr-student-001)"
-              className="flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              placeholder="Enter student QR token ID"
+              className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-mono text-slate-900 dark:text-white"
             />
             <button
               type="submit"
-              className="rounded-md bg-emerald-600 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-700 transition-colors"
+              className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-xs font-semibold transition-colors"
             >
-              {t('verifyTokenBtn')}
+              Verify Token
             </button>
           </form>
-
-          {/* Quick Mock Tokens Selector for Mess Staff Testing */}
-          <div className="rounded-md bg-slate-50 p-3 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
-            <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-              {t('quickTestTokens')}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {['qr-student-001', 'qr-student-002', 'qr-student-003'].map((token) => (
-                <button
-                  key={token}
-                  type="button"
-                  onClick={() => {
-                    setManualToken(token);
-                    setLastScanned(token);
-                    onScanSuccess(token);
-                  }}
-                  className="rounded-md bg-white px-2.5 py-1 text-xs font-mono text-slate-700 border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600 dark:hover:border-emerald-400 dark:hover:text-emerald-300 transition-colors shadow-xs"
-                >
-                  {token}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       )}
 
       {/* Scanned Result Banner */}
       {lastScanned && (
-        <div className="mt-3 flex items-center justify-between rounded-md bg-slate-100 px-3 py-2 text-xs dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+        <div className="mt-3 flex items-center justify-between rounded-lg bg-slate-100 dark:bg-slate-900 px-3.5 py-2 text-xs border border-slate-200 dark:border-slate-700">
           <span className="text-slate-600 dark:text-slate-400">
-            {t('lastScannedToken')} <strong className="font-mono text-emerald-600 dark:text-emerald-400">{lastScanned}</strong>
+            Scanned Token: <strong className="font-mono text-emerald-600 dark:text-emerald-400">{lastScanned}</strong>
           </span>
           <button
             type="button"
             onClick={() => setLastScanned(null)}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold"
           >
             ✕
           </button>
@@ -438,4 +411,3 @@ export function QrScanner({
     </div>
   );
 }
-

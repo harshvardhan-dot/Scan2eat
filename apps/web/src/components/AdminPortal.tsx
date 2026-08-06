@@ -647,12 +647,12 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
     );
   }
 
-  const cardClass = 'card-super-glass rounded-[2.2rem] p-6';
-  const panelClass = 'card-super-glass rounded-[2.2rem] p-6 sm:p-8';
-  const inputClass = 'w-full rounded-2xl glass-input px-4 py-2.5 text-sm transition-all backdrop-blur-md';
+  const cardClass = 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs';
+  const panelClass = 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 sm:p-8 shadow-xs';
+  const inputClass = 'w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2 text-sm text-slate-900 dark:text-white';
   const mutedText = isDark ? 'text-slate-400' : 'text-slate-600';
   const headText = isDark ? 'text-white' : 'text-slate-900';
-  const subBoxBg = isDark ? 'bg-slate-900/40 border border-white/10 text-slate-100 backdrop-blur-xl rounded-2xl' : 'bg-white/40 border border-white/40 text-slate-900 backdrop-blur-xl rounded-2xl';
+  const subBoxBg = isDark ? 'bg-slate-900 border border-slate-700 text-slate-100 rounded-lg' : 'bg-slate-50 border border-slate-200 text-slate-900 rounded-lg';
 
   // -------------------------------------------------------------
   // DEDICATED DEVELOPER SYSTEM OWNER VIEW (super_admin / developer)
@@ -1650,86 +1650,86 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
       </div>
 
       {/* Tab Switcher */}
-      <div className="mt-6 flex gap-2 border-t border-slate-700/70 pt-4 overflow-x-auto pb-2 flex-nowrap sm:flex-wrap no-scrollbar">
+      <div className="mt-4 flex gap-1.5 border-t border-slate-200 dark:border-slate-700 pt-4 overflow-x-auto pb-2 flex-nowrap sm:flex-wrap no-scrollbar">
           <button
             onClick={() => setActiveTab('lunchbox_tracker')}
-            className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-semibold transition flex items-center gap-2 ${
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors flex items-center gap-1.5 ${
               activeTab === 'lunchbox_tracker'
-                ? 'bg-gradient-to-r from-violet-600 to-amber-500 text-white shadow-lg shadow-violet-500/25'
-                : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
             }`}
           >
-            🍱 Today's Lunch Box Tracker {dailySummary?.notReturnedCount > 0 ? `(⚠️ ${dailySummary.notReturnedCount} Outstanding)` : ''}
+            <span>Today's Lunch Box Tracker {dailySummary?.notReturnedCount > 0 ? `(${dailySummary.notReturnedCount} Outstanding)` : ''}</span>
           </button>
           <button
             onClick={() => setActiveTab('students')}
-            className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-semibold transition ${
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
               activeTab === 'students'
-                ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
-                : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
             }`}
           >
-            👥 Student Directory ({students.length})
+            Student Directory ({students.length})
           </button>
           <button
             onClick={() => setActiveTab('bulk_excel')}
-            className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-semibold transition ${
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
               activeTab === 'bulk_excel'
-                ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
-                : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
             }`}
           >
-            📊 Excel Bulk Import
+            Excel Bulk Import
           </button>
           <button
             onClick={() => setActiveTab('password_queue')}
-            className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-semibold transition ${
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
               activeTab === 'password_queue'
-                ? 'bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25'
-                : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
             }`}
           >
-            🔑 Password Reset Requests {resetRequests.length > 0 ? `(${resetRequests.length})` : ''}
+            Password Reset Requests {resetRequests.length > 0 ? `(${resetRequests.length})` : ''}
           </button>
           <button
             onClick={() => setActiveTab('van_drivers')}
-            className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-semibold transition ${
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
               activeTab === 'van_drivers'
-                ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
-                : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
             }`}
           >
-            🚐 Van Drivers ({vanDrivers.length})
+            Van Drivers ({vanDrivers.length})
           </button>
           <button
             onClick={() => setActiveTab('menu')}
-            className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-semibold transition ${
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
               activeTab === 'menu'
-                ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
-                : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
             }`}
           >
-            📅 Weekly Mess Menu
+            Weekly Mess Menu
           </button>
 
           <button
             onClick={() => setActiveTab('complaints')}
-            className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-semibold transition flex items-center gap-2 ${
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors flex items-center gap-1.5 ${
               activeTab === 'complaints'
-                ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25 font-bold'
-                : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
             }`}
           >
-            📬 Student Complaints {complaints.length > 0 ? `(${complaints.length})` : ''}
+            Student Complaints {complaints.length > 0 ? `(${complaints.length})` : ''}
           </button>
         </div>
 
 
       {/* Status Notification */}
       {status ? (
-        <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-xs font-medium text-cyan-300 flex items-center justify-between">
-          <span>ℹ️ {status}</span>
-          <span className="text-[10px] opacity-70">Realtime Express Node</span>
+        <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center justify-between shadow-xs">
+          <span>System Update: {status}</span>
+          <span className="text-[10px] text-slate-500 font-mono">Realtime Express Node</span>
         </div>
       ) : null}
 
@@ -1738,29 +1738,29 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
         <div className="space-y-6">
           {/* Warden Summary Header Cards */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className={`rounded-3xl border p-5 ${cardClass} bg-gradient-to-br from-violet-950/30 to-slate-900`}>
-              <p className="text-xs uppercase font-bold text-violet-400">Total Resident Students</p>
-              <p className="mt-2 text-3xl font-extrabold text-white">{dailySummary?.totalStudents ?? students.length}</p>
-              <p className="mt-1 text-xs text-slate-300">Registered in hostel</p>
+            <div className={cardClass}>
+              <p className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400">Total Resident Students</p>
+              <p className="mt-2 text-3xl font-extrabold text-slate-900 dark:text-white">{dailySummary?.totalStudents ?? students.length}</p>
+              <p className="mt-1 text-xs text-slate-500">Registered in hostel</p>
             </div>
 
-            <div className={`rounded-3xl border p-5 ${cardClass} bg-gradient-to-br from-amber-950/30 to-slate-900`}>
-              <p className="text-xs uppercase font-bold text-amber-400">Lunch Boxes Issued Today</p>
-              <p className="mt-2 text-3xl font-extrabold text-amber-300">{dailySummary?.issuedCount ?? 0}</p>
-              <p className="mt-1 text-xs text-slate-300">Handed over to students</p>
+            <div className={cardClass}>
+              <p className="text-xs uppercase font-bold text-amber-600 dark:text-amber-400">Lunch Boxes Issued Today</p>
+              <p className="mt-2 text-3xl font-extrabold text-amber-600 dark:text-amber-400">{dailySummary?.issuedCount ?? 0}</p>
+              <p className="mt-1 text-xs text-slate-500">Handed over to students</p>
             </div>
 
-            <div className={`rounded-3xl border p-5 ${cardClass} bg-gradient-to-br from-emerald-950/30 to-slate-900`}>
-              <p className="text-xs uppercase font-bold text-emerald-400">Boxes Returned</p>
-              <p className="mt-2 text-3xl font-extrabold text-emerald-300">{dailySummary?.returnedCount ?? 0}</p>
-              <p className="mt-1 text-xs text-slate-300">Returned to mess counter</p>
+            <div className={cardClass}>
+              <p className="text-xs uppercase font-bold text-emerald-600 dark:text-emerald-400">Boxes Returned</p>
+              <p className="mt-2 text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">{dailySummary?.returnedCount ?? 0}</p>
+              <p className="mt-1 text-xs text-slate-500">Returned to mess counter</p>
             </div>
 
-            <div className={`rounded-3xl border p-5 ${cardClass} bg-gradient-to-br from-rose-950/40 to-slate-900 border-rose-500/40`}>
-              <p className="text-xs uppercase font-bold text-rose-400 flex items-center justify-between">
+            <div className={cardClass}>
+              <p className="text-xs uppercase font-bold text-rose-600 dark:text-rose-400 flex items-center justify-between">
                 <span>Not Returned</span>
                 {dailySummary?.notReturnedCount > 0 && (
-                  <span className="rounded-full bg-rose-500 text-white px-2 py-0.5 text-[10px] font-extrabold animate-pulse">Action Req</span>
+                  <span className="rounded bg-rose-600 text-white px-2 py-0.5 text-[10px] font-bold">Action Req</span>
                 )}
               </p>
               <p className="mt-2 text-3xl font-extrabold text-rose-400">{dailySummary?.notReturnedCount ?? 0}</p>

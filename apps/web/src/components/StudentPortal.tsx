@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import { getStudentStatus, getWeeklyMenu, submitFoodReview, studentCheckIn, setMealOptIn } from '../lib/api';
 import { useTranslation, type Language } from '../lib/translations';
+import { IconCheck, IconCopy, IconQr, IconUtensils } from './Icons';
 
 interface StudentPortalProps {
   user: { id?: string; name: string; email?: string; role: string };
@@ -52,7 +53,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
     try {
       const res = await studentCheckIn(studentId, 'lunch');
       setIsCheckedIn(true);
-      setCheckInMsg(res.message || '✅ Confirmed going to college! Your QR Pass is now active.');
+      setCheckInMsg(res.message || 'Confirmed attending today. Your meal pass is now active.');
       await fetchStatus();
     } catch {
       setCheckInMsg('Failed to activate QR pass. Please try again.');
@@ -67,7 +68,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
       await setMealOptIn(studentId, false);
       setIsCheckedIn(false);
       setConfirmCheckInBox(false);
-      setCheckInMsg('Marked as NOT going to college today. QR pass deactivated.');
+      setCheckInMsg('Marked as NOT attending today. QR pass deactivated.');
       await fetchStatus();
     } catch {
       setCheckInMsg('Failed to update status.');
@@ -156,19 +157,18 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
   const selectedMenu = weeklyMenu.find((m) => m.day === selectedDay) ?? weeklyMenu[0];
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Student Profile Header matching reference layout */}
-      <div className="card-super-glass rounded-[2.2rem] p-6 sm:p-8 flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-6 max-w-6xl mx-auto font-sans">
+      {/* Student Profile Header */}
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Today's status</span>
-            <span className="ml-auto font-bold text-slate-900 dark:text-white bg-white/60 dark:bg-slate-800/80 px-2.5 py-0.5 rounded-full border border-white/20">100% Verified</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
+            <span>Today's Status: Active Pass</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             {student.name}
           </h1>
-          <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
+          <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
             Room <strong className="text-slate-900 dark:text-white">{student.roomNumber}</strong> • Roll <strong className="text-slate-900 dark:text-white">{student.rollNumber}</strong> • Diet <strong className="text-emerald-600 dark:text-emerald-400 font-bold">{student.mealPreference}</strong>
           </p>
         </div>
@@ -177,9 +177,10 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
           <button
             type="button"
             onClick={handleCopyToken}
-            className="btn-pill-dark text-xs py-3 px-5"
+            className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 transition-colors shadow-xs"
           >
-            ⏱️ {copied ? t('tokenCopied') : t('copyToken')}
+            <IconCopy className="w-4 h-4 text-slate-500" />
+            <span>{copied ? t('tokenCopied') : t('copyToken')}</span>
           </button>
         </div>
       </div>
@@ -189,55 +190,57 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
         {/* QR Code Pass Card */}
         <div className="lg:col-span-5">
           {!isCheckedIn ? (
-            <div className="card-super-glass rounded-[2.2rem] p-6 text-center space-y-4">
-              <div className="mx-auto w-14 h-14 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center text-2xl shadow-lg">
-                🎓
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs text-center space-y-4">
+              <div className="mx-auto w-12 h-12 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40 flex items-center justify-center">
+                <IconQr className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Going to College Today?</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Your meal QR Pass is currently <strong>locked</strong>. Please confirm that you are going to college / attending mess today to activate your QR pass.
-              </p>
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Attending Mess Today?</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Your digital QR pass is currently locked. Please confirm your mess attendance today to activate your QR pass.
+                </p>
+              </div>
 
               {checkInMsg && (
-                <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-300 backdrop-blur-md">
+                <div className="rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 p-3 text-xs text-amber-800 dark:text-amber-200">
                   {checkInMsg}
                 </div>
               )}
 
-              <label className="flex items-start gap-2 text-left cursor-pointer rounded-2xl border border-white/10 bg-slate-900/40 p-3.5 text-xs text-slate-300 backdrop-blur-md hover:border-emerald-500/40 transition">
+              <label className="flex items-start gap-2.5 text-left cursor-pointer rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-3 text-xs text-slate-700 dark:text-slate-300">
                 <input
                   type="checkbox"
                   checked={confirmCheckInBox}
                   onChange={(e) => setConfirmCheckInBox(e.target.checked)}
-                  className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-0"
+                  className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                 />
-                <span>I confirm I am going to college today and request my mess meal pass.</span>
+                <span>I confirm I am attending the mess today and request my digital meal pass.</span>
               </label>
 
               <button
                 type="button"
                 onClick={handleCheckIn}
                 disabled={!confirmCheckInBox || loading}
-                className="w-full btn-pill-dark text-xs py-3 disabled:opacity-50"
+                className="w-full rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-xs font-semibold disabled:opacity-50 transition-colors shadow-xs"
               >
-                🎓 I am Going to College — Activate QR Pass
+                Activate Digital Meal Pass
               </button>
             </div>
           ) : (
-            <div className="card-super-glass rounded-[2.2rem] p-6 text-center space-y-3">
-              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold mb-2">
-                <span>Today's Pass</span>
-                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-0.5 rounded-full border border-emerald-500/20 font-bold flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Going to College • Active Pass
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs text-center space-y-3">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1">
+                <span>Today's Meal Pass</span>
+                <span className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 px-2.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  Active Pass
                 </span>
               </div>
 
-              <div className="mx-auto flex w-fit justify-center rounded-[1.8rem] bg-white p-5 shadow-2xl border border-white/30">
-                <QRCode value={student.qrToken ?? 'qr-student-001'} size={190} />
+              <div className="mx-auto flex w-fit justify-center rounded-lg bg-white p-4 border border-slate-200 shadow-xs">
+                <QRCode value={student.qrToken ?? 'qr-student-001'} size={180} />
               </div>
 
-              <h4 className="pt-2 text-base font-extrabold text-slate-900 dark:text-white">{student.name}</h4>
+              <h4 className="pt-1 text-sm font-bold text-slate-900 dark:text-white">{student.name}</h4>
               <p className="text-xs font-mono text-slate-500 dark:text-slate-400">Token: {student.qrToken}</p>
 
               <div className="pt-2">
@@ -245,9 +248,9 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
                   type="button"
                   onClick={handleOptOut}
                   disabled={loading}
-                  className="text-xs text-slate-400 hover:text-rose-400 underline transition"
+                  className="text-xs text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 underline transition-colors"
                 >
-                  Not going to college today? (Deactivate Pass)
+                  Not attending today? (Deactivate Pass)
                 </button>
               </div>
             </div>
@@ -257,50 +260,52 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
         {/* Real-time Box Status & Food Review */}
         <div className="lg:col-span-7 space-y-6">
           {/* Meal Status Banner */}
-          <div className="card-super-glass rounded-[2.2rem] p-6">
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                ⚡ Real-time Meal Box Status
+                <IconUtensils className="w-4 h-4 text-emerald-600" />
+                Real-time Meal Box Status
               </h3>
-              <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
+              <span className={`px-2.5 py-0.5 text-xs font-bold rounded border ${
                 currentStatus === 'issued'
-                  ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 shadow-md'
+                  ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
                   : currentStatus === 'returned'
-                  ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-md'
-                  : 'bg-sky-500/10 text-sky-500 border-sky-500/20 shadow-md'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                  : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600'
               }`}>
-                {currentStatus === 'issued' ? '🍱 Box Issued' : currentStatus === 'returned' ? '🔄 Box Returned' : '⏳ Ready for Pickup'}
+                {currentStatus === 'issued' ? 'Box Issued' : currentStatus === 'returned' ? 'Box Returned' : 'Ready for Pickup'}
               </span>
             </div>
 
             {currentStatus === 'issued' ? (
-              <div className="rounded-2xl bg-amber-500/10 p-3.5 text-xs text-amber-200 border border-amber-500/20 backdrop-blur-md">
+              <div className="rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-3.5 text-xs text-amber-900 dark:text-amber-200">
                 <p className="font-bold">{t('activeBoxNotice')}</p>
                 <p className="mt-1">{t('issuedAtLabel')} {activeBox?.issuedAt ? new Date(activeBox.issuedAt).toLocaleTimeString() : 'Just now'}</p>
-                <p className="mt-2 text-[11px] text-amber-300">
+                <p className="mt-1 text-amber-700 dark:text-amber-300">
                   {t('returnNotice')}
                 </p>
               </div>
             ) : currentStatus === 'returned' ? (
-              <div className="rounded-2xl bg-emerald-500/10 p-3.5 text-xs text-emerald-200 border border-emerald-500/20 backdrop-blur-md">
+              <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-3.5 text-xs text-emerald-900 dark:text-emerald-200">
                 <p className="font-bold">{t('returnedNotice')}</p>
               </div>
             ) : (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-600 dark:text-slate-400">
                 {t('showQrNotice')}
               </p>
             )}
           </div>
 
           {/* Food Quality Review Form */}
-          <div className="card-super-glass rounded-[2.2rem] p-6">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">
               {t('rateFoodQuality')}
             </h3>
 
             {reviewMessage && (
-              <div className="mb-3 rounded-2xl bg-emerald-500/10 p-3 text-xs text-emerald-300 border border-emerald-500/20 backdrop-blur-md">
-                ✅ {reviewMessage}
+              <div className="mb-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-3 text-xs text-emerald-800 dark:text-emerald-200 flex items-center gap-2">
+                <IconCheck className="w-4 h-4 text-emerald-600" />
+                <span>{reviewMessage}</span>
               </div>
             )}
 
@@ -311,7 +316,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
                   <select
                     value={reviewForm.taste}
                     onChange={(e) => setReviewForm({ ...reviewForm, taste: Number(e.target.value) })}
-                    className="w-full rounded-2xl glass-input px-3 py-2 text-xs"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white"
                   >
                     <option value={5}>5 - Excellent</option>
                     <option value={4}>4 - Good</option>
@@ -325,7 +330,7 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
                   <select
                     value={reviewForm.quantity}
                     onChange={(e) => setReviewForm({ ...reviewForm, quantity: Number(e.target.value) })}
-                    className="w-full rounded-2xl glass-input px-3 py-2 text-xs"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white"
                   >
                     <option value={5}>5 - Sufficient</option>
                     <option value={4}>4 - Adequate</option>
@@ -341,14 +346,14 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
                   value={reviewForm.comment}
                   onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
                   placeholder={t('shareFeedbackPlaceholder')}
-                  className="w-full rounded-2xl glass-input px-3.5 py-2 text-xs"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={reviewLoading}
-                className="w-full btn-pill-dark text-xs py-3 disabled:opacity-50"
+                className="w-full rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-xs font-semibold disabled:opacity-50 transition-colors shadow-xs"
               >
                 {t('submitFeedback')}
               </button>
@@ -357,44 +362,46 @@ export function StudentPortal({ user, lang = 'en' }: StudentPortalProps) {
         </div>
       </div>
 
-      {/* Weekly Mess Menu with Reference M T W T F S S Calendar Strip */}
-      <div className="card-super-glass rounded-[2.2rem] p-6 space-y-4">
+      {/* Weekly Mess Menu */}
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-extrabold text-slate-900 dark:text-white">{t('weeklyMenuSchedule')}</h3>
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Aug 2-8</span>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">{t('weeklyMenuSchedule')}</h3>
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Current Week</span>
         </div>
 
-        {/* Reference M T W T F S S Day Pill Selector */}
-        <div className="calendar-day-strip my-2">
+        {/* Day Selector Tabs */}
+        <div className="flex gap-1.5 overflow-x-auto pb-2 no-scrollbar border-b border-slate-200 dark:border-slate-700">
           {DAYS_OF_WEEK.map((day) => {
-            const shortChar = day.charAt(0);
             const isActive = selectedDay === day;
             return (
               <button
                 key={day}
                 type="button"
                 onClick={() => setSelectedDay(day)}
-                className={`calendar-day-item ${isActive ? 'active' : ''}`}
-                title={day}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+                  isActive
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+                }`}
               >
-                {shortChar}
+                {day}
               </button>
             );
           })}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
           {selectedMenu?.meals.map((meal, idx) => (
-            <div key={idx} className="rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-md p-4 transition-all hover:border-emerald-500/30">
+            <div key={idx} className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                   {meal.mealType}
                 </span>
-                <span className="text-[10px] text-slate-400 font-mono">{meal.timing}</span>
+                <span className="text-[11px] text-slate-500 font-mono">{meal.timing}</span>
               </div>
               <h4 className="text-sm font-bold text-slate-900 dark:text-white">{meal.mainDish}</h4>
               {meal.sideDishes?.length > 0 && (
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
                   Sides: {meal.sideDishes.join(', ')}
                 </p>
               )}

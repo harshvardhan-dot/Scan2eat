@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { QrScanner } from './QrScanner';
 import { issueLunchBox, returnLunchBox, scanQr, getDailyLunchBoxSummary } from '../lib/api';
 import { useTranslation, Language } from '../lib/translations';
+import { IconBox, IconCheck, IconUtensils } from './Icons';
 
 interface StaffPortalProps {
   user: { id?: string; name: string; role: string };
@@ -44,9 +45,9 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
       const result = await scanQr(tokenToVerify.trim(), 'lunch');
       setScanResult(result);
       if (result.status === 'not_opted_in' || result.isAttending === false) {
-        setStatus(`⚠️ ${result.student?.name || 'Student'} has NOT clicked "Going to College" today. QR pass is INACTIVE!`);
+        setStatus(`⚠️ ${result.student?.name || 'Student'} has NOT confirmed attendance today. Pass is inactive.`);
       } else if (result.status === 'issued') {
-        setStatus('Meal box already issued for this session');
+        setStatus('Meal box already issued for this session.');
       } else {
         setStatus('Student verified successfully');
       }
@@ -61,7 +62,7 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
   const handleIssue = async () => {
     if (!scanResult?.student?.id) return;
     if (scanResult.isAttending === false || scanResult.status === 'not_opted_in') {
-      setStatus(`❌ Cannot issue meal box: ${scanResult.student.name} has NOT clicked "Going to College" today.`);
+      setStatus(`Cannot issue meal box: ${scanResult.student.name} has NOT confirmed attendance today.`);
       return;
     }
 
@@ -69,12 +70,12 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
     setStatus('Issuing meal box...');
     try {
       const result = await issueLunchBox(scanResult.student.id, 'lunch', user.id ?? 'staff-1');
-      setStatus(result.ok ? '✅ Meal box issued successfully' : result.message);
+      setStatus(result.ok ? 'Meal box issued successfully' : result.message);
       setScanResult({ ...scanResult, status: result.ok ? 'issued' : scanResult.status });
       await fetchSummary();
     } catch (err: any) {
       const msg = err?.response?.data?.message || 'Failed to issue meal box';
-      setStatus(`❌ ${msg}`);
+      setStatus(msg);
     } finally {
       setLoading(false);
     }
@@ -86,7 +87,7 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
     setStatus('Recording meal box return...');
     try {
       const result = await returnLunchBox(scanResult.student.id, user.id ?? 'staff-1');
-      setStatus(result.ok ? '✅ Meal box returned successfully' : result.message);
+      setStatus(result.ok ? 'Meal box returned successfully' : result.message);
       setScanResult({ ...scanResult, status: result.ok ? 'returned' : scanResult.status });
       await fetchSummary();
     } catch {
@@ -97,16 +98,16 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
   };
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto font-sans">
       {/* Operations Header */}
-      <div className="card-super-glass rounded-[2.2rem] p-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 backdrop-blur-md mb-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="inline-flex items-center gap-1.5 rounded bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 mb-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
             {t('messOperations')} • Live Issue Desk
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            🍱 Welcome back, {user.name}!
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Welcome, {user.name}
           </h1>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {t('staffScannerDesc')}
@@ -114,39 +115,39 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="rounded-full border border-white/10 bg-slate-900/40 px-4 py-2 text-xs backdrop-blur-md">
-            <span className="text-slate-400">{t('operator')}: </span>
-            <span className="font-bold text-slate-100">{user.name}</span>
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2 text-xs">
+            <span className="text-slate-500">{t('operator')}: </span>
+            <span className="font-bold text-slate-900 dark:text-white">{user.name}</span>
           </div>
         </div>
       </div>
 
       {/* Mess Daily Operations Metric Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="card-super-glass rounded-[1.8rem] p-5">
-          <p className="text-xs font-semibold text-slate-400">{t('targetBoxesToday')}</p>
-          <p className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">{summary?.lunchBoxesToBeMade ?? 0}</p>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5 shadow-xs">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{t('targetBoxesToday')}</p>
+          <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{summary?.lunchBoxesToBeMade ?? 0}</p>
         </div>
 
-        <div className="card-super-glass rounded-[1.8rem] p-5">
-          <p className="text-xs font-semibold text-amber-400">{t('issuedToStudents')}</p>
-          <p className="text-3xl font-extrabold text-amber-400 mt-1">{summary?.issuedCount ?? 0}</p>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5 shadow-xs">
+          <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">{t('issuedToStudents')}</p>
+          <p className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">{summary?.issuedCount ?? 0}</p>
         </div>
 
-        <div className="card-super-glass rounded-[1.8rem] p-5">
-          <p className="text-xs font-semibold text-emerald-400">{t('returnedBoxes')}</p>
-          <p className="text-3xl font-extrabold text-emerald-400 mt-1">{summary?.returnedCount ?? 0}</p>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5 shadow-xs">
+          <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">{t('returnedBoxes')}</p>
+          <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">{summary?.returnedCount ?? 0}</p>
         </div>
 
-        <div className="card-super-glass rounded-[1.8rem] p-5">
-          <p className="text-xs font-semibold text-rose-400">{t('pendingReturn')}</p>
-          <p className="text-3xl font-extrabold text-rose-400 mt-1">{summary?.notReturnedCount ?? 0}</p>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5 shadow-xs">
+          <p className="text-xs font-semibold text-rose-600 dark:text-rose-400">{t('pendingReturn')}</p>
+          <p className="text-2xl font-extrabold text-rose-600 dark:text-rose-400 mt-1">{summary?.notReturnedCount ?? 0}</p>
         </div>
       </div>
 
-      {/* Main Work Area: Scanner + Verification Result */}
+      {/* Main Work Area: Scanner (Visual Focus) + Verification Result */}
       <div className="grid gap-6 lg:grid-cols-12">
-        {/* Scanner Column */}
+        {/* Scanner Column (Visual Focus) */}
         <div className="lg:col-span-7">
           <QrScanner
             scannerId="staff-issue-desk-scanner"
@@ -158,37 +159,34 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
 
         {/* Verification Result Column */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="card-super-glass rounded-[2.2rem] p-6">
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-xs">
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-              📋 {t('verificationResult')}
+              <IconCheck className="w-4 h-4 text-emerald-600" />
+              {t('verificationResult')}
             </h3>
 
-            <div className={`rounded-2xl border p-3.5 mb-4 backdrop-blur-md ${
+            <div className={`rounded-lg border p-3 mb-4 text-xs font-semibold ${
               scanResult?.isAttending === false || scanResult?.status === 'not_opted_in'
-                ? 'bg-rose-500/10 border-rose-500/20 text-rose-300'
-                : 'bg-slate-950/40 border-white/10 text-emerald-400'
+                ? 'bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-900/40 dark:text-rose-200'
+                : 'bg-slate-50 border-slate-200 text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200'
             }`}>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t('systemStatus')}</p>
-              <p className={`mt-1 text-xs font-bold ${
-                scanResult?.isAttending === false || scanResult?.status === 'not_opted_in'
-                  ? 'text-rose-400'
-                  : 'text-emerald-400'
-              }`}>{status}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('systemStatus')}</p>
+              <p className="mt-0.5">{status}</p>
             </div>
 
             {scanResult ? (
               <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
                   <div>
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">{scanResult.student?.name}</h4>
-                    <p className="text-xs text-slate-400">{scanResult.student?.email}</p>
+                    <h4 className="text-base font-bold text-slate-900 dark:text-white">{scanResult.student?.name}</h4>
+                    <p className="text-xs text-slate-500">{scanResult.student?.email}</p>
                   </div>
-                  <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
+                  <span className={`px-2.5 py-0.5 text-xs font-bold rounded border ${
                     scanResult.isAttending === false || scanResult.status === 'not_opted_in'
-                      ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                      ? 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800'
                       : scanResult.status === 'issued'
-                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                      : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                      ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
+                      : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
                   }`}>
                     {scanResult.isAttending === false || scanResult.status === 'not_opted_in'
                       ? 'Pass Inactive'
@@ -197,27 +195,27 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
                 </div>
 
                 {(scanResult.isAttending === false || scanResult.status === 'not_opted_in') && (
-                  <div className="rounded-2xl bg-rose-500/10 border border-rose-500/20 p-3 text-xs text-rose-300">
-                    ⚠️ Student has NOT clicked "Going to College" in their portal today. QR pass is locked!
+                  <div className="rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 p-3 text-xs text-rose-800 dark:text-rose-200">
+                    ⚠️ Student has NOT confirmed attendance today. QR pass is locked.
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-2xl bg-white/5 p-3 border border-white/10 backdrop-blur-md">
-                    <p className="text-slate-400 font-medium">{t('room')}</p>
-                    <p className="font-bold text-slate-100 mt-0.5">{scanResult.student?.roomNumber}</p>
+                  <div className="rounded-lg bg-slate-50 dark:bg-slate-900 p-2.5 border border-slate-200 dark:border-slate-700">
+                    <p className="text-slate-500 font-medium">{t('room')}</p>
+                    <p className="font-bold text-slate-900 dark:text-slate-100 mt-0.5">{scanResult.student?.roomNumber}</p>
                   </div>
-                  <div className="rounded-2xl bg-white/5 p-3 border border-white/10 backdrop-blur-md">
-                    <p className="text-slate-400 font-medium">{t('rollNumber')}</p>
-                    <p className="font-bold text-slate-100 mt-0.5">{scanResult.student?.rollNumber}</p>
+                  <div className="rounded-lg bg-slate-50 dark:bg-slate-900 p-2.5 border border-slate-200 dark:border-slate-700">
+                    <p className="text-slate-500 font-medium">{t('rollNumber')}</p>
+                    <p className="font-bold text-slate-900 dark:text-slate-100 mt-0.5">{scanResult.student?.rollNumber}</p>
                   </div>
-                  <div className="rounded-2xl bg-white/5 p-3 border border-white/10 backdrop-blur-md">
-                    <p className="text-slate-400 font-medium">{t('dietPreference')}</p>
-                    <p className="font-bold text-emerald-400 mt-0.5">{scanResult.student?.mealPreference ?? 'Veg'}</p>
+                  <div className="rounded-lg bg-slate-50 dark:bg-slate-900 p-2.5 border border-slate-200 dark:border-slate-700">
+                    <p className="text-slate-500 font-medium">{t('dietPreference')}</p>
+                    <p className="font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{scanResult.student?.mealPreference ?? 'Veg'}</p>
                   </div>
-                  <div className="rounded-2xl bg-white/5 p-3 border border-white/10 backdrop-blur-md">
-                    <p className="text-slate-400 font-medium">{t('currentSession')}</p>
-                    <p className="font-bold text-indigo-400 mt-0.5">{scanResult.session?.type ?? 'Lunch'}</p>
+                  <div className="rounded-lg bg-slate-50 dark:bg-slate-900 p-2.5 border border-slate-200 dark:border-slate-700">
+                    <p className="text-slate-500 font-medium">{t('currentSession')}</p>
+                    <p className="font-bold text-slate-900 dark:text-slate-100 mt-0.5">{scanResult.session?.type ?? 'Lunch'}</p>
                   </div>
                 </div>
 
@@ -226,22 +224,24 @@ export function StaffPortal({ user, lang: propLang = 'en' }: StaffPortalProps) {
                     type="button"
                     onClick={handleIssue}
                     disabled={loading || scanResult.isAttending === false || scanResult.status === 'not_opted_in'}
-                    className="flex-1 btn-pill-dark text-xs py-3 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs flex items-center justify-center gap-1.5"
                   >
-                    🍱 {t('issueLunchBox')}
+                    <IconUtensils className="w-3.5 h-3.5" />
+                    <span>{t('issueLunchBox')}</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleReturn}
                     disabled={loading}
-                    className="flex-1 rounded-full border border-white/15 bg-slate-800/60 py-3 text-xs font-bold text-slate-200 hover:bg-slate-700/60 backdrop-blur-md disabled:opacity-50 transition-all shadow-md"
+                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors shadow-xs flex items-center justify-center gap-1.5"
                   >
-                    🔄 {t('returnLunchBox')}
+                    <IconBox className="w-3.5 h-3.5" />
+                    <span>{t('returnLunchBox')}</span>
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="py-10 text-center text-xs text-slate-400">
+              <div className="py-12 text-center text-xs text-slate-500">
                 {t('noStudentScanned')}
               </div>
             )}
