@@ -74,12 +74,39 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
     setPassword('');
   };
 
-  const handleDevQuickFill = () => {
-    setSelectedRole('developer');
-    setMobileNumber('#harsh107');
-    setPassword('#harsh107');
+  const handleDemoLogin = async (role: 'student' | 'mess_staff' | 'admin') => {
+    let demoPhone = '';
+    let demoPass = '';
+    if (role === 'student') {
+      demoPhone = '9876543210';
+      demoPass = 'student123';
+    } else if (role === 'mess_staff') {
+      demoPhone = '9876543220';
+      demoPass = 'staff123';
+    } else if (role === 'admin') {
+      demoPhone = '9876543299';
+      demoPass = 'warden123';
+    }
+
+    setSelectedRole(role);
+    setMobileNumber(demoPhone);
+    setPassword(demoPass);
     setError('');
     setSuccessMessage('');
+    setLoading(true);
+
+    try {
+      const result = await login(demoPhone, demoPass);
+      localStorage.setItem('hostelos-token', result.token);
+      onLoginSuccess?.(result.user, result.token);
+      const isDevOrAdmin = result.user.role === 'admin' || result.user.role === 'super_admin' || result.user.role === 'developer';
+      const targetRoute = isDevOrAdmin ? '/admin' : result.user.role === 'mess_staff' ? '/staff' : '/student';
+      navigate(targetRoute);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Demo authentication failed.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -449,6 +476,36 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                       {t('newWardenRegister')}
                     </button>
                   )}
+                </div>
+
+                {/* Quick Demo Login Preset Buttons (Excludes Developer) */}
+                <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mb-2 uppercase tracking-wider">
+                    Quick Demo Accounts
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleDemoLogin('student')}
+                      className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-300 border border-slate-200 dark:border-slate-600 transition-colors shadow-xs"
+                    >
+                      Student Demo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDemoLogin('mess_staff')}
+                      className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-300 border border-slate-200 dark:border-slate-600 transition-colors shadow-xs"
+                    >
+                      Mess Staff Demo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDemoLogin('admin')}
+                      className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-300 border border-slate-200 dark:border-slate-600 transition-colors shadow-xs"
+                    >
+                      Warden Demo
+                    </button>
+                  </div>
                 </div>
               </form>
             )}
