@@ -348,14 +348,14 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
             {selectedRole === 'developer' && (
               <div className="mb-4 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 p-3 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between">
                 <div>
-                  <strong>Developer Portal Access:</strong> Use ID <code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">DEV9999</code> or <code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">harsh dev</code>.
+                  <strong>Developer ID Access:</strong> Sign in using Developer ID only (<code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">DEV9999</code> or <code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">harsh dev</code>). Password is not required.
                 </div>
                 <button
                   type="button"
                   onClick={handleDevQuickFill}
                   className="ml-2 text-[11px] font-bold text-amber-700 dark:text-amber-300 hover:underline shrink-0"
                 >
-                  Quick Fill
+                  Quick Fill ID
                 </button>
               </div>
             )}
