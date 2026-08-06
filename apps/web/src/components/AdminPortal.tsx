@@ -678,120 +678,119 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
     return (
       <div className="space-y-6 max-w-6xl mx-auto">
         {/* Developer Header Banner */}
-        <div className={`rounded-3xl border p-6 backdrop-blur ${panelClass}`}>
+        <div className={panelClass}>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-400 border border-amber-500/20">
-                👑 {t('devPortalTitle')}
+              <div className="inline-flex items-center rounded bg-amber-50 dark:bg-amber-950/50 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                {t('devPortalTitle')}
               </div>
-              <h1 className="mt-3 text-3xl font-bold tracking-tight">{t('devPortalTitle')}</h1>
-              <p className={`mt-2 text-sm leading-6 ${mutedText}`}>
+              <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('devPortalTitle')}</h1>
+              <p className={`mt-1 text-xs sm:text-sm ${mutedText}`}>
                 {t('devPortalDesc')}
               </p>
             </div>
 
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-3 items-center">
               <button
                 onClick={() => void loadData()}
                 disabled={loading}
-                className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-sm font-semibold text-amber-300 hover:bg-amber-500/20 transition disabled:opacity-50"
+                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 px-3.5 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-200 transition-colors disabled:opacity-50"
               >
-                {loading ? 'Refreshing...' : '🔄 Refresh Platform Data'}
+                {loading ? 'Refreshing...' : 'Refresh Platform Data'}
               </button>
             </div>
           </div>
         </div>
 
-          {/* Developer Navigation Tabs */}
-          <div className="mt-6 flex gap-2 border-t border-slate-700/70 pt-4 overflow-x-auto pb-2 flex-nowrap sm:flex-wrap no-scrollbar">
-            <button
-              onClick={() => setDevTab('hostels')}
-              className={`shrink-0 rounded-2xl px-4 py-2 text-sm font-semibold transition ${
-                devTab === 'hostels'
-                  ? 'bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25'
-                  : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
-              }`}
-            >
-              🏫 Hostels & Payment Details ({tenants.length})
-            </button>
+        {/* Developer Navigation Tabs */}
+        <div className="mt-4 flex gap-1.5 border-t border-slate-200 dark:border-slate-700 pt-4 overflow-x-auto pb-2 flex-nowrap sm:flex-wrap no-scrollbar">
+          <button
+            onClick={() => setDevTab('hostels')}
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
+              devTab === 'hostels'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
+            }`}
+          >
+            Hostels & Payment Details ({tenants.length})
+          </button>
 
-            <button
-              onClick={() => setDevTab('students')}
-              className={`rounded-2xl px-4 py-2 text-sm font-semibold transition ${
-                devTab === 'students'
-                  ? 'bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25'
-                  : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
-              }`}
-            >
-              {t('tabStudentsDir')} ({students.length})
-            </button>
+          <button
+            onClick={() => setDevTab('students')}
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
+              devTab === 'students'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
+            }`}
+          >
+            {t('tabStudentsDir')} ({students.length})
+          </button>
 
-            <button
-              onClick={() => setDevTab('wardens')}
-              className={`rounded-2xl px-4 py-2 text-sm font-semibold transition ${
-                devTab === 'wardens'
-                  ? 'bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25'
-                  : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
-              }`}
-            >
-              {t('tabWardens')} {pendingWardens.length > 0 ? `(${pendingWardens.length} Pending)` : ''}
-            </button>
+          <button
+            onClick={() => setDevTab('wardens')}
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
+              devTab === 'wardens'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
+            }`}
+          >
+            {t('tabWardens')} {pendingWardens.length > 0 ? `(${pendingWardens.length} Pending)` : ''}
+          </button>
 
-            <button
-              onClick={() => setDevTab('rankings')}
-              className={`rounded-2xl px-4 py-2 text-sm font-semibold transition ${
-                devTab === 'rankings'
-                  ? 'bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25'
-                  : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
-              }`}
-            >
-              {t('tabLeaderboard')}
-            </button>
+          <button
+            onClick={() => setDevTab('rankings')}
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
+              devTab === 'rankings'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
+            }`}
+          >
+            {t('tabLeaderboard')}
+          </button>
 
-            <button
-              onClick={() => setDevTab('menus_reviews')}
-              className={`rounded-2xl px-4 py-2 text-sm font-semibold transition ${
-                devTab === 'menus_reviews'
-                  ? 'bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25'
-                  : `border border-slate-700 ${isDark ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`
-              }`}
-            >
-              {t('tabMenus')} ({allReviews.length})
-            </button>
-          </div>
-
+          <button
+            onClick={() => setDevTab('menus_reviews')}
+            className={`shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors ${
+              devTab === 'menus_reviews'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : `border border-slate-200 dark:border-slate-700 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
+            }`}
+          >
+            {t('tabMenus')} ({allReviews.length})
+          </button>
+        </div>
 
         {/* Status Notification */}
         {status ? (
-          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs font-medium text-amber-300 flex items-center justify-between">
-            <span>ℹ️ {status}</span>
-            <span className="text-[10px] opacity-70">HostelOS Super Admin Backend</span>
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center justify-between shadow-xs">
+            <span>System Update: {status}</span>
+            <span className="text-[10px] text-slate-500 font-mono">HostelOS Super Admin Backend</span>
           </div>
         ) : null}
 
         {/* Developer Platform Summary Cards */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className={`rounded-3xl border p-5 ${cardClass}`}>
-            <p className={`text-xs uppercase tracking-wider font-semibold ${mutedText}`}>{t('subscribedHostels')}</p>
-            <p className="mt-2 text-3xl font-extrabold text-amber-400">{tenants.length}</p>
+          <div className={cardClass}>
+            <p className={`text-xs uppercase tracking-wider font-bold ${mutedText}`}>{t('subscribedHostels')}</p>
+            <p className="mt-2 text-3xl font-extrabold text-slate-900 dark:text-white">{tenants.length}</p>
             <p className={`mt-1 text-xs ${mutedText}`}>{t('activeClientInst')}</p>
           </div>
 
-          <div className={`rounded-3xl border p-5 ${cardClass}`}>
-            <p className={`text-xs uppercase tracking-wider font-semibold ${mutedText}`}>{t('monthlyRev')}</p>
-            <p className="mt-2 text-3xl font-extrabold text-emerald-400">₹{totalMRR.toLocaleString()}</p>
+          <div className={cardClass}>
+            <p className={`text-xs uppercase tracking-wider font-bold ${mutedText}`}>{t('monthlyRev')}</p>
+            <p className="mt-2 text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">₹{totalMRR.toLocaleString()}</p>
             <p className={`mt-1 text-xs ${mutedText}`}>{t('monthlyActiveSubs')}</p>
           </div>
 
-          <div className={`rounded-3xl border p-5 ${cardClass}`}>
-            <p className={`text-xs uppercase tracking-wider font-semibold ${mutedText}`}>{t('allHostelStudents')}</p>
-            <p className="mt-2 text-3xl font-extrabold text-cyan-400">{students.length}</p>
+          <div className={cardClass}>
+            <p className={`text-xs uppercase tracking-wider font-bold ${mutedText}`}>{t('allHostelStudents')}</p>
+            <p className="mt-2 text-3xl font-extrabold text-slate-900 dark:text-white">{students.length}</p>
             <p className={`mt-1 text-xs ${mutedText}`}>{t('acrossAllClients')}</p>
           </div>
 
-          <div className={`rounded-3xl border p-5 ${cardClass}`}>
-            <p className={`text-xs uppercase tracking-wider font-semibold ${mutedText}`}>{t('platformWardens')}</p>
-            <p className="mt-2 text-3xl font-extrabold text-violet-400">{allAdmins.length}</p>
+          <div className={cardClass}>
+            <p className={`text-xs uppercase tracking-wider font-bold ${mutedText}`}>{t('platformWardens')}</p>
+            <p className="mt-2 text-3xl font-extrabold text-slate-900 dark:text-white">{allAdmins.length}</p>
             <p className={`mt-1 text-xs ${mutedText}`}>{pendingWardens.length} {t('awaitingAppr')}</p>
           </div>
         </div>
