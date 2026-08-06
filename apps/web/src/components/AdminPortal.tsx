@@ -797,48 +797,48 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
 
         {/* Real-Time Pending Warden Registration Approvals Queue */}
         {pendingWardens.length > 0 && (
-          <div className="rounded-3xl border border-amber-500/50 bg-gradient-to-r from-amber-950/40 via-slate-900 to-amber-950/20 p-6 shadow-xl shadow-amber-500/10 animate-fade-in">
+          <div className="rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/60 dark:bg-amber-950/30 p-6 shadow-xs">
             <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
               <div>
-                <h2 className="text-xl font-bold text-amber-300 flex items-center gap-2">
-                  <span>⏳</span> Real-Time Pending Warden Approval Requests ({pendingWardens.length})
+                <h2 className="text-base font-bold text-amber-900 dark:text-amber-200 flex items-center gap-2">
+                  Pending Warden Approvals ({pendingWardens.length})
                 </h2>
-                <p className="text-xs text-amber-200/80 mt-0.5">
-                  New hostel wardens signed up on the login screen and are waiting for your live developer authorization.
+                <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                  New hostel wardens waiting for developer authorization.
                 </p>
               </div>
-              <span className="rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 px-3 py-1 text-xs font-bold animate-pulse">
+              <span className="rounded bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700 px-2.5 py-0.5 text-xs font-semibold">
                 Action Required
               </span>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               {pendingWardens.map((pw) => (
-                <div key={pw.id} className="flex flex-col justify-between rounded-2xl border border-amber-500/30 bg-slate-950/90 p-4 space-y-3">
+                <div key={pw.id} className="flex flex-col justify-between rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 space-y-3 shadow-xs">
                   <div>
                     <div className="flex items-center justify-between">
-                      <p className="font-extrabold text-white text-base">{pw.name}</p>
-                      <span className="rounded-full bg-violet-500/20 text-violet-300 text-[10px] font-semibold px-2 py-0.5">Applicant</span>
+                      <p className="font-bold text-slate-900 dark:text-white text-sm">{pw.name}</p>
+                      <span className="rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold px-2 py-0.5">Applicant</span>
                     </div>
-                    <p className="text-xs text-cyan-300 font-semibold mt-1">🏫 Hostel: {pw.hostelName || 'Hostel Residency'}</p>
-                    <p className="text-xs text-slate-300 mt-0.5">📧 {pw.email}</p>
-                    <p className="text-xs text-emerald-400 font-mono mt-0.5">📱 Mobile: {pw.phoneNumber}</p>
+                    <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mt-1">Hostel: {pw.hostelName || 'Hostel Residency'}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Email: {pw.email}</p>
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">Mobile: {pw.phoneNumber}</p>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+                  <div className="flex items-center gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
                     <button
                       onClick={() => handleApproveWarden(pw.id)}
                       disabled={loading}
-                      className="flex-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-2.5 text-xs font-bold text-slate-950 hover:brightness-110 transition shadow-md shadow-emerald-500/20"
+                      className="flex-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white py-2 text-xs font-semibold transition-colors shadow-xs"
                     >
-                      ✓ Approve & Activate Warden
+                      Approve & Activate
                     </button>
                     <button
                       onClick={() => handleRejectWarden(pw.id)}
                       disabled={loading}
-                      className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3 py-2.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition"
+                      className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                     >
-                      ✕ Reject
+                      Reject
                     </button>
                   </div>
                 </div>
@@ -1625,24 +1625,24 @@ export function AdminPortal({ user, isDark = true, lang: propLang = 'en' }: Admi
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       {/* Top Banner */}
-      <div className={`rounded-3xl border p-6 backdrop-blur ${panelClass}`}>
+      <div className={panelClass}>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-violet-400 border border-violet-500/20">
+            <div className="inline-flex items-center rounded bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               {t('adminPortalTitle')}
             </div>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight">{t('adminPortalTitle')}</h1>
-            <p className={`mt-2 text-sm leading-6 ${mutedText}`}>
+            <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('adminPortalTitle')}</h1>
+            <p className={`mt-1 text-xs sm:text-sm ${mutedText}`}>
               {t('adminPortalDesc')}
             </p>
           </div>
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-3 items-center">
             <button
               onClick={() => void loadData()}
               disabled={loading}
-              className="rounded-2xl border border-violet-500/30 bg-violet-500/10 px-4 py-2.5 text-sm font-semibold text-violet-300 hover:bg-violet-500/20 transition disabled:opacity-50"
+              className="rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 px-3.5 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-200 transition-colors disabled:opacity-50"
             >
-              {loading ? 'Refreshing...' : '🔄 Refresh Data'}
+              {loading ? 'Refreshing...' : 'Refresh Data'}
             </button>
           </div>
         </div>
