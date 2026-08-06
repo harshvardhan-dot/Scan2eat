@@ -76,7 +76,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
 
   const handleDevQuickFill = () => {
     setSelectedRole('developer');
-    setMobileNumber('DEV9999');
+    setMobileNumber('#harsh107');
     setPassword('#harsh107');
     setError('');
     setSuccessMessage('');
@@ -348,7 +348,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
             {selectedRole === 'developer' && (
               <div className="mb-4 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 p-3 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between">
                 <div>
-                  <strong>Developer ID Access:</strong> Sign in using Developer ID only (<code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">DEV9999</code> or <code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">harsh dev</code>). Password is not required.
+                  <strong>Developer ID Access:</strong> Sign in using Developer ID only (<code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">#harsh107</code>). Password is not required.
                 </div>
                 <button
                   type="button"
@@ -387,7 +387,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                     required
                     value={mobileNumber}
                     onChange={(e) => setMobileNumber(e.target.value)}
-                    placeholder={selectedRole === 'developer' ? 'Enter Developer ID (e.g. DEV9999 or harsh dev)' : t('enterMobile')}
+                    placeholder={selectedRole === 'developer' ? 'Enter Developer ID (e.g. #harsh107)' : t('enterMobile')}
                     className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400"
                   />
                 </div>
