@@ -400,7 +400,7 @@ export function LoginPage({ onLoginSuccess, lang: propLang = 'en', onSelectLang 
                     required
                     value={mobileNumber}
                     onChange={(e) => setMobileNumber(e.target.value)}
-                    placeholder={selectedRole === 'developer' ? 'Enter Developer ID (e.g. #harsh107)' : t('enterMobile')}
+                    placeholder={selectedRole === 'developer' ? 'Enter Developer ID' : t('enterMobile')}
                     className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400"
                   />
                 </div>
